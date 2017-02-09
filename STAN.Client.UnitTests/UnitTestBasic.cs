@@ -381,10 +381,6 @@ namespace STAN.Client.UnitTests
                     };
 
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
-                    sOpts.StartAt(500);
-
-                    Assert.Throws<StanException>(() => (c.Subscribe("foo", sOpts, eh)));
-
                     sOpts.StartAt(6);
                     c.Subscribe("foo", sOpts, eh);
 
@@ -448,9 +444,6 @@ namespace STAN.Client.UnitTests
                     Thread.Sleep(500);
 
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
-                    sOpts.StartAt(DateTime.Now);
-                    Assert.Throws<StanException>(() => (c.Subscribe("foo", sOpts, eh)));
-
                     sOpts.StartAt(useUtc ? startTime.ToUniversalTime() : startTime);
                     var s = c.Subscribe("foo", sOpts, eh);
                     Assert.True(ev.WaitOne(DEFAULT_WAIT));
@@ -558,10 +551,10 @@ namespace STAN.Client.UnitTests
                     var opts = StanSubscriptionOptions.GetDefaultOptions();
 
                     opts.StartAt(DateTime.Now);
-                    Assert.Throws<StanException>(() => c.Subscribe("foo", opts, noopMh));
+                    c.Subscribe("foo", opts, noopMh).Unsubscribe();
 
                     opts.StartAt(0);
-                    Assert.Throws<StanException>(() => c.Subscribe("foo", opts, noopMh));
+                    c.Subscribe("foo", opts, noopMh).Unsubscribe();
 
 
                     IStanSubscription s;
@@ -950,12 +943,10 @@ namespace STAN.Client.UnitTests
                     // make sure we get an error from an invalid Ack wait
                     Assert.Throws<ArgumentOutOfRangeException>(() => { sOpts.AckWait = 500; });
 
-                    int ackRedeliverTime = 1000;
-
                     sOpts.DeliverAllAvailable();
                     sOpts.ManualAcks = true;
                     sOpts.MaxInflight = toSend;
-                    sOpts.AckWait = ackRedeliverTime;
+                    sOpts.AckWait = 2000;
 
                     long received = 0;
 
@@ -966,7 +957,7 @@ namespace STAN.Client.UnitTests
 
                         Interlocked.Increment(ref received);
                     });
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
                     Assert.True(redelivered == false);
                     Assert.True(Interlocked.Read(ref received) == toSend);
                 }

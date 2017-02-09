@@ -1,7 +1,7 @@
 install:
   - appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-  - appveyor DownloadFile https://github.com/nats-io/nats-streaming-server/releases/download/v0.2.0/nats-streaming-server-windows-amd64.zip
-  - 7z e nats-streaming-server-windows-amd64.zip nats-streaming-server.exe -r -oc:\projects\nss\build
+  - appveyor DownloadFile https://github.com/nats-io/nats-streaming-server/releases/download/v0.3.8/nats-streaming-server-v0.3.8-windows-amd64.zip
+  - 7z e nats-streaming-server-v0.3.8-windows-amd64.zip nats-streaming-server.exe -r -oc:\projects\nss\build
   - cmd: set PATH=%PATH%;C:\projects\nss\build
 before_build:
   - nuget restore
