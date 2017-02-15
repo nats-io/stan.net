@@ -1719,7 +1719,6 @@ namespace STAN.Client.UnitTests
                 EventHandler<StanMsgHandlerArgs> eh = (obj, args) =>
                 {
                     ulong count = (ulong)Interlocked.Increment(ref received);
-                    Console.WriteLine("Received {0}, seqno={1}", count, args.Message.Sequence);
                     if (count != args.Message.Sequence)
                         error = true;
 
