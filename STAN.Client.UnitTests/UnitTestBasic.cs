@@ -1704,5 +1704,107 @@ namespace STAN.Client.UnitTests
                 }
             }
         }
+
+        private void testSubscriberClose(string channel, bool useQG)
+        {
+            using (var sc = DefaultConnection)
+            {
+                int received = 0;
+                bool error = false;
+                AutoResetEvent ev = new AutoResetEvent(false);
+
+                // Send 1 message.
+                sc.Publish(channel, System.Text.Encoding.UTF8.GetBytes("msg"));
+
+                EventHandler<StanMsgHandlerArgs> eh = (obj, args) =>
+                {
+                    ulong count = (ulong)Interlocked.Increment(ref received);
+                    Console.WriteLine("Received {0}, seqno={1}", count, args.Message.Sequence);
+                    if (count != args.Message.Sequence)
+                        error = true;
+
+                    ev.Set();
+                };
+
+                StanSubscriptionOptions so = StanSubscriptionOptions.GetDefaultOptions();
+                so.DeliverAllAvailable();
+                so.DurableName = "dur";
+
+                IStanSubscription sub;
+                if (useQG)
+                    sub = sc.Subscribe(channel, "group", so, eh);
+                else
+                    sub = sc.Subscribe(channel, so, eh);
+
+                // wait for the first message
+                Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                Assert.False(error, "invalid message seq received.");
+
+                // Wait a bit to reduce risk of server processing unsubscribe before ACK
+                Thread.Sleep(500);
+
+                try
+                {
+                    sub.Close();
+                }
+                catch (StanNoServerSupport)
+                {
+                    // older server; just unsubscribe and 
+                    // we are done.
+                    sub.Unsubscribe();
+                    return;
+                }
+
+                // send the second message
+                sc.Publish(channel, System.Text.Encoding.UTF8.GetBytes("msg"));
+
+                // restart the durable
+                ev.Reset();
+                if (useQG)
+                    sub = sc.Subscribe(channel, "group", so, eh);
+                else
+                    sub = sc.Subscribe(channel, so, eh);
+
+                // wait for the second message
+                Assert.True(ev.WaitOne(10000));
+                Assert.False(error, "invalid message seq received.");
+
+                sub.Unsubscribe();
+            }
+        }
+
+        [Fact]
+        public void TestSubscriberClose()
+        {
+            using (new NatsStreamingServer())
+            {
+                StanOptions so = StanOptions.GetDefaultOptions();
+                using (var c = DefaultConnection)
+                {
+                    var sub = c.Subscribe("foo", (obj, args) => { });
+                    try
+                    {
+                        sub.Close();
+                    }
+                    catch (StanNoServerSupport)
+                    {
+                        // noop, this is OK;
+                    }
+
+                    var qsub = c.Subscribe("foo", "group", (obj, args) => { });
+                    try
+                    {
+                        qsub.Close();
+                    }
+                    catch (StanNoServerSupport)
+                    {
+                        // noop, this is OK;
+                    }
+                }
+
+                testSubscriberClose("dursub", false);
+                testSubscriberClose("durqueuesub", true);
+            }
+        }
     }
 }

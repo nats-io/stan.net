@@ -14,7 +14,18 @@ namespace STAN.Client
     {
         /// <summary>
         /// Removes interest in the given subject.
+        /// For durables, it means that the durable interest is also removed
+        /// from the server. Restarting a durable with the same name will 
+        /// not resume the subscription, it will be considered a new one.
         /// </summary>
         void Unsubscribe();
+
+        /// <summary>
+        /// Close removes this subscriber from the server, but unlike Unsubscribe(),
+        /// the durable interest is not removed. If the client has connected to a server
+        /// for which this feature is not available, Close() will return a ErrNoServerSupport
+        /// error.
+        /// </summary>
+        void Close();
     }
 }

@@ -10,7 +10,6 @@ using scg = global::System.Collections.Generic;
 namespace STAN.Client {
 
   /// <summary>Holder for reflection information generated from protocol.proto</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public static partial class ProtocolReflection {
 
     #region Descriptor
@@ -32,22 +31,23 @@ namespace STAN.Client {
             "CgtyZWRlbGl2ZXJlZBgGIAEoCBINCgVDUkMzMhgKIAEoDSIoCgNBY2sSDwoH",
             "c3ViamVjdBgBIAEoCRIQCghzZXF1ZW5jZRgCIAEoBCI6Cg5Db25uZWN0UmVx",
             "dWVzdBIQCghjbGllbnRJRBgBIAEoCRIWCg5oZWFydGJlYXRJbmJveBgCIAEo",
-            "CSKJAQoPQ29ubmVjdFJlc3BvbnNlEhEKCXB1YlByZWZpeBgBIAEoCRITCgtz",
+            "CSKjAQoPQ29ubmVjdFJlc3BvbnNlEhEKCXB1YlByZWZpeBgBIAEoCRITCgtz",
             "dWJSZXF1ZXN0cxgCIAEoCRIVCg11bnN1YlJlcXVlc3RzGAMgASgJEhUKDWNs",
-            "b3NlUmVxdWVzdHMYBCABKAkSDQoFZXJyb3IYBSABKAkSEQoJcHVibGljS2V5",
-            "GGQgASgJIvoBChNTdWJzY3JpcHRpb25SZXF1ZXN0EhAKCGNsaWVudElEGAEg",
-            "ASgJEg8KB3N1YmplY3QYAiABKAkSDgoGcUdyb3VwGAMgASgJEg0KBWluYm94",
-            "GAQgASgJEhMKC21heEluRmxpZ2h0GAUgASgFEhUKDWFja1dhaXRJblNlY3MY",
-            "BiABKAUSEwoLZHVyYWJsZU5hbWUYByABKAkSMQoNc3RhcnRQb3NpdGlvbhgK",
-            "IAEoDjIaLlNUQU4uQ2xpZW50LlN0YXJ0UG9zaXRpb24SFQoNc3RhcnRTZXF1",
-            "ZW5jZRgLIAEoBBIWCg5zdGFydFRpbWVEZWx0YRgMIAEoAyI3ChRTdWJzY3Jp",
-            "cHRpb25SZXNwb25zZRIQCghhY2tJbmJveBgCIAEoCRINCgVlcnJvchgDIAEo",
-            "CSJbChJVbnN1YnNjcmliZVJlcXVlc3QSEAoIY2xpZW50SUQYASABKAkSDwoH",
-            "c3ViamVjdBgCIAEoCRINCgVpbmJveBgDIAEoCRITCgtkdXJhYmxlTmFtZRgE",
-            "IAEoCSIgCgxDbG9zZVJlcXVlc3QSEAoIY2xpZW50SUQYASABKAkiHgoNQ2xv",
-            "c2VSZXNwb25zZRINCgVlcnJvchgBIAEoCSpgCg1TdGFydFBvc2l0aW9uEgsK",
-            "B05ld09ubHkQABIQCgxMYXN0UmVjZWl2ZWQQARISCg5UaW1lRGVsdGFTdGFy",
-            "dBACEhEKDVNlcXVlbmNlU3RhcnQQAxIJCgVGaXJzdBAEYgZwcm90bzM="));
+            "b3NlUmVxdWVzdHMYBCABKAkSDQoFZXJyb3IYBSABKAkSGAoQc3ViQ2xvc2VS",
+            "ZXF1ZXN0cxgGIAEoCRIRCglwdWJsaWNLZXkYZCABKAki+gEKE1N1YnNjcmlw",
+            "dGlvblJlcXVlc3QSEAoIY2xpZW50SUQYASABKAkSDwoHc3ViamVjdBgCIAEo",
+            "CRIOCgZxR3JvdXAYAyABKAkSDQoFaW5ib3gYBCABKAkSEwoLbWF4SW5GbGln",
+            "aHQYBSABKAUSFQoNYWNrV2FpdEluU2VjcxgGIAEoBRITCgtkdXJhYmxlTmFt",
+            "ZRgHIAEoCRIxCg1zdGFydFBvc2l0aW9uGAogASgOMhouU1RBTi5DbGllbnQu",
+            "U3RhcnRQb3NpdGlvbhIVCg1zdGFydFNlcXVlbmNlGAsgASgEEhYKDnN0YXJ0",
+            "VGltZURlbHRhGAwgASgDIjcKFFN1YnNjcmlwdGlvblJlc3BvbnNlEhAKCGFj",
+            "a0luYm94GAIgASgJEg0KBWVycm9yGAMgASgJIlsKElVuc3Vic2NyaWJlUmVx",
+            "dWVzdBIQCghjbGllbnRJRBgBIAEoCRIPCgdzdWJqZWN0GAIgASgJEg0KBWlu",
+            "Ym94GAMgASgJEhMKC2R1cmFibGVOYW1lGAQgASgJIiAKDENsb3NlUmVxdWVz",
+            "dBIQCghjbGllbnRJRBgBIAEoCSIeCg1DbG9zZVJlc3BvbnNlEg0KBWVycm9y",
+            "GAEgASgJKmAKDVN0YXJ0UG9zaXRpb24SCwoHTmV3T25seRAAEhAKDExhc3RS",
+            "ZWNlaXZlZBABEhIKDlRpbWVEZWx0YVN0YXJ0EAISEQoNU2VxdWVuY2VTdGFy",
+            "dBADEgkKBUZpcnN0EARiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::STAN.Client.StartPosition), }, new pbr::GeneratedClrTypeInfo[] {
@@ -56,7 +56,7 @@ namespace STAN.Client {
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.MsgProto), global::STAN.Client.MsgProto.Parser, new[]{ "Sequence", "Subject", "Reply", "Data", "Timestamp", "Redelivered", "CRC32" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.Ack), global::STAN.Client.Ack.Parser, new[]{ "Subject", "Sequence" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectRequest), global::STAN.Client.ConnectRequest.Parser, new[]{ "ClientID", "HeartbeatInbox" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectResponse), global::STAN.Client.ConnectResponse.Parser, new[]{ "PubPrefix", "SubRequests", "UnsubRequests", "CloseRequests", "Error", "PublicKey" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectResponse), global::STAN.Client.ConnectResponse.Parser, new[]{ "PubPrefix", "SubRequests", "UnsubRequests", "CloseRequests", "Error", "SubCloseRequests", "PublicKey" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.SubscriptionRequest), global::STAN.Client.SubscriptionRequest.Parser, new[]{ "ClientID", "Subject", "QGroup", "Inbox", "MaxInFlight", "AckWaitInSecs", "DurableName", "StartPosition", "StartSequence", "StartTimeDelta" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.SubscriptionResponse), global::STAN.Client.SubscriptionResponse.Parser, new[]{ "AckInbox", "Error" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.UnsubscribeRequest), global::STAN.Client.UnsubscribeRequest.Parser, new[]{ "ClientID", "Subject", "Inbox", "DurableName" }, null, null, null),
@@ -69,7 +69,7 @@ namespace STAN.Client {
   }
   #region Enums
   /// <summary>
-  ///  Enum for start position type.
+  /// Enum for start position type.
   /// </summary>
   public enum StartPosition {
     [pbr::OriginalName("NewOnly")] NewOnly = 0,
@@ -83,27 +83,31 @@ namespace STAN.Client {
 
   #region Messages
   /// <summary>
-  ///  How messages are delivered to the STAN cluster
+  /// How messages are delivered to the STAN cluster
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class PubMsg : pb::IMessage<PubMsg> {
     private static readonly pb::MessageParser<PubMsg> _parser = new pb::MessageParser<PubMsg>(() => new PubMsg());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<PubMsg> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[0]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public PubMsg() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public PubMsg(PubMsg other) : this() {
       clientID_ = other.clientID_;
       guid_ = other.guid_;
@@ -113,6 +117,7 @@ namespace STAN.Client {
       sha256_ = other.sha256_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public PubMsg Clone() {
       return new PubMsg(this);
     }
@@ -121,8 +126,9 @@ namespace STAN.Client {
     public const int ClientIDFieldNumber = 1;
     private string clientID_ = "";
     /// <summary>
-    ///  ClientID
+    /// ClientID
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string ClientID {
       get { return clientID_; }
       set {
@@ -134,8 +140,9 @@ namespace STAN.Client {
     public const int GuidFieldNumber = 2;
     private string guid_ = "";
     /// <summary>
-    ///  guid
+    /// guid
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Guid {
       get { return guid_; }
       set {
@@ -147,8 +154,9 @@ namespace STAN.Client {
     public const int SubjectFieldNumber = 3;
     private string subject_ = "";
     /// <summary>
-    ///  subject
+    /// subject
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Subject {
       get { return subject_; }
       set {
@@ -160,8 +168,9 @@ namespace STAN.Client {
     public const int ReplyFieldNumber = 4;
     private string reply_ = "";
     /// <summary>
-    ///  optional reply
+    /// optional reply
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Reply {
       get { return reply_; }
       set {
@@ -173,8 +182,9 @@ namespace STAN.Client {
     public const int DataFieldNumber = 5;
     private pb::ByteString data_ = pb::ByteString.Empty;
     /// <summary>
-    ///  payload
+    /// payload
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Data {
       get { return data_; }
       set {
@@ -186,8 +196,9 @@ namespace STAN.Client {
     public const int Sha256FieldNumber = 10;
     private pb::ByteString sha256_ = pb::ByteString.Empty;
     /// <summary>
-    ///  optional sha256 of data
+    /// optional sha256 of data
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Sha256 {
       get { return sha256_; }
       set {
@@ -195,10 +206,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as PubMsg);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(PubMsg other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -215,6 +228,7 @@ namespace STAN.Client {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (ClientID.Length != 0) hash ^= ClientID.GetHashCode();
@@ -226,10 +240,12 @@ namespace STAN.Client {
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (ClientID.Length != 0) {
         output.WriteRawTag(10);
@@ -257,6 +273,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (ClientID.Length != 0) {
@@ -280,6 +297,7 @@ namespace STAN.Client {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(PubMsg other) {
       if (other == null) {
         return;
@@ -304,6 +322,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -342,32 +361,37 @@ namespace STAN.Client {
   }
 
   /// <summary>
-  ///  Used to ACK to publishers
+  /// Used to ACK to publishers
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class PubAck : pb::IMessage<PubAck> {
     private static readonly pb::MessageParser<PubAck> _parser = new pb::MessageParser<PubAck>(() => new PubAck());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<PubAck> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[1]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public PubAck() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public PubAck(PubAck other) : this() {
       guid_ = other.guid_;
       error_ = other.error_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public PubAck Clone() {
       return new PubAck(this);
     }
@@ -376,8 +400,9 @@ namespace STAN.Client {
     public const int GuidFieldNumber = 1;
     private string guid_ = "";
     /// <summary>
-    ///  guid
+    /// guid
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Guid {
       get { return guid_; }
       set {
@@ -389,8 +414,9 @@ namespace STAN.Client {
     public const int ErrorFieldNumber = 2;
     private string error_ = "";
     /// <summary>
-    ///  err string, empty/omitted if no error
+    /// err string, empty/omitted if no error
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Error {
       get { return error_; }
       set {
@@ -398,10 +424,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as PubAck);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(PubAck other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -414,6 +442,7 @@ namespace STAN.Client {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (Guid.Length != 0) hash ^= Guid.GetHashCode();
@@ -421,10 +450,12 @@ namespace STAN.Client {
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (Guid.Length != 0) {
         output.WriteRawTag(10);
@@ -436,6 +467,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (Guid.Length != 0) {
@@ -447,6 +479,7 @@ namespace STAN.Client {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(PubAck other) {
       if (other == null) {
         return;
@@ -459,6 +492,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -481,28 +515,32 @@ namespace STAN.Client {
   }
 
   /// <summary>
-  ///  Msg struct. Sequence is assigned for global ordering by
-  ///  the cluster after the publisher has been acknowledged.
+  /// Msg struct. Sequence is assigned for global ordering by
+  /// the cluster after the publisher has been acknowledged.
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class MsgProto : pb::IMessage<MsgProto> {
     private static readonly pb::MessageParser<MsgProto> _parser = new pb::MessageParser<MsgProto>(() => new MsgProto());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<MsgProto> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[2]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public MsgProto() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public MsgProto(MsgProto other) : this() {
       sequence_ = other.sequence_;
       subject_ = other.subject_;
@@ -513,6 +551,7 @@ namespace STAN.Client {
       cRC32_ = other.cRC32_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public MsgProto Clone() {
       return new MsgProto(this);
     }
@@ -521,8 +560,9 @@ namespace STAN.Client {
     public const int SequenceFieldNumber = 1;
     private ulong sequence_;
     /// <summary>
-    ///  globally ordered sequence number for the subject's channel
+    /// globally ordered sequence number for the subject's channel
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ulong Sequence {
       get { return sequence_; }
       set {
@@ -534,8 +574,9 @@ namespace STAN.Client {
     public const int SubjectFieldNumber = 2;
     private string subject_ = "";
     /// <summary>
-    ///  subject
+    /// subject
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Subject {
       get { return subject_; }
       set {
@@ -547,8 +588,9 @@ namespace STAN.Client {
     public const int ReplyFieldNumber = 3;
     private string reply_ = "";
     /// <summary>
-    ///  optional reply
+    /// optional reply
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Reply {
       get { return reply_; }
       set {
@@ -560,8 +602,9 @@ namespace STAN.Client {
     public const int DataFieldNumber = 4;
     private pb::ByteString data_ = pb::ByteString.Empty;
     /// <summary>
-    ///  payload
+    /// payload
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Data {
       get { return data_; }
       set {
@@ -573,8 +616,9 @@ namespace STAN.Client {
     public const int TimestampFieldNumber = 5;
     private long timestamp_;
     /// <summary>
-    ///  received timestamp
+    /// received timestamp
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public long Timestamp {
       get { return timestamp_; }
       set {
@@ -586,8 +630,9 @@ namespace STAN.Client {
     public const int RedeliveredFieldNumber = 6;
     private bool redelivered_;
     /// <summary>
-    ///  Flag specifying if the message is being redelivered
+    /// Flag specifying if the message is being redelivered
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Redelivered {
       get { return redelivered_; }
       set {
@@ -599,8 +644,9 @@ namespace STAN.Client {
     public const int CRC32FieldNumber = 10;
     private uint cRC32_;
     /// <summary>
-    ///  optional IEEE CRC32
+    /// optional IEEE CRC32
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint CRC32 {
       get { return cRC32_; }
       set {
@@ -608,10 +654,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as MsgProto);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(MsgProto other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -629,6 +677,7 @@ namespace STAN.Client {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (Sequence != 0UL) hash ^= Sequence.GetHashCode();
@@ -641,10 +690,12 @@ namespace STAN.Client {
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (Sequence != 0UL) {
         output.WriteRawTag(8);
@@ -676,6 +727,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (Sequence != 0UL) {
@@ -702,6 +754,7 @@ namespace STAN.Client {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(MsgProto other) {
       if (other == null) {
         return;
@@ -729,6 +782,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -771,32 +825,37 @@ namespace STAN.Client {
   }
 
   /// <summary>
-  ///  Ack will deliver an ack for a delivered msg.
+  /// Ack will deliver an ack for a delivered msg.
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class Ack : pb::IMessage<Ack> {
     private static readonly pb::MessageParser<Ack> _parser = new pb::MessageParser<Ack>(() => new Ack());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<Ack> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[3]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Ack() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Ack(Ack other) : this() {
       subject_ = other.subject_;
       sequence_ = other.sequence_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Ack Clone() {
       return new Ack(this);
     }
@@ -805,8 +864,9 @@ namespace STAN.Client {
     public const int SubjectFieldNumber = 1;
     private string subject_ = "";
     /// <summary>
-    ///  Subject
+    /// Subject
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Subject {
       get { return subject_; }
       set {
@@ -818,8 +878,9 @@ namespace STAN.Client {
     public const int SequenceFieldNumber = 2;
     private ulong sequence_;
     /// <summary>
-    ///  Sequence to acknowledge
+    /// Sequence to acknowledge
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ulong Sequence {
       get { return sequence_; }
       set {
@@ -827,10 +888,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Ack);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(Ack other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -843,6 +906,7 @@ namespace STAN.Client {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (Subject.Length != 0) hash ^= Subject.GetHashCode();
@@ -850,10 +914,12 @@ namespace STAN.Client {
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (Subject.Length != 0) {
         output.WriteRawTag(10);
@@ -865,6 +931,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (Subject.Length != 0) {
@@ -876,6 +943,7 @@ namespace STAN.Client {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(Ack other) {
       if (other == null) {
         return;
@@ -888,6 +956,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -910,32 +979,37 @@ namespace STAN.Client {
   }
 
   /// <summary>
-  ///  Connection Request
+  /// Connection Request
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class ConnectRequest : pb::IMessage<ConnectRequest> {
     private static readonly pb::MessageParser<ConnectRequest> _parser = new pb::MessageParser<ConnectRequest>(() => new ConnectRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<ConnectRequest> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[4]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ConnectRequest() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ConnectRequest(ConnectRequest other) : this() {
       clientID_ = other.clientID_;
       heartbeatInbox_ = other.heartbeatInbox_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ConnectRequest Clone() {
       return new ConnectRequest(this);
     }
@@ -944,8 +1018,9 @@ namespace STAN.Client {
     public const int ClientIDFieldNumber = 1;
     private string clientID_ = "";
     /// <summary>
-    ///  Client name/identifier.
+    /// Client name/identifier.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string ClientID {
       get { return clientID_; }
       set {
@@ -957,8 +1032,9 @@ namespace STAN.Client {
     public const int HeartbeatInboxFieldNumber = 2;
     private string heartbeatInbox_ = "";
     /// <summary>
-    ///  Inbox for server initiated heartbeats.
+    /// Inbox for server initiated heartbeats.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string HeartbeatInbox {
       get { return heartbeatInbox_; }
       set {
@@ -966,10 +1042,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ConnectRequest);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(ConnectRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -982,6 +1060,7 @@ namespace STAN.Client {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (ClientID.Length != 0) hash ^= ClientID.GetHashCode();
@@ -989,10 +1068,12 @@ namespace STAN.Client {
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (ClientID.Length != 0) {
         output.WriteRawTag(10);
@@ -1004,6 +1085,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (ClientID.Length != 0) {
@@ -1015,6 +1097,7 @@ namespace STAN.Client {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(ConnectRequest other) {
       if (other == null) {
         return;
@@ -1027,6 +1110,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -1049,36 +1133,42 @@ namespace STAN.Client {
   }
 
   /// <summary>
-  ///  Response to a client connect
+  /// Response to a client connect
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class ConnectResponse : pb::IMessage<ConnectResponse> {
     private static readonly pb::MessageParser<ConnectResponse> _parser = new pb::MessageParser<ConnectResponse>(() => new ConnectResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<ConnectResponse> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[5]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ConnectResponse() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ConnectResponse(ConnectResponse other) : this() {
       pubPrefix_ = other.pubPrefix_;
       subRequests_ = other.subRequests_;
       unsubRequests_ = other.unsubRequests_;
       closeRequests_ = other.closeRequests_;
       error_ = other.error_;
+      subCloseRequests_ = other.subCloseRequests_;
       publicKey_ = other.publicKey_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ConnectResponse Clone() {
       return new ConnectResponse(this);
     }
@@ -1087,8 +1177,9 @@ namespace STAN.Client {
     public const int PubPrefixFieldNumber = 1;
     private string pubPrefix_ = "";
     /// <summary>
-    ///  Prefix to use when publishing to this STAN cluster
+    /// Prefix to use when publishing to this STAN cluster
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string PubPrefix {
       get { return pubPrefix_; }
       set {
@@ -1100,8 +1191,9 @@ namespace STAN.Client {
     public const int SubRequestsFieldNumber = 2;
     private string subRequests_ = "";
     /// <summary>
-    ///  Subject to use for subscription requests
+    /// Subject to use for subscription requests
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string SubRequests {
       get { return subRequests_; }
       set {
@@ -1113,8 +1205,9 @@ namespace STAN.Client {
     public const int UnsubRequestsFieldNumber = 3;
     private string unsubRequests_ = "";
     /// <summary>
-    ///  Subject to use for unsubscribe requests
+    /// Subject to use for unsubscribe requests
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string UnsubRequests {
       get { return unsubRequests_; }
       set {
@@ -1126,8 +1219,9 @@ namespace STAN.Client {
     public const int CloseRequestsFieldNumber = 4;
     private string closeRequests_ = "";
     /// <summary>
-    ///  Subject for closing the stan connection
+    /// Subject for closing the stan connection
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string CloseRequests {
       get { return closeRequests_; }
       set {
@@ -1139,8 +1233,9 @@ namespace STAN.Client {
     public const int ErrorFieldNumber = 5;
     private string error_ = "";
     /// <summary>
-    ///  err string, empty/omitted if no error
+    /// err string, empty/omitted if no error
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Error {
       get { return error_; }
       set {
@@ -1148,12 +1243,27 @@ namespace STAN.Client {
       }
     }
 
+    /// <summary>Field number for the "subCloseRequests" field.</summary>
+    public const int SubCloseRequestsFieldNumber = 6;
+    private string subCloseRequests_ = "";
+    /// <summary>
+    /// Subject to use for subscription close requests
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string SubCloseRequests {
+      get { return subCloseRequests_; }
+      set {
+        subCloseRequests_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "publicKey" field.</summary>
     public const int PublicKeyFieldNumber = 100;
     private string publicKey_ = "";
     /// <summary>
-    ///  Possibly used to sign acks, etc.
+    /// Possibly used to sign acks, etc.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string PublicKey {
       get { return publicKey_; }
       set {
@@ -1161,10 +1271,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ConnectResponse);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(ConnectResponse other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -1177,10 +1289,12 @@ namespace STAN.Client {
       if (UnsubRequests != other.UnsubRequests) return false;
       if (CloseRequests != other.CloseRequests) return false;
       if (Error != other.Error) return false;
+      if (SubCloseRequests != other.SubCloseRequests) return false;
       if (PublicKey != other.PublicKey) return false;
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (PubPrefix.Length != 0) hash ^= PubPrefix.GetHashCode();
@@ -1188,14 +1302,17 @@ namespace STAN.Client {
       if (UnsubRequests.Length != 0) hash ^= UnsubRequests.GetHashCode();
       if (CloseRequests.Length != 0) hash ^= CloseRequests.GetHashCode();
       if (Error.Length != 0) hash ^= Error.GetHashCode();
+      if (SubCloseRequests.Length != 0) hash ^= SubCloseRequests.GetHashCode();
       if (PublicKey.Length != 0) hash ^= PublicKey.GetHashCode();
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (PubPrefix.Length != 0) {
         output.WriteRawTag(10);
@@ -1217,12 +1334,17 @@ namespace STAN.Client {
         output.WriteRawTag(42);
         output.WriteString(Error);
       }
+      if (SubCloseRequests.Length != 0) {
+        output.WriteRawTag(50);
+        output.WriteString(SubCloseRequests);
+      }
       if (PublicKey.Length != 0) {
         output.WriteRawTag(162, 6);
         output.WriteString(PublicKey);
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (PubPrefix.Length != 0) {
@@ -1240,12 +1362,16 @@ namespace STAN.Client {
       if (Error.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Error);
       }
+      if (SubCloseRequests.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(SubCloseRequests);
+      }
       if (PublicKey.Length != 0) {
         size += 2 + pb::CodedOutputStream.ComputeStringSize(PublicKey);
       }
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(ConnectResponse other) {
       if (other == null) {
         return;
@@ -1265,11 +1391,15 @@ namespace STAN.Client {
       if (other.Error.Length != 0) {
         Error = other.Error;
       }
+      if (other.SubCloseRequests.Length != 0) {
+        SubCloseRequests = other.SubCloseRequests;
+      }
       if (other.PublicKey.Length != 0) {
         PublicKey = other.PublicKey;
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -1297,6 +1427,10 @@ namespace STAN.Client {
             Error = input.ReadString();
             break;
           }
+          case 50: {
+            SubCloseRequests = input.ReadString();
+            break;
+          }
           case 802: {
             PublicKey = input.ReadString();
             break;
@@ -1308,27 +1442,31 @@ namespace STAN.Client {
   }
 
   /// <summary>
-  ///  Protocol for a client to subscribe
+  /// Protocol for a client to subscribe
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class SubscriptionRequest : pb::IMessage<SubscriptionRequest> {
     private static readonly pb::MessageParser<SubscriptionRequest> _parser = new pb::MessageParser<SubscriptionRequest>(() => new SubscriptionRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<SubscriptionRequest> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[6]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public SubscriptionRequest() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public SubscriptionRequest(SubscriptionRequest other) : this() {
       clientID_ = other.clientID_;
       subject_ = other.subject_;
@@ -1342,6 +1480,7 @@ namespace STAN.Client {
       startTimeDelta_ = other.startTimeDelta_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public SubscriptionRequest Clone() {
       return new SubscriptionRequest(this);
     }
@@ -1350,8 +1489,9 @@ namespace STAN.Client {
     public const int ClientIDFieldNumber = 1;
     private string clientID_ = "";
     /// <summary>
-    ///  ClientID
+    /// ClientID
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string ClientID {
       get { return clientID_; }
       set {
@@ -1363,8 +1503,9 @@ namespace STAN.Client {
     public const int SubjectFieldNumber = 2;
     private string subject_ = "";
     /// <summary>
-    ///  Formal subject to subscribe to, e.g. foo.bar
+    /// Formal subject to subscribe to, e.g. foo.bar
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Subject {
       get { return subject_; }
       set {
@@ -1376,8 +1517,9 @@ namespace STAN.Client {
     public const int QGroupFieldNumber = 3;
     private string qGroup_ = "";
     /// <summary>
-    ///  Optional queue group
+    /// Optional queue group
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string QGroup {
       get { return qGroup_; }
       set {
@@ -1389,8 +1531,9 @@ namespace STAN.Client {
     public const int InboxFieldNumber = 4;
     private string inbox_ = "";
     /// <summary>
-    ///  Inbox subject to deliver messages on
+    /// Inbox subject to deliver messages on
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Inbox {
       get { return inbox_; }
       set {
@@ -1402,8 +1545,9 @@ namespace STAN.Client {
     public const int MaxInFlightFieldNumber = 5;
     private int maxInFlight_;
     /// <summary>
-    ///  Maximum inflight messages without an ack allowed
+    /// Maximum inflight messages without an ack allowed
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int MaxInFlight {
       get { return maxInFlight_; }
       set {
@@ -1415,8 +1559,9 @@ namespace STAN.Client {
     public const int AckWaitInSecsFieldNumber = 6;
     private int ackWaitInSecs_;
     /// <summary>
-    ///  Timeout for receiving an ack from the client
+    /// Timeout for receiving an ack from the client
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int AckWaitInSecs {
       get { return ackWaitInSecs_; }
       set {
@@ -1428,8 +1573,9 @@ namespace STAN.Client {
     public const int DurableNameFieldNumber = 7;
     private string durableName_ = "";
     /// <summary>
-    ///  Optional durable name which survives client restarts
+    /// Optional durable name which survives client restarts
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string DurableName {
       get { return durableName_; }
       set {
@@ -1441,8 +1587,9 @@ namespace STAN.Client {
     public const int StartPositionFieldNumber = 10;
     private global::STAN.Client.StartPosition startPosition_ = 0;
     /// <summary>
-    ///  Start position
+    /// Start position
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::STAN.Client.StartPosition StartPosition {
       get { return startPosition_; }
       set {
@@ -1454,8 +1601,9 @@ namespace STAN.Client {
     public const int StartSequenceFieldNumber = 11;
     private ulong startSequence_;
     /// <summary>
-    ///  Optional start sequence number
+    /// Optional start sequence number
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ulong StartSequence {
       get { return startSequence_; }
       set {
@@ -1467,8 +1615,9 @@ namespace STAN.Client {
     public const int StartTimeDeltaFieldNumber = 12;
     private long startTimeDelta_;
     /// <summary>
-    ///  Optional start time
+    /// Optional start time
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public long StartTimeDelta {
       get { return startTimeDelta_; }
       set {
@@ -1476,10 +1625,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as SubscriptionRequest);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(SubscriptionRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -1500,6 +1651,7 @@ namespace STAN.Client {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (ClientID.Length != 0) hash ^= ClientID.GetHashCode();
@@ -1515,10 +1667,12 @@ namespace STAN.Client {
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (ClientID.Length != 0) {
         output.WriteRawTag(10);
@@ -1562,6 +1716,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (ClientID.Length != 0) {
@@ -1597,6 +1752,7 @@ namespace STAN.Client {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(SubscriptionRequest other) {
       if (other == null) {
         return;
@@ -1633,6 +1789,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -1687,32 +1844,37 @@ namespace STAN.Client {
   }
 
   /// <summary>
-  ///  Response for SubscriptionRequest and UnsubscribeRequests
+  /// Response for SubscriptionRequest and UnsubscribeRequests
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class SubscriptionResponse : pb::IMessage<SubscriptionResponse> {
     private static readonly pb::MessageParser<SubscriptionResponse> _parser = new pb::MessageParser<SubscriptionResponse>(() => new SubscriptionResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<SubscriptionResponse> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[7]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public SubscriptionResponse() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public SubscriptionResponse(SubscriptionResponse other) : this() {
       ackInbox_ = other.ackInbox_;
       error_ = other.error_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public SubscriptionResponse Clone() {
       return new SubscriptionResponse(this);
     }
@@ -1721,8 +1883,9 @@ namespace STAN.Client {
     public const int AckInboxFieldNumber = 2;
     private string ackInbox_ = "";
     /// <summary>
-    ///  ackInbox for sending acks
+    /// ackInbox for sending acks
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string AckInbox {
       get { return ackInbox_; }
       set {
@@ -1734,8 +1897,9 @@ namespace STAN.Client {
     public const int ErrorFieldNumber = 3;
     private string error_ = "";
     /// <summary>
-    ///  err string, empty/omitted if no error
+    /// err string, empty/omitted if no error
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Error {
       get { return error_; }
       set {
@@ -1743,10 +1907,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as SubscriptionResponse);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(SubscriptionResponse other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -1759,6 +1925,7 @@ namespace STAN.Client {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (AckInbox.Length != 0) hash ^= AckInbox.GetHashCode();
@@ -1766,10 +1933,12 @@ namespace STAN.Client {
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (AckInbox.Length != 0) {
         output.WriteRawTag(18);
@@ -1781,6 +1950,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (AckInbox.Length != 0) {
@@ -1792,6 +1962,7 @@ namespace STAN.Client {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(SubscriptionResponse other) {
       if (other == null) {
         return;
@@ -1804,6 +1975,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -1826,27 +1998,31 @@ namespace STAN.Client {
   }
 
   /// <summary>
-  ///  Protocol for a clients to unsubscribe. Will return a SubscriptionResponse
+  /// Protocol for a clients to unsubscribe. Will return a SubscriptionResponse
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class UnsubscribeRequest : pb::IMessage<UnsubscribeRequest> {
     private static readonly pb::MessageParser<UnsubscribeRequest> _parser = new pb::MessageParser<UnsubscribeRequest>(() => new UnsubscribeRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<UnsubscribeRequest> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[8]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnsubscribeRequest() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnsubscribeRequest(UnsubscribeRequest other) : this() {
       clientID_ = other.clientID_;
       subject_ = other.subject_;
@@ -1854,6 +2030,7 @@ namespace STAN.Client {
       durableName_ = other.durableName_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnsubscribeRequest Clone() {
       return new UnsubscribeRequest(this);
     }
@@ -1862,8 +2039,9 @@ namespace STAN.Client {
     public const int ClientIDFieldNumber = 1;
     private string clientID_ = "";
     /// <summary>
-    ///  ClientID
+    /// ClientID
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string ClientID {
       get { return clientID_; }
       set {
@@ -1875,8 +2053,9 @@ namespace STAN.Client {
     public const int SubjectFieldNumber = 2;
     private string subject_ = "";
     /// <summary>
-    ///  subject for the subscription
+    /// subject for the subscription
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Subject {
       get { return subject_; }
       set {
@@ -1888,8 +2067,9 @@ namespace STAN.Client {
     public const int InboxFieldNumber = 3;
     private string inbox_ = "";
     /// <summary>
-    ///  Inbox subject to identify subscription
+    /// Inbox subject to identify subscription
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Inbox {
       get { return inbox_; }
       set {
@@ -1901,8 +2081,9 @@ namespace STAN.Client {
     public const int DurableNameFieldNumber = 4;
     private string durableName_ = "";
     /// <summary>
-    ///  Optional durable name which survives client restarts
+    /// Optional durable name which survives client restarts
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string DurableName {
       get { return durableName_; }
       set {
@@ -1910,10 +2091,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnsubscribeRequest);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(UnsubscribeRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -1928,6 +2111,7 @@ namespace STAN.Client {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (ClientID.Length != 0) hash ^= ClientID.GetHashCode();
@@ -1937,10 +2121,12 @@ namespace STAN.Client {
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (ClientID.Length != 0) {
         output.WriteRawTag(10);
@@ -1960,6 +2146,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (ClientID.Length != 0) {
@@ -1977,6 +2164,7 @@ namespace STAN.Client {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(UnsubscribeRequest other) {
       if (other == null) {
         return;
@@ -1995,6 +2183,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -2025,31 +2214,36 @@ namespace STAN.Client {
   }
 
   /// <summary>
-  ///  Protocol for a client to close a connection
+  /// Protocol for a client to close a connection
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class CloseRequest : pb::IMessage<CloseRequest> {
     private static readonly pb::MessageParser<CloseRequest> _parser = new pb::MessageParser<CloseRequest>(() => new CloseRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<CloseRequest> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[9]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public CloseRequest() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public CloseRequest(CloseRequest other) : this() {
       clientID_ = other.clientID_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public CloseRequest Clone() {
       return new CloseRequest(this);
     }
@@ -2058,8 +2252,9 @@ namespace STAN.Client {
     public const int ClientIDFieldNumber = 1;
     private string clientID_ = "";
     /// <summary>
-    ///  Client name provided to Connect() requests
+    /// Client name provided to Connect() requests
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string ClientID {
       get { return clientID_; }
       set {
@@ -2067,10 +2262,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as CloseRequest);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(CloseRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -2082,16 +2279,19 @@ namespace STAN.Client {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (ClientID.Length != 0) hash ^= ClientID.GetHashCode();
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (ClientID.Length != 0) {
         output.WriteRawTag(10);
@@ -2099,6 +2299,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (ClientID.Length != 0) {
@@ -2107,6 +2308,7 @@ namespace STAN.Client {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(CloseRequest other) {
       if (other == null) {
         return;
@@ -2116,6 +2318,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -2134,31 +2337,36 @@ namespace STAN.Client {
   }
 
   /// <summary>
-  ///  Response for CloseRequest
+  /// Response for CloseRequest
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class CloseResponse : pb::IMessage<CloseResponse> {
     private static readonly pb::MessageParser<CloseResponse> _parser = new pb::MessageParser<CloseResponse>(() => new CloseResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<CloseResponse> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[10]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public CloseResponse() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public CloseResponse(CloseResponse other) : this() {
       error_ = other.error_;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public CloseResponse Clone() {
       return new CloseResponse(this);
     }
@@ -2167,8 +2375,9 @@ namespace STAN.Client {
     public const int ErrorFieldNumber = 1;
     private string error_ = "";
     /// <summary>
-    ///  err string, empty/omitted if no error
+    /// err string, empty/omitted if no error
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Error {
       get { return error_; }
       set {
@@ -2176,10 +2385,12 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as CloseResponse);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(CloseResponse other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -2191,16 +2402,19 @@ namespace STAN.Client {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (Error.Length != 0) hash ^= Error.GetHashCode();
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (Error.Length != 0) {
         output.WriteRawTag(10);
@@ -2208,6 +2422,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (Error.Length != 0) {
@@ -2216,6 +2431,7 @@ namespace STAN.Client {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(CloseResponse other) {
       if (other == null) {
         return;
@@ -2225,6 +2441,7 @@ namespace STAN.Client {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {

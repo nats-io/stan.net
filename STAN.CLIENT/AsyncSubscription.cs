@@ -100,9 +100,15 @@ namespace STAN.Client
             {
                 if (inboxSub != null)
                 {
-                    inboxSub.Unsubscribe();
+                    try
+                    {
+                        inboxSub.Unsubscribe();
+                    }
+                    catch (NATSTimeoutException)
+                    {
+                        // NOOP - this is unrecoverable.
+                    }
                 }
-                
                 throw;
             }
             finally
@@ -111,7 +117,9 @@ namespace STAN.Client
             }
         }
 
-        public void Unsubscribe()
+        // The unsubscribe method handles both the subscripition 
+        // unsubscribe and close operations.
+        private void unsubscribe(bool close)
         {
             string linbox = null;
             string lAckInbox = null;
@@ -143,7 +151,17 @@ namespace STAN.Client
                 rwLock.ExitWriteLock();
             }
 
-            lsc.unsubscribe(subject, linbox, lAckInbox);
+            lsc.unsubscribe(subject, linbox, lAckInbox, close);
+        }
+
+        public void Unsubscribe()
+        {
+            unsubscribe(false);
+        }
+
+        public void Close()
+        {
+            unsubscribe(true);
         }
 
         internal void manualAck(StanMsg m)

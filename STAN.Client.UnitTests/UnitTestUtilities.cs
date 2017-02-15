@@ -36,7 +36,7 @@ namespace STAN.Client.UnitTests
 
             debug = shouldDebug;
             ProcessStartInfo psInfo = createProcessStartInfo();
-            this.p = Process.Start(psInfo);
+            p = Process.Start(psInfo);
             for (int i = 0; i < 20; i++)
             {
                 Thread.Sleep(500);

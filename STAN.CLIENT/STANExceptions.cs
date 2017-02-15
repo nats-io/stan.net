@@ -104,4 +104,15 @@ namespace STAN.Client
         internal StanManualAckException() : base("Cannot manually ack in auto-ack mode.") { }
         internal StanManualAckException(Exception e) : base("Cannot manually ack in auto-ack mode.", e) { }
     }
+
+    /// <summary>
+    /// An exception representing the case when the application attempts 
+    /// to manually acknowledge a message while the subscriber is configured
+    /// to automatically acknowledge messages.
+    /// </summary>
+    public class StanNoServerSupport : StanException
+    {
+        internal StanNoServerSupport() : base("Operation not supported by the server.") { }
+        internal StanNoServerSupport(Exception e) : base("Operation not supported by the server.", e) { }
+    }
 }

@@ -130,6 +130,7 @@ namespace STAN.Client
         private readonly string pubPrefix; // Publish prefix set by stan, append our subject.
         private readonly string subRequests; // Subject to send subscription requests.
         private readonly string unsubRequests; // Subject to send unsubscribe requests.
+        private readonly string subCloseRequests; // Subject to send subscrption close requests.
         private readonly string closeRequests; // Subject to send close requests.
         private readonly string ackSubject; // publish acks
 
@@ -140,14 +141,14 @@ namespace STAN.Client
         private BlockingDictionary<string, PublishAck> pubAckMap;
 
         internal ProtocolSerializer ps = new ProtocolSerializer();
-        
+
         private StanOptions opts = null;
 
-	    private IConnection  nc;
+        private IConnection nc;
         private bool ncOwned = false;
 
         private Connection() { }
-        
+
         internal Connection(string stanClusterID, string clientID, StanOptions options)
         {
             this.clientID = clientID;
@@ -188,7 +189,7 @@ namespace STAN.Client
             Msg cr;
             try
             {
-                cr = nc.Request(discoverSubject, 
+                cr = nc.Request(discoverSubject,
                     ProtocolSerializer.marshal(req),
                     opts.ConnectTimeout);
             }
@@ -206,16 +207,17 @@ namespace STAN.Client
             {
                 throw new StanConnectRequestException(e);
             }
-            
+
             if (!string.IsNullOrEmpty(response.Error))
             {
                 throw new StanConnectRequestException(response.Error);
             }
 
-            // capture clister configuration endpoints to publish and subscribe/unsubscribe
+            // capture cluster configuration endpoints to publish and subscribe/unsubscribe
             pubPrefix = response.PubPrefix;
             subRequests = response.SubRequests;
             unsubRequests = response.UnsubRequests;
+            subCloseRequests = response.SubCloseRequests;
             closeRequests = response.CloseRequests;
 
             // setup the Ack subscription
@@ -234,9 +236,11 @@ namespace STAN.Client
 
             lock (mu)
             {
-                lnc = this.nc;
+                lnc = nc;
             }
-            lnc.Publish(args.Message.Reply, null);
+
+            if (lnc != null)
+                lnc.Publish(args.Message.Reply, null);
         }
 
         internal PublishAck removeAck(string guid)
@@ -257,7 +261,7 @@ namespace STAN.Client
             {
                 lock (mu)
                 {
-                    return this.nc;
+                    return nc;
                 }
             }
         }
@@ -412,14 +416,24 @@ namespace STAN.Client
             return sub;
         }
 
-        internal void unsubscribe(string subject, string inbox, string ackInbox)
+        internal void unsubscribe(string subject, string inbox, string ackInbox, bool close)
         {
             IConnection lnc;
 
             lock (mu)
             {
                 lnc = nc;
+                if (lnc == null)
+                    throw new StanConnectionClosedException();
                 subMap.Remove(inbox);
+            }
+
+            string requestSubject = unsubRequests;
+            if (close)
+            {
+                requestSubject = subCloseRequests;
+                if (string.IsNullOrEmpty(requestSubject))
+                    throw new StanNoServerSupport();
             }
 
             UnsubscribeRequest usr = new UnsubscribeRequest();
@@ -428,8 +442,7 @@ namespace STAN.Client
             usr.Inbox = ackInbox;
             byte[] b = ProtocolSerializer.marshal(usr);
 
-            var r = lnc.Request(unsubRequests, b, 2000);
-
+            var r = lnc.Request(requestSubject, b, 2000);
             SubscriptionResponse sr = new SubscriptionResponse();
             ProtocolSerializer.unmarshal(r.Data, sr);
             if (!string.IsNullOrEmpty(sr.Error))
