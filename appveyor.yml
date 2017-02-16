@@ -7,7 +7,7 @@ install:
 before_build:
   - nuget restore
 build:
-  project: STAN.sln
+  project: STANnet45.sln
 notifications:
   - provider: GitHubPullRequest
     auth_token:

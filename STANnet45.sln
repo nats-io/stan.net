@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAN.Client", "STAN.CLIENT\STAN.Client.csproj", "{A92ECD64-3BA4-4AB2-BD58-5E4D97AF972C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAN.Client", "net45\STAN.CLIENT\STAN.Client.csproj", "{A92ECD64-3BA4-4AB2-BD58-5E4D97AF972C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAN.Client.UnitTests", "STAN.Client.UnitTests\STAN.Client.UnitTests.csproj", "{72E03EF2-C7AF-49EA-B6E0-1FB8E3204053}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAN.Client.UnitTests", "net45\STAN.Client.UnitTests\STAN.Client.UnitTests.csproj", "{72E03EF2-C7AF-49EA-B6E0-1FB8E3204053}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stan-sub", "examples\stan-sub\stan-sub.csproj", "{F74C9C78-1CE9-440B-A276-8B4FE46BF3E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stan-sub", "net45\examples\stan-sub\stan-sub.csproj", "{F74C9C78-1CE9-440B-A276-8B4FE46BF3E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stan-pub", "examples\stan-pub\stan-pub.csproj", "{7E321D88-4117-456D-B9CF-03F2042D608D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stan-pub", "net45\examples\stan-pub\stan-pub.csproj", "{7E321D88-4117-456D-B9CF-03F2042D608D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
