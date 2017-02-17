@@ -34,7 +34,7 @@ namespace STAN.Client
 
             if (opts.durableName != null)
             {
-                this.durableName = string.Copy(opts.durableName);
+                durableName = StanOptions.DeepCopy(opts.durableName);
             }
 
             manualAcks = opts.manualAcks;

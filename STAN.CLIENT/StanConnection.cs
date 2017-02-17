@@ -57,8 +57,7 @@ namespace STAN.Client
 
             ah = handler;
             guidValue = guid;
-            ackTimer = new Timer(ackTimerCb);
-            ackTimer.Change(timeout, Timeout.Infinite);
+            ackTimer = new Timer(ackTimerCb, null, (int)timeout, Timeout.Infinite);
         }
 
         internal string GUID

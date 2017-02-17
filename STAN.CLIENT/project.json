@@ -1,0 +1,25 @@
+{
+  "description": "STAN Client API",
+  "copyright": "Copyright © Apcera 2017",
+  "title": "STAN Client",
+  "version": "0.1.4-*",
+  "dependencies": {
+    "NETStandard.Library": "1.6.1",
+    "NATS.Client": "0.7.0",
+    "System.Reflection.Extensions": "4.3.0",
+    "System.Runtime": "4.3.0",
+    "System.Runtime.Serialization.Primitives": "4.3.0",
+    "System.Threading.Thread": "4.3.0",
+    "Google.Protobuf": "3.2.0",
+    "Google.Protobuf.Tools": "3.2.0",
+    "System.Runtime.Serialization.Json": "4.3.0"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  },
+  "buildOptions": {
+    "xmlDoc": true
+  }
+}

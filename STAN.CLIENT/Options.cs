@@ -22,21 +22,21 @@ namespace STAN.Client
 
         internal StanOptions() { }
 
-        private string deepCopy(string value)
+        internal static string DeepCopy(string value)
         {
             if (value == null)
                 return null;
 
-            return string.Copy(value);
+            return new string(value.ToCharArray());
         }
 
         internal StanOptions(StanOptions options)
         {
             ackTimeout = options.ackTimeout;
-            NatsURL = deepCopy(options.NatsURL);
+            NatsURL = DeepCopy(options.NatsURL);
             ConnectTimeout = options.ConnectTimeout;
             PubAckWait = options.PubAckWait;
-            DiscoverPrefix = deepCopy(options.DiscoverPrefix);
+            DiscoverPrefix = DeepCopy(options.DiscoverPrefix);
             MaxPubAcksInFlight = options.MaxPubAcksInFlight;
             NatsConn = options.natsConn;
         }
