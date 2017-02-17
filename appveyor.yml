@@ -4,12 +4,24 @@ install:
   - 7z e nats-streaming-server-v0.3.8-windows-amd64.zip nats-streaming-server-v0.3.8.exe -r -oc:\projects\nss\build
   - cmd: ren C:\projects\nss\build\nats-streaming-server-v0.3.8.exe nats-streaming-server.exe
   - cmd: set PATH=%PATH%;C:\projects\nss\build
-before_build:
-  - nuget restore
-build:
-  project: STANnet45.sln
+
+# to add several configurations to build matrix:
+configuration:
+  - Release
+
+environment:
+  matrix:
+    - arch_name: core
+    - arch_name: net45
+
+# to run your custom scripts instead of automatic MSBuild
+build_script:
+  - cmd: appveyor\bld%arch_name%.bat
+
+test_script:
+  - cmd: appveyor\test%arch_name%.bat
+
 notifications:
   - provider: GitHubPullRequest
     auth_token:
-      secure: iVXvp6gJv5IQjqJRZJCXVw==
-    template: "{{#passed}}:white_check_mark:{{/passed}}{{#failed}}:x:{{/failed}} [Build {{&projectName}} {{buildVersion}} {{status}}]({{buildUrl}}) (commit {{commitUrl}} by @{{&commitAuthorUsername}})"
+      secure: XI9j+cGG2z/YLFNk+KCnLQ==
