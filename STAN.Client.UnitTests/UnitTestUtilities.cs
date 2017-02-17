@@ -106,6 +106,7 @@ namespace STAN.Client.UnitTests
                 psInfo.WindowStyle = ProcessWindowStyle.Hidden;
 #else
                 psInfo.CreateNoWindow = false;
+                psInfo.RedirectStandardError = true;
 #endif
             }
 
