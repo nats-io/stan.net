@@ -17,16 +17,17 @@ NATS Streaming provides the following high-level feature set:
 ## Notes
 - Please raise questions/issues via the [Issue Tracker](https://github.com/nats-io/csharp-nats-streaming/issues) or via natsio.slack.com (contact larry@apcera.com or brian@apcera.com for access)
 
-## Known Issues
-- Time- and sequence-based subscriptions are exact. Requesting a time or seqno before the earliest stored message for a subject will result in an error when creating a subscription.
-
 ## Installation
 
-The NATS streaming .NET client can be installed manually by downloading the source and building.  [NuGet](www.nuget.com) and an environment to build [Visual Studio](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx) project files is required.
+For convenience, the NATS streaming client can found on NuGet as [STAN.Client](https://www.nuget.org/packages/STAN.Client/).  
 
-From the directory the repository has been cloned into, either invoke `build.bat` from the command line, or open the `STAN.sln` project file in Visual Studio and build from there.
+Alternatively, you can build the C# NATS streaming client yourself.  To build, you'll need an environment to build [Visual Studio](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx) and/or .NET core project files.
 
-NuGet packages will be coming soon.
+### .NET core
+From the directory the repository has been cloned into, either invoke `buildcore.bat` from the command line, or open the `STANcore.sln` project file in Visual Studio and build from there.
+
+### .NET 4.5
+From the directory the repository has been cloned into, either invoke `build45.bat` from the command line, or open the `STANnet45.sln` project file in Visual Studio and build from there.
 
 ### API Documentation
 
@@ -154,7 +155,6 @@ var s = c.Subscribe("foo",  opts, (obj, args) =>
 
 NATS Streaming subscriptions **do not** support wildcards.
 
-
 ## Advanced Usage
 
 ### Asynchronous Publishing
@@ -173,7 +173,9 @@ var guid = await c.PublishAsync("foo", null);
 
 // alternatively, one can work in some application code.
 var t = c.PublishAsync("foo", null);
-// application code
+
+// your application can do work here
+
 guid = await t;
 ```
 
@@ -278,7 +280,7 @@ var s = c.Subscribe("foo", sOpts, (obj, args) =>
 ```
 
 ## TODO
-- [ ] Core 1.0 support
+- [X] Core 1.0 support
 - [ ] Rx API
 - [ ] Robust Benchmark Testing
 - [X] CI (Appveyor)
