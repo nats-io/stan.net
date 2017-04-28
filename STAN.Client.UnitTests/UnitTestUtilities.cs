@@ -41,11 +41,16 @@ namespace STAN.Client.UnitTests
             debug = shouldDebug;
             ProcessStartInfo psInfo = createProcessStartInfo();
             p = Process.Start(psInfo);
-            for (int i = 0; i < 20; i++)
+            for (int i = 1; i <= 20; i++)
             {
-                Thread.Sleep(500);
+                Thread.Sleep(100*i);
                 if (isNatsServerRunning())
                     break;
+            }
+
+            if (p.HasExited)
+            {
+                Console.WriteLine("Server failure with exit code: " + p.ExitCode);
             }
             // Allow the Nats streaming server to setup.
             Thread.Sleep(250);
