@@ -50,10 +50,10 @@ namespace STAN.Client.UnitTests
 
             if (p.HasExited)
             {
-                Console.WriteLine("Server failure with exit code: " + p.ExitCode);
+                throw new Exception("Server failure with exit code: " + p.ExitCode);
             }
             // Allow the Nats streaming server to setup.
-            Thread.Sleep(250);
+            Thread.Sleep(1000);
         }
 
         public NatsStreamingServer()
