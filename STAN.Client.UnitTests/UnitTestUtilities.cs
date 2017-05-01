@@ -128,6 +128,7 @@ namespace STAN.Client.UnitTests
             try
             {
                 p.Kill();
+                p.WaitForExit(60000);
             }
             catch (Exception) { }
 
