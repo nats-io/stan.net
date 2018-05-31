@@ -201,7 +201,7 @@ namespace STAN.Client
             rwLock.EnterReadLock();
             
             string localAckSubject = ackInbox;
-            bool   localManualAck = options.manualAcks;
+            bool   localManualAck = options.ManualAcks;
             Connection sc = this.sc;
 
             rwLock.ExitReadLock();
@@ -225,7 +225,7 @@ namespace STAN.Client
             rwLock.EnterReadLock();
 
             EventHandler<StanMsgHandlerArgs> cb = handler;
-            bool isManualAck  = options.manualAcks;
+            bool isManualAck  = options.ManualAcks;
             string localAckSubject = ackInbox;
             IStanConnection subsSc = sc;
             IConnection localNc = null;

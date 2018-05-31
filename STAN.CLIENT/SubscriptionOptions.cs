@@ -20,16 +20,13 @@ namespace STAN.Client
     /// </summary>
     public class StanSubscriptionOptions
     {
-        internal string durableName = null;
-        internal int maxInFlight = StanConsts.DefaultMaxInflight;
+        internal int maxInflight = StanConsts.DefaultMaxInflight;
         internal int ackWait = 30000;
         internal StartPosition startAt = StartPosition.NewOnly;
         internal ulong startSequence = 0;
         internal DateTime startTime;
         internal bool useStartTimeDelta = false;
         internal TimeSpan startTimeDelta;
-        internal bool manualAcks = false;
-        internal bool leaveOpen = false;
 
         internal StanSubscriptionOptions() { }
 
@@ -38,15 +35,15 @@ namespace STAN.Client
             if (opts == null)
                 return;
 
-            ackWait = opts.ackWait;
+            AckWait = opts.AckWait;
 
-            if (opts.durableName != null)
+            if (opts.DurableName != null)
             {
-                durableName = StanOptions.DeepCopy(opts.durableName);
+                DurableName = StanOptions.DeepCopy(opts.DurableName);
             }
-            leaveOpen = opts.leaveOpen;
-            manualAcks = opts.manualAcks;
-            maxInFlight = opts.maxInFlight;
+            LeaveOpen = opts.LeaveOpen;
+            ManualAcks = opts.ManualAcks;
+            maxInflight = opts.MaxInflight;
             startAt = opts.startAt;
             startSequence = opts.startSequence;
             useStartTimeDelta = opts.useStartTimeDelta;
@@ -57,10 +54,20 @@ namespace STAN.Client
         /// <summary>
         /// DurableName, if set will survive client restarts.
         /// </summary>
-        public string DurableName
+        public string DurableName { get; set; }
+
+        /// <summary>
+        /// Do Close() on Disposing subscription if true, or Unsubscribe(). If you want to resume subscription with durable name, set true.
+        /// </summary>
+        /// <remarks>
+        /// If Close() or Unsubscribe() is called before Disposing, this flag has no effect
+        /// </remarks>
+        public bool LeaveOpen { get; set; }
+
+        public void Durable(string name, bool leaveOpen)
         {
-            get { return durableName; }
-            set { durableName = value; }
+            DurableName = name;
+            LeaveOpen = leaveOpen;
         }
 
         /// <summary>
@@ -68,13 +75,13 @@ namespace STAN.Client
         /// </summary>
         public int MaxInflight
         {
-            get { return maxInFlight; }
+            get { return maxInflight; }
             set
             {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException("value", value, "MaxInflight must be greater than 0");
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "MaxInflight must be greater than 0");
 
-                maxInFlight = value;
+                maxInflight = value;
             }
         }
 
@@ -90,7 +97,7 @@ namespace STAN.Client
             set
             {
                 if (value < 1000)
-                    throw new ArgumentOutOfRangeException("value", value, "AckWait cannot be less than 1000");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "AckWait cannot be less than 1000");
  
                 ackWait = value;
             }
@@ -99,22 +106,7 @@ namespace STAN.Client
         /// <summary>
         /// Controls the time the cluster will wait for an ACK for a given message.
         /// </summary>
-        public bool ManualAcks
-        {
-            get { return manualAcks; }
-            set { manualAcks = value; }
-        }
-        /// <summary>
-        /// Do Close() on Disposing subscription if true, or Unsubscribe(). If you want to resume subscription with durable name, set true.
-        /// </summary>
-        /// <remarks>
-        /// If Close() or Unsubscribe() is called before Disposing, this flag has no effect
-        /// </remarks>
-        public bool LeaveOpen
-        {
-            get { return leaveOpen; }
-            set { leaveOpen = value; }
-        }
+        public bool ManualAcks { get; set; }
 
         /// <summary>
         /// Optional start sequence number.
@@ -127,7 +119,7 @@ namespace STAN.Client
         }
 
         /// <summary>
-        /// Optional start time.  UTC is recommended although a local time will be converted to UTC.
+        /// Optional start time. UTC is recommended although a local time will be converted to UTC.
         /// </summary>
         /// <param name="time"></param>
         public void StartAt(DateTime time)
@@ -153,26 +145,16 @@ namespace STAN.Client
         /// <summary>
         /// Start with the last received message.
         /// </summary>
-        public void StartWithLastReceived()
-        {
-            startAt = StartPosition.LastReceived;
-        }
-
+        public void StartWithLastReceived() => startAt = StartPosition.LastReceived;
+        
         /// <summary>
         /// Deliver all messages available.
         /// </summary>
-        public void DeliverAllAvailable()
-        {
-            startAt = StartPosition.First;
-        }
+        public void DeliverAllAvailable() => startAt = StartPosition.First;
 
         /// <summary>
         /// Returns a copy of the default subscription options.
         /// </summary>
-        /// <returns></returns>
-        public static StanSubscriptionOptions GetDefaultOptions()
-        {
-            return new StanSubscriptionOptions();
-        }
+        public static StanSubscriptionOptions GetDefaultOptions() => new StanSubscriptionOptions();
     }
 }
