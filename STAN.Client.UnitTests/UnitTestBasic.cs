@@ -33,7 +33,10 @@ namespace STAN.Client.UnitTests
         {
             get
             {
-                return new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID);
+                var opts = StanOptions.GetDefaultOptions();
+                opts.NatsURL = "nats://127.0.0.1:4222";
+                opts.ConnectTimeout = 5000;
+                return new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
             }
         }
 

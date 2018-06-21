@@ -311,8 +311,6 @@ namespace STAN.Client
             if (isClosed || sub == null)
                 return;
 
-            StanMsg msg = new StanMsg(mp, sub);
-
             sub.processMsg(mp);
         }
 
