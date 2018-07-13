@@ -33,7 +33,10 @@ namespace STAN.Client.UnitTests
         {
             get
             {
-                return new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID);
+                var opts = StanOptions.GetDefaultOptions();
+                opts.NatsURL = "nats://127.0.0.1:4222";
+                opts.ConnectTimeout = 5000;
+                return new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
             }
         }
 
@@ -154,7 +157,7 @@ namespace STAN.Client.UnitTests
 
                 Assert.False(string.IsNullOrWhiteSpace(pubGuid));
                 Assert.True(string.IsNullOrWhiteSpace(err));
-                Assert.True(pubGuid.Equals(cbGuid));
+                Assert.Equal(pubGuid, cbGuid);
             }
         }
 
@@ -182,7 +185,7 @@ namespace STAN.Client.UnitTests
 
                 Assert.False(string.IsNullOrWhiteSpace(pubGuid));
                 Assert.True(string.IsNullOrWhiteSpace(err));
-                Assert.True(pubGuid.Equals(cbGuid));
+                Assert.Equal(pubGuid, cbGuid);
             }
         }
 
@@ -237,7 +240,7 @@ namespace STAN.Client.UnitTests
                             Assert.True(args.Message.Time > 0);
                             Assert.True(args.Message.Data != null);
                             var str = System.Text.Encoding.UTF8.GetString(args.Message.Data);
-                            Assert.True("hello".Equals(str));
+                            Assert.Equal("hello", str);
 
                             if (seqDict.ContainsKey(args.Message.Sequence))
                                 throw new Exception("Duplicate Sequence found");
@@ -289,7 +292,7 @@ namespace STAN.Client.UnitTests
                             Assert.True(args.Message.Time > 0);
                             Assert.True(args.Message.Data != null);
                             var str = System.Text.Encoding.UTF8.GetString(args.Message.Data);
-                            Assert.True("hello".Equals(str));
+                            Assert.Equal("hello", str);
 
                             if (seqDict.ContainsKey(args.Message.Sequence))
                                 throw new Exception("Duplicate Sequence found");
@@ -1539,19 +1542,15 @@ namespace STAN.Client.UnitTests
         [Fact]
         public void TestMaxChannels()
         {
-            // From the server default
-            int maxChannels = 100;
-            using (new NatsStreamingServer())
+            using (new NatsStreamingServer("-mc 5"))
             {
                 using (var c = DefaultConnection)
                 {
-                    for (int i = 0; i < maxChannels; i++)
+                    for (int i = 0; i < 5; i++)
                     {
                         c.Publish(string.Format("chan-{0}", i), null);
                     }
-
                     Assert.Throws<StanException>(() => c.Publish("MAX_CHAN", null));
-
                 }
             }
         }
@@ -1636,7 +1635,7 @@ namespace STAN.Client.UnitTests
                     });
 
                     c.Publish("foo", null, (obj, args) => { });
-                    ev.WaitOne();
+                    Assert.True(ev.WaitOne(10000));
 
                     Assert.True(sw.ElapsedMilliseconds  > 1000);
                 }
@@ -1663,7 +1662,7 @@ namespace STAN.Client.UnitTests
 
         private async void testAsyncPublishAPIParallel()
         {
-            using (var s = new NatsStreamingServer())
+            using (new NatsStreamingServer())
             {
                 using (var c = DefaultConnection)
                 {

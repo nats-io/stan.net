@@ -151,7 +151,6 @@ namespace STAN.Client.UnitTests
     class UnitTestUtilities
     {
         object mu = new object();
-        static NatsStreamingServer defaultServer = null;
 
         static internal string GetConfigDir()
         {
@@ -165,40 +164,9 @@ namespace STAN.Client.UnitTests
 #endif
         }
 
-        public void StartDefaultServer()
-        {
-            lock (mu)
-            {
-                if (defaultServer == null)
-                {
-                    defaultServer = new NatsStreamingServer();
-                }
-            }
-        }
-
-        public void StopDefaultServer()
-        {
-            lock (mu)
-            {
-                try
-                {
-                    defaultServer.Shutdown();
-                }
-                catch (Exception) { }
-
-                defaultServer = null;
-            }
-        }
-
-        public void bounceDefaultServer(int delayMillis)
-        {
-            StopDefaultServer();
-            Thread.Sleep(delayMillis);
-            StartDefaultServer();
-        }
-
         internal static void CleanupExistingServers()
         {
+            bool hadProc = false;
             try
             {
                 Process[] procs = Process.GetProcessesByName("nats-streaming-server");
@@ -209,6 +177,8 @@ namespace STAN.Client.UnitTests
                 }
             }
             catch (Exception) { } // ignore
+
+            if (hadProc) Thread.Sleep(500);
         }
     }
 }

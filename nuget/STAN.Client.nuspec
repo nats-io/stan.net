@@ -11,13 +11,13 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>NATS acts as a central nervous system for distributed systems at scale, such as mobile devices, IoT networks, and cloud native infrastructure.  This is the .NET Streaming client API.</description>
         <summary>NATS Streaming .NET Client</summary>
-        <releaseNotes>.NET core, 4.5 support, added IStanSubscription.Close(), bug fixes.</releaseNotes>
+        <releaseNotes>See https://github.com/nats-io/csharp-nats-streaming/releases/v0.1.5</releaseNotes>
         <copyright>Copyright 2017-2018 The NATS Authors</copyright>
         <language />
         <tags>NATS Messaging Cloud Publish Subscribe PubSub Streaming Persistence</tags>
         <dependencies>
-            <dependency id="Google.Protobuf" version="3.2"/>
-            <dependency id="NATS.Client" version="0.7.1" />
+            <dependency id="Google.Protobuf" version="3.6"/>
+            <dependency id="NATS.Client" version="0.8.1" />
         </dependencies>
     </metadata>
     <files>
