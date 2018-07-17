@@ -51,7 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\STAN.Client\AsyncSubscription.cs" />
-    <Compile Include="..\..\STAN.Client\BlockingChannel.cs" />
     <Compile Include="..\..\STAN.Client\StanConnection.cs" />
     <Compile Include="..\..\STAN.Client\Consts.cs" />
     <Compile Include="..\..\STAN.Client\StanMsg.cs" />

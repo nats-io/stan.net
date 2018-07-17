@@ -48,236 +48,229 @@ namespace STAN.Client
 {
     internal class PublishAck
     {
-        string guidValue;
+        // fields
 
-        internal Timer ackTimer;
-        object cond = new Object();
-        bool isComplete = false;
-        private Connection connection;
-        private EventHandler<StanAckHandlerArgs> ah;
-        private Exception ex = null;
+        private volatile bool _completed;
+
+        private Connection _conn;
+        private EventHandler<StanAckHandlerArgs> _handler;
+        private TimeSpan _timeout;
+        private Timer _timer;
+        private Exception _ex;
+
+        // constructors
 
         internal PublishAck(Connection conn, string guid, EventHandler<StanAckHandlerArgs> handler, long timeout)
         {
-            connection = conn;
-            guidValue = guid;
-
-            ah = handler;
-            guidValue = guid;
-            ackTimer = new Timer(ackTimerCb, null, (int)timeout, Timeout.Infinite);
+            GUID = guid;
+            _conn = conn;
+            _handler = handler;
+            _timeout = TimeSpan.FromMilliseconds(timeout);
+            _timer = new Timer(AckTimeout, null, Timeout.Infinite, Timeout.Infinite);
         }
 
-        internal string GUID
+        // auxiliary properties and methods
+
+        private void AckTimeout(object state) => _conn.HandleAck(GUID, "Timeout occurred.");
+
+        // public api
+
+        public string GUID { get; }
+
+        public void StartTimeoutMonitor() => _timer.Change(_timeout, Timeout.InfiniteTimeSpan);
+
+        public void Wait()
         {
-            get { return guidValue;  }
+            SpinWait.SpinUntil(() => _completed);
+
+            if (_ex != null) throw _ex;
         }
 
-        private void ackTimerCb(object state)
+        public void Complete(string error)
         {
-            connection.removeAck(this.guidValue);
-            invokeHandler(guidValue, "Timeout occurred.");
-        }
-
-        internal void wait(int timeout)
-        {
-            lock (cond)
+            if (!_completed)
             {
-                while (!isComplete)
-                {
-                    Monitor.Wait(cond, timeout);
-                }
-            }
-        }
+                _timer.Dispose();
 
-        internal void wait()
-        {
-            wait(Timeout.Infinite);
-            if (ex != null)
-                throw ex;
-        }
+                error = error?.Trim();
 
-        internal void complete()
-        {
-            lock (cond)
-            {
-                if (!isComplete)
+                if (_handler != null)
                 {
-                    ackTimer.Dispose();
-                    isComplete = true;
-                    Monitor.Pulse(cond);
+                    try
+                    {
+                        _handler(this, new StanAckHandlerArgs(GUID, error));
+                    }
+                    catch { /* ignore user exceptions */ }
                 }
-            }
-        }
+                else if (!string.IsNullOrEmpty(error))
+                {
+                    _ex = new StanException(error);
+                }
 
-        internal void invokeHandler(string guidValue, string error)
-        {
-            try
-            {
-                if (ah != null)
-                {
-                    ah(this, new StanAckHandlerArgs(guidValue, error));
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(error) == false)
-                        ex = new StanException(error);
-                }
-                complete();
+                _completed = true;
             }
-            catch { /* ignore user exceptions */ }
         }
     }
 
     public class Connection : IStanConnection, IDisposable
     {
-        private Object mu = new Object();
+        // fields
 
-        private readonly string clientID;
-        private readonly string pubPrefix; // Publish prefix set by stan, append our subject.
-        private readonly string subRequests; // Subject to send subscription requests.
-        private readonly string unsubRequests; // Subject to send unsubscribe requests.
-        private readonly string subCloseRequests; // Subject to send subscrption close requests.
-        private readonly string closeRequests; // Subject to send close requests.
-        private readonly string ackSubject; // publish acks
+        private readonly object _lock = new object();
 
-        private ISubscription ackSubscription;
-        private ISubscription hbSubscription;
+        private volatile bool _disposed;
 
-        private IDictionary<string, AsyncSubscription> subMap = new Dictionary<string, AsyncSubscription>();
-        private BlockingDictionary<string, PublishAck> pubAckMap;
+        private readonly string _pubPrefix; // Publish prefix set by stan, append our subject.
+        private readonly string _subRequests; // Subject to send subscription requests.
+        private readonly string _unsubRequests; // Subject to send unsubscribe requests.
+        private readonly string _subCloseRequests; // Subject to send subscrption close requests.
+        private readonly string _closeRequests; // Subject to send close requests.
+        private readonly string _ackSubject; // publish acks
 
-        internal ProtocolSerializer ps = new ProtocolSerializer();
+        private ISubscription _ackSubscription;
+        private ISubscription _hbSubscription;
 
-        private StanOptions opts = null;
+        private Dictionary<string, AsyncSubscription> _subs;
+        private Dictionary<string, PublishAck> _pubACKs;
 
-        private IConnection nc;
-        private bool ncOwned = false;
+        private StanOptions _opts;
+
+        private bool _ncOwned = false;
+
+        // constructors
 
         private Connection() { }
 
-        internal Connection(string stanClusterID, string clientID, StanOptions options)
+        internal Connection(string clusterID, string clientID, StanOptions options)
         {
-            this.clientID = clientID;
+            ClientID = clientID;
 
-            if (options != null)
-                opts = new StanOptions(options);
-            else
-                opts = new StanOptions();
+            _opts = options != null ? new StanOptions(options) : new StanOptions();
 
-            if (opts.natsConn == null)
+            if (_opts.natsConn == null)
             {
-                ncOwned = true;
+                _ncOwned = true;
                 try
                 {
-                    nc = new ConnectionFactory().CreateConnection(opts.NatsURL);
+                    NATSConnection = new ConnectionFactory().CreateConnection(_opts.NatsURL);
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    throw new StanConnectionException(ex);
+                    throw new StanConnectionException(e);
                 }
             }
             else
             {
-                nc = opts.natsConn;
-                ncOwned = false;
+                _ncOwned = false;
+                NATSConnection = _opts.natsConn;
             }
 
             // create a heartbeat inbox
-            string hbInbox = newInbox();
-            hbSubscription = nc.SubscribeAsync(hbInbox, processHeartBeat);
+            string hbInbox = NewInbox();
+            _hbSubscription = NATSConnection.SubscribeAsync(hbInbox, ProcessHeartBeat);
 
-            string discoverSubject = opts.discoverPrefix + "." + stanClusterID;
-
-            ConnectRequest req = new ConnectRequest();
-            req.ClientID = this.clientID;
-            req.HeartbeatInbox = hbInbox;
-
-            Msg cr;
+            var resp = new ConnectResponse();
             try
             {
-                cr = nc.Request(discoverSubject,
-                    ProtocolSerializer.marshal(req),
-                    opts.ConnectTimeout);
+                byte[] data = ProtocolSerializer.marshal(new ConnectRequest
+                {
+                    ClientID = ClientID,
+                    HeartbeatInbox = hbInbox,
+                });
+
+                Msg cr = NATSConnection.Request(
+                    $"{_opts.discoverPrefix}.{clusterID}",
+                    data,
+                    _opts.ConnectTimeout
+                    );
+
+                ProtocolSerializer.unmarshal(cr.Data, resp);
             }
             catch (NATSTimeoutException)
             {
                 throw new StanConnectRequestTimeoutException();
-            }
-
-            ConnectResponse response = new ConnectResponse();
-            try
-            {
-                ProtocolSerializer.unmarshal(cr.Data, response);
             }
             catch (Exception e)
             {
                 throw new StanConnectRequestException(e);
             }
 
-            if (!string.IsNullOrEmpty(response.Error))
+            if (!string.IsNullOrWhiteSpace(resp.Error))
             {
-                throw new StanConnectRequestException(response.Error);
+                throw new StanConnectRequestException(resp.Error);
             }
 
             // capture cluster configuration endpoints to publish and subscribe/unsubscribe
-            pubPrefix = response.PubPrefix;
-            subRequests = response.SubRequests;
-            unsubRequests = response.UnsubRequests;
-            subCloseRequests = response.SubCloseRequests;
-            closeRequests = response.CloseRequests;
+            _pubPrefix = resp.PubPrefix;
+            _subRequests = resp.SubRequests;
+            _unsubRequests = resp.UnsubRequests;
+            _subCloseRequests = resp.SubCloseRequests;
+            _closeRequests = resp.CloseRequests;
 
             // setup the Ack subscription
-            ackSubject = StanConsts.DefaultACKPrefix + "." + newGUID();
-            ackSubscription = nc.SubscribeAsync(ackSubject, processAck);
+            _ackSubject = $"{StanConsts.DefaultACKPrefix}.{NewGUID()}";
+            _ackSubscription = NATSConnection.SubscribeAsync(_ackSubject, ProcessAck);
 
             // TODO:  hardcode or options?
-            ackSubscription.SetPendingLimits(1024 * 1024, 32 * 1024 * 1024);
+            _ackSubscription.SetPendingLimits(1024 * 1024, 32 * 1024 * 1024);
 
-            pubAckMap = new BlockingDictionary<string, PublishAck>(opts.maxPubAcksInflight);
+            _subs = new Dictionary<string, AsyncSubscription>();
+            _pubACKs = new Dictionary<string, PublishAck>();
+
+            ProtoSer = new ProtocolSerializer();
         }
 
-        private void processHeartBeat(object sender, MsgHandlerEventArgs args)
+        // auxiliary propertites and methods
+
+        private void Dispose(bool disposing)
         {
-            IConnection lnc;
-
-            lock (mu)
+            if (!_disposed)
             {
-                lnc = nc;
-            }
+                _disposed = true;
 
-            if (lnc != null)
-                lnc.Publish(args.Message.Reply, null);
-        }
-
-        internal PublishAck removeAck(string guid)
-        {
-            PublishAck a;
-
-            lock (mu)
-            {
-                pubAckMap.Remove(guid, out a, 0);
-            }
-
-            return a;
-        }
-
-        public IConnection NATSConnection
-        {
-            get
-            {
-                lock (mu)
+                if (disposing)
                 {
-                    return nc;
+                    // Dispose all managed resources.
+
+                    try
+                    {
+                        Close();
+                    }
+                    catch (Exception) {  /* ignore */ }
+
+                    GC.SuppressFinalize(this);
+                }
+                // Clean up unmanaged resources here.
+            }
+        }
+
+        private void ProcessHeartBeat(object sender, MsgHandlerEventArgs args) => NATSConnection.Publish(args.Message.Reply, null);
+
+        private PublishAck RemoveAck(string guid)
+        {
+            PublishAck ack;
+
+            lock (_lock)
+            {
+                if (_pubACKs.TryGetValue(guid, out ack))
+                {
+                    _pubACKs.Remove(guid);
+                    Monitor.Pulse(_lock);
                 }
             }
+
+            return ack;
         }
 
-        private void processAck(object sender, MsgHandlerEventArgs args)
+        internal void HandleAck(string guid, string error) => RemoveAck(guid)?.Complete(error);
+
+        private void ProcessAck(object sender, MsgHandlerEventArgs args)
         {
-            PubAck pa = new PubAck();
+            var ack = new PubAck();
+
             try
             {
-                ProtocolSerializer.unmarshal(args.Message.Data, pa);
+                ProtocolSerializer.unmarshal(args.Message.Data, ack);
             }
             catch (Exception)
             {
@@ -285,254 +278,181 @@ namespace STAN.Client
                 return;
             }
 
-            PublishAck a = removeAck(pa.Guid);
-
-            if (a != null)
-                a.invokeHandler(pa.Guid, pa.Error);
+            HandleAck(ack.Guid, ack.Error);
         }
 
-        internal void processMsg(object sender, MsgHandlerEventArgs args)
+        public IConnection NATSConnection { get; }
+
+        private bool IsClosed => NATSConnection.IsClosed();
+
+        private static string NewGUID() => NUID.NextGlobal;
+
+        private PublishAck publish(string subject, byte[] data, EventHandler<StanAckHandlerArgs> handler)
         {
-            bool isClosed = false;
-            AsyncSubscription sub = null;
-            Msg raw = null;
+            string subj = $"{_pubPrefix}.{subject}";
+            string guid = NewGUID();
+            byte[] b = ProtocolSerializer.createPubMsg(ClientID, guid, subject, data);
 
-            MsgProto mp = new MsgProto();
-            ProtocolSerializer.unmarshal(args.Message.Data, mp);
+            var ack = new PublishAck(this, guid, handler, _opts.PubAckWait);
 
-            raw = args.Message;
-
-            lock (mu)
+            lock (_lock)
             {
-                isClosed = (nc == null);
-                subMap.TryGetValue(raw.Subject, out sub);
-            }
-
-            if (isClosed || sub == null)
-                return;
-
-            sub.processMsg(mp);
-        }
-
-        static public string newGUID()
-        {
-            return NUID.NextGlobal;
-        }
-
-        public void Publish(string subject, byte[] data)
-        {
-            publish(subject, data, null).wait();
-        }
-
-        public string Publish(string subject, byte[] data, EventHandler<StanAckHandlerArgs> handler)
-        {
-            return publish(subject, data, handler).GUID;
-        }
-
-        internal PublishAck publish(string subject, byte[] data, EventHandler<StanAckHandlerArgs> handler)
-        {
-            string localAckSubject = null;
-            long localAckTimeout = 0;
-
-            string subj = this.pubPrefix + "." + subject;
-            string guidValue = newGUID();
-            byte[] b = ProtocolSerializer.createPubMsg(clientID, guidValue, subject, data);
-
-            PublishAck a = new PublishAck(this, guidValue, handler, opts.PubAckWait);
-
-            lock (mu)
-            {
-                if (nc == null)
-                    throw new StanConnectionClosedException();
-
-                while (!pubAckMap.TryAdd(guidValue, a))
+                while (_pubACKs.Count >= _opts.maxPubAcksInflight)
                 {
-                    var bd = pubAckMap;
-
-                    Monitor.Exit(mu);
-                    // Wait for space outside of the lock so 
-                    // acks can be removed.
-                    bd.waitForSpace();
-                    Monitor.Enter(mu);
-
-                    if (nc == null)
-                    {
-                        throw new StanConnectionClosedException();
-                    }
+                    Monitor.Wait(_lock);
                 }
-
-                localAckSubject = ackSubject;
-                localAckTimeout = opts.ackTimeout;
+                _pubACKs[ack.GUID] = ack;
             }
 
             try
             {
-                nc.Publish(subj, localAckSubject, b);
+                NATSConnection.Publish(subj, _ackSubject, b);
             }
             catch
             {
-                removeAck(guidValue);
+                RemoveAck(guid);
                 throw;
             }
 
-            return a;
+            ack.StartTimeoutMonitor();
+            return ack;
         }
+
+        public void Publish(string subject, byte[] data) => publish(subject, data, null).Wait();
+
+        public string Publish(string subject, byte[] data, EventHandler<StanAckHandlerArgs> handler) => publish(subject, data, handler).GUID;
 
         public Task<string> PublishAsync(string subject, byte[] data)
         {
-            PublishAck a = publish(subject, data, null);
-            Task<string> t = new Task<string>(() =>
+            var ack = publish(subject, data, null);
+
+            var t = new Task<string>(() =>
             {
-                a.wait();
-                return a.GUID;
+                ack.Wait();
+                return ack.GUID;
             });
             t.Start();
+
             return t;
         }
 
-        private IStanSubscription subscribe(string subject, string qgroup, EventHandler<StanMsgHandlerArgs> handler, StanSubscriptionOptions options)
+        private IStanSubscription Subscribe(string subject, string qgroup, EventHandler<StanMsgHandlerArgs> handler, StanSubscriptionOptions options)
         {
-            AsyncSubscription sub = new AsyncSubscription(this, options);
+            var sub = new AsyncSubscription(this, options);
 
-            lock (mu)
+            sub.Subscribe(_subRequests, subject, qgroup, handler);
+
+            lock (_lock)
             {
-                if (nc == null)
-                {
-                    throw new StanConnectionClosedException();
-                }
-
                 // Register the subscription
-                subMap[sub.Inbox] = sub;
-                IConnection localNc = nc;
-            }
-
-            try
-            {
-                sub.subscribe(subRequests, subject, qgroup, handler);
-            }
-            catch
-            {
-                lock (mu)
-                {
-                    subMap.Remove(sub.Inbox);
-                }
-
-                throw;
+                _subs[sub.Inbox] = sub;
             }
 
             return sub;
         }
 
-        internal void unsubscribe(string subject, string inbox, string ackInbox, bool close)
+        internal void Unsubscribe(string subject, string inbox, string ackInbox, bool close)
         {
-            IConnection lnc;
-
-            lock (mu)
+            lock (_lock)
             {
-                lnc = nc;
-                if (lnc == null)
-                    throw new StanConnectionClosedException();
-                subMap.Remove(inbox);
+                _subs.Remove(inbox);
             }
 
-            string requestSubject = unsubRequests;
+            string requestSubject = _unsubRequests;
             if (close)
             {
-                requestSubject = subCloseRequests;
-                if (string.IsNullOrEmpty(requestSubject))
+                if (string.IsNullOrEmpty(_subCloseRequests))
+                {
                     throw new StanNoServerSupport();
+                }
+                requestSubject = _subCloseRequests;
             }
 
-            UnsubscribeRequest usr = new UnsubscribeRequest();
-            usr.ClientID = clientID;
-            usr.Subject = subject;
-            usr.Inbox = ackInbox;
-            byte[] b = ProtocolSerializer.marshal(usr);
+            byte[] b = ProtocolSerializer.marshal(new UnsubscribeRequest
+            {
+                ClientID = ClientID,
+                Subject = subject,
+                Inbox = ackInbox,
+            });
 
-            var r = lnc.Request(requestSubject, b, 2000);
-            SubscriptionResponse sr = new SubscriptionResponse();
+            var r = NATSConnection.Request(requestSubject, b, 2000);
+            var sr = new SubscriptionResponse();
             ProtocolSerializer.unmarshal(r.Data, sr);
             if (!string.IsNullOrEmpty(sr.Error))
                 throw new StanException(sr.Error);
         }
 
-        internal static string newInbox() 
-        {
-            return "_INBOX." + newGUID();
-        }
+        internal static string NewInbox() => "_INBOX." + NewGUID();
 
-        public IStanSubscription Subscribe(string subject, EventHandler<StanMsgHandlerArgs> handler)
-        {
-            return Subscribe(subject, AsyncSubscription.DefaultOptions, handler);
-        }
+        public IStanSubscription Subscribe(string subject, EventHandler<StanMsgHandlerArgs> handler) => 
+            Subscribe(subject, AsyncSubscription.DefaultOptions, handler);
 
         public IStanSubscription Subscribe(string subject, StanSubscriptionOptions options, EventHandler<StanMsgHandlerArgs> handler)
         {
             if (subject == null)
-                throw new ArgumentNullException("subject");
+                throw new ArgumentNullException(nameof(subject));
             if (options == null)
-                throw new ArgumentNullException("options");
+                throw new ArgumentNullException(nameof(options));
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
 
-            return subscribe(subject, null, handler, options);
+            return Subscribe(subject, null, handler, options);
         }
 
-        public IStanSubscription Subscribe(string subject, string qgroup,EventHandler<StanMsgHandlerArgs> handler)
-        {
-            return Subscribe(subject, qgroup, AsyncSubscription.DefaultOptions, handler);
-        }
+        public IStanSubscription Subscribe(string subject, string qgroup,EventHandler<StanMsgHandlerArgs> handler) =>
+            Subscribe(subject, qgroup, AsyncSubscription.DefaultOptions, handler);
 
         public IStanSubscription Subscribe(string subject, string qgroup, StanSubscriptionOptions options, EventHandler<StanMsgHandlerArgs> handler)
         {
             if (subject == null)
-                throw new ArgumentNullException("subject");
+                throw new ArgumentNullException(nameof(subject));
             if (qgroup == null)
-                throw new ArgumentNullException("qgroup");
+                throw new ArgumentNullException(nameof(qgroup));
             if (options == null)
-                throw new ArgumentNullException("options");
+                throw new ArgumentNullException(nameof(options));
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
 
-            return subscribe(subject, qgroup, handler, options);
+            return Subscribe(subject, qgroup, handler, options);
         }
 
         public void Close()
         {
-            Msg reply = null;
+            if (IsClosed)
+                return;
 
-            lock (mu)
+            lock (_lock)
             {
-
-                IConnection lnc = nc;
-                nc = null;
-
-                if (lnc == null)
-                    return;
-
-                if (lnc.IsClosed())
-                    return;
-
-                if (ackSubscription != null)
-                {
-                    ackSubscription.Unsubscribe();
-                    ackSubscription = null;
-                }
-
-                if (hbSubscription != null)
-                {
-                    hbSubscription.Unsubscribe();
-                    hbSubscription = null;
-                }
-
-                CloseRequest req = new CloseRequest();
-                req.ClientID = this.clientID;
+                _ackSubscription?.Unsubscribe();
+                _hbSubscription?.Unsubscribe();
 
                 try
                 {
-                    if (this.closeRequests != null)
+                    if (_closeRequests != null)
                     {
-                        reply = lnc.Request(closeRequests, ProtocolSerializer.marshal(req));
+                        Msg reply = NATSConnection.Request(_closeRequests, ProtocolSerializer.marshal(new CloseRequest { ClientID = ClientID }));
+                        if (reply != null)
+                        {
+                            var resp = new CloseResponse();
+                            try
+                            {
+                                ProtocolSerializer.unmarshal(reply.Data, resp);
+                            }
+                            catch (Exception e)
+                            {
+                                throw new StanCloseRequestException(e);
+                            }
+
+                            if (!string.IsNullOrEmpty(resp.Error))
+                            {
+                                throw new StanCloseRequestException(resp.Error);
+                            }
+                        }
+                    }
+
+                    if (_ncOwned)
+                    {
+                        NATSConnection.Dispose();
                     }
                 }
                 catch (StanBadSubscriptionException)
@@ -540,45 +460,13 @@ namespace STAN.Client
                     // it's possible we never actually connected.
                     return;
                 }
-
-                if (reply != null)
-                {
-                    CloseResponse resp = new CloseResponse();
-                    try
-                    {
-                        ProtocolSerializer.unmarshal(reply.Data, resp);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new StanCloseRequestException(e);
-                    }
-
-                    if (!string.IsNullOrEmpty(resp.Error))
-                    {
-                        throw new StanCloseRequestException(resp.Error);
-                    }
-                }
-
-                if (ncOwned && lnc != null)
-                {
-                    lnc.Close();
-                }
             }
         }
 
-        public void Dispose()
-        {
-            try { Close(); } catch (Exception) { }
-        }
+        public void Dispose() => Dispose(true);
 
-        public string ClientID 
-        { 
-            get { return this.clientID; }
-        }
+        public string ClientID { get; }
 
-        internal ProtocolSerializer ProtoSer
-        {
-            get { return this.ps; }
-        }
+        internal ProtocolSerializer ProtoSer { get; }
     }
 }
