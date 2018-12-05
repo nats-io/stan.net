@@ -71,13 +71,28 @@ namespace STAN.Client
 
         // auxiliary properties and methods
 
-        private void AckTimeout(object state) => _conn.HandleAck(GUID, "Timeout occurred.");
+        private void AckTimeout(object state) => _conn.HandleAck(GUID, "Timeout occurred.", true);
 
         // public api
 
         public string GUID { get; }
 
-        public void StartTimeoutMonitor() => _timer.Change(_timeout, Timeout.InfiniteTimeSpan);
+        public void StartTimeoutMonitor()
+        {
+            try
+            {
+                _timer.Change(_timeout, Timeout.InfiniteTimeSpan);
+            }
+            catch (ObjectDisposedException)
+            {
+                // There is no need to handle or even log this exception.
+                // The only reason for this to happen is if we received
+                // an ACK before being able to start the timeout timer.
+                // At this point Complete(string error, bool dataPublished) 
+                // has been called and the timer disposed. There is no need 
+                // to start the timer to check for a timeout.
+            }
+        }
 
         public void Wait()
         {
@@ -86,25 +101,28 @@ namespace STAN.Client
             if (_ex != null) throw _ex;
         }
 
-        public void Complete(string error)
+        public void Complete(string error, bool dataPublished)
         {
             if (!_completed)
             {
                 _timer.Dispose();
 
-                error = error?.Trim();
+                if (dataPublished)
+                {
+                    error = error?.Trim();
 
-                if (_handler != null)
-                {
-                    try
+                    if (_handler != null)
                     {
-                        _handler(this, new StanAckHandlerArgs(GUID, error));
+                        try
+                        {
+                            _handler(this, new StanAckHandlerArgs(GUID, error));
+                        }
+                        catch { /* ignore user exceptions */ }
                     }
-                    catch { /* ignore user exceptions */ }
-                }
-                else if (!string.IsNullOrEmpty(error))
-                {
-                    _ex = new StanException(error);
+                    else if (!string.IsNullOrEmpty(error))
+                    {
+                        _ex = new StanException(error);
+                    }
                 }
 
                 _completed = true;
@@ -262,7 +280,7 @@ namespace STAN.Client
             return ack;
         }
 
-        internal void HandleAck(string guid, string error) => RemoveAck(guid)?.Complete(error);
+        internal void HandleAck(string guid, string error, bool dataPublished) => RemoveAck(guid)?.Complete(error, dataPublished);
 
         private void ProcessAck(object sender, MsgHandlerEventArgs args)
         {
@@ -278,7 +296,7 @@ namespace STAN.Client
                 return;
             }
 
-            HandleAck(ack.Guid, ack.Error);
+            HandleAck(ack.Guid, ack.Error, true);
         }
 
         public IConnection NATSConnection { get; }
@@ -310,11 +328,12 @@ namespace STAN.Client
             }
             catch
             {
-                RemoveAck(guid);
+                HandleAck(guid, null, false);
                 throw;
             }
 
             ack.StartTimeoutMonitor();
+
             return ack;
         }
 
