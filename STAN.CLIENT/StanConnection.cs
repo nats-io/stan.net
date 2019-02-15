@@ -10,11 +10,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using NATS.Client;
 using System.Threading.Tasks;
+using NATS.Client;
 
 /*! \mainpage %NATS .NET Streaming Client.
  *
@@ -44,7 +45,7 @@ using System.Threading.Tasks;
 // disable XML comment warnings
 #pragma warning disable 1591
 
-namespace STAN.Client
+namespace STAN.CLIENT
 {
     internal class PublishAck
     {

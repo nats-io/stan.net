@@ -10,9 +10,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 using System;
 
-namespace STAN.Client
+namespace STAN.CLIENT
 {
     /// <summary>
     /// Arguments passed to the StanMsgHandler.

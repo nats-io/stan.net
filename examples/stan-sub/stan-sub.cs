@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using STAN.Client;
+using STAN.CLIENT;
 
 namespace STAN.Example.Subscribe
 {

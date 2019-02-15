@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using STAN.Client;
 using System.Threading;
+using STAN.CLIENT;
 
 namespace STAN.Example.Publish
 {

@@ -11,7 +11,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace STAN.Client
+namespace STAN.CLIENT
 {
     /// <summary>
     /// Creates a connection to the NATS streaming server.

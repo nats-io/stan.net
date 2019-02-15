@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\STAN.CLIENT\STAN.CLIENT.csproj" />
+    <ProjectReference Include="..\STAN.CLIENT2\STAN.CLIENT.csproj" />
   </ItemGroup>
 
 </Project>

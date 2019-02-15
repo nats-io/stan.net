@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using NATS.Client;
 using System.Diagnostics;
+using STAN.CLIENT;
 
 namespace STAN.Client.UnitTests
 {

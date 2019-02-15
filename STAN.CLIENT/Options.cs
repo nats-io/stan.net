@@ -10,10 +10,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 using System;
 using NATS.Client;
 
-namespace STAN.Client
+namespace STAN.CLIENT
 {
     /// <summary>
     /// Options available to configure a connection to the NATS streaming server.
