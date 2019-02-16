@@ -6,7 +6,7 @@
 using pb = global::Google.Protobuf;
 using pbr = global::Google.Protobuf.Reflection;
 
-namespace STAN.CLIENT {
+namespace STAN.Client {
 
   /// <summary>Holder for reflection information generated from protocol.proto</summary>
   public static partial class ProtocolReflection {
@@ -49,18 +49,18 @@ namespace STAN.CLIENT {
             "dBADEgkKBUZpcnN0EARiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::STAN.CLIENT.StartPosition), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.PubMsg), global::STAN.CLIENT.PubMsg.Parser, new[]{ "ClientID", "Guid", "Subject", "Reply", "Data", "Sha256" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.PubAck), global::STAN.CLIENT.PubAck.Parser, new[]{ "Guid", "Error" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.MsgProto), global::STAN.CLIENT.MsgProto.Parser, new[]{ "Sequence", "Subject", "Reply", "Data", "Timestamp", "Redelivered", "CRC32" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.Ack), global::STAN.CLIENT.Ack.Parser, new[]{ "Subject", "Sequence" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.ConnectRequest), global::STAN.CLIENT.ConnectRequest.Parser, new[]{ "ClientID", "HeartbeatInbox" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.ConnectResponse), global::STAN.CLIENT.ConnectResponse.Parser, new[]{ "PubPrefix", "SubRequests", "UnsubRequests", "CloseRequests", "Error", "SubCloseRequests", "PublicKey" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.SubscriptionRequest), global::STAN.CLIENT.SubscriptionRequest.Parser, new[]{ "ClientID", "Subject", "QGroup", "Inbox", "MaxInFlight", "AckWaitInSecs", "DurableName", "StartPosition", "StartSequence", "StartTimeDelta" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.SubscriptionResponse), global::STAN.CLIENT.SubscriptionResponse.Parser, new[]{ "AckInbox", "Error" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.UnsubscribeRequest), global::STAN.CLIENT.UnsubscribeRequest.Parser, new[]{ "ClientID", "Subject", "Inbox", "DurableName" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.CloseRequest), global::STAN.CLIENT.CloseRequest.Parser, new[]{ "ClientID" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.CLIENT.CloseResponse), global::STAN.CLIENT.CloseResponse.Parser, new[]{ "Error" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::STAN.Client.StartPosition), }, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.PubMsg), global::STAN.Client.PubMsg.Parser, new[]{ "ClientID", "Guid", "Subject", "Reply", "Data", "Sha256" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.PubAck), global::STAN.Client.PubAck.Parser, new[]{ "Guid", "Error" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.MsgProto), global::STAN.Client.MsgProto.Parser, new[]{ "Sequence", "Subject", "Reply", "Data", "Timestamp", "Redelivered", "CRC32" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.Ack), global::STAN.Client.Ack.Parser, new[]{ "Subject", "Sequence" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectRequest), global::STAN.Client.ConnectRequest.Parser, new[]{ "ClientID", "HeartbeatInbox" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectResponse), global::STAN.Client.ConnectResponse.Parser, new[]{ "PubPrefix", "SubRequests", "UnsubRequests", "CloseRequests", "Error", "SubCloseRequests", "PublicKey" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.SubscriptionRequest), global::STAN.Client.SubscriptionRequest.Parser, new[]{ "ClientID", "Subject", "QGroup", "Inbox", "MaxInFlight", "AckWaitInSecs", "DurableName", "StartPosition", "StartSequence", "StartTimeDelta" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.SubscriptionResponse), global::STAN.Client.SubscriptionResponse.Parser, new[]{ "AckInbox", "Error" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.UnsubscribeRequest), global::STAN.Client.UnsubscribeRequest.Parser, new[]{ "ClientID", "Subject", "Inbox", "DurableName" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.CloseRequest), global::STAN.Client.CloseRequest.Parser, new[]{ "ClientID" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.CloseResponse), global::STAN.Client.CloseResponse.Parser, new[]{ "Error" }, null, null, null)
           }));
     }
     #endregion
@@ -91,7 +91,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[0]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -369,7 +369,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[1]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -524,7 +524,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[2]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -833,7 +833,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[3]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -987,7 +987,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[4]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1141,7 +1141,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[5]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1450,7 +1450,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[6]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1584,12 +1584,12 @@ namespace STAN.CLIENT {
 
     /// <summary>Field number for the "startPosition" field.</summary>
     public const int StartPositionFieldNumber = 10;
-    private global::STAN.CLIENT.StartPosition startPosition_ = 0;
+    private global::STAN.Client.StartPosition startPosition_ = 0;
     /// <summary>
     /// Start position
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::STAN.CLIENT.StartPosition StartPosition {
+    public global::STAN.Client.StartPosition StartPosition {
       get { return startPosition_; }
       set {
         startPosition_ = value;
@@ -1825,7 +1825,7 @@ namespace STAN.CLIENT {
             break;
           }
           case 80: {
-            startPosition_ = (global::STAN.CLIENT.StartPosition) input.ReadEnum();
+            startPosition_ = (global::STAN.Client.StartPosition) input.ReadEnum();
             break;
           }
           case 88: {
@@ -1852,7 +1852,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[7]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2006,7 +2006,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[8]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2222,7 +2222,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[9]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2345,7 +2345,7 @@ namespace STAN.CLIENT {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.CLIENT.ProtocolReflection.Descriptor.MessageTypes[10]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

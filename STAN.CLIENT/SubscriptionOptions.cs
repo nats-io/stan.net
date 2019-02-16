@@ -13,7 +13,7 @@
 
 using System;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     /// <summary>
     /// The StanSubsciption options class represents various options available

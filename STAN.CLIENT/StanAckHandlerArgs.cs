@@ -13,7 +13,7 @@
 
 using System;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     /// <summary>
     /// This class is used with an acknowleggement event handler indicating 

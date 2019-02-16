@@ -13,7 +13,7 @@
 
 using System;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     /// <summary>
     /// A StanMsg object is a received NATS streaming message.

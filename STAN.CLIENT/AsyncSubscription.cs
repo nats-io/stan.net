@@ -15,7 +15,7 @@ using System;
 using System.Threading;
 using NATS.Client;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     class AsyncSubscription : IStanSubscription
     {

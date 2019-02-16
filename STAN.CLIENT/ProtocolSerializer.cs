@@ -14,7 +14,7 @@
 using System;
 using Google.Protobuf;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     // Keep protocol serialization encapulated here.
     internal class ProtocolSerializer

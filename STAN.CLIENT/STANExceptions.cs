@@ -13,7 +13,7 @@
 
 using System;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     /// <summary>
     /// A general exception thrown by the NATS streaming server client.

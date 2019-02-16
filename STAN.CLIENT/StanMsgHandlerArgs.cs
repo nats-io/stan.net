@@ -13,7 +13,7 @@
 
 using System;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     /// <summary>
     /// Arguments passed to the StanMsgHandler.

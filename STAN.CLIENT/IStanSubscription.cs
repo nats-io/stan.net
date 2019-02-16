@@ -13,7 +13,7 @@
 
 using System;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     /// <summary>
     /// Subscription represents a subscription within the NATS Streaming cluster. Subscriptions will be rate matched and follow at-least delivery semantics.

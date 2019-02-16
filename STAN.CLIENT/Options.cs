@@ -14,7 +14,7 @@
 using System;
 using NATS.Client;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     /// <summary>
     /// Options available to configure a connection to the NATS streaming server.

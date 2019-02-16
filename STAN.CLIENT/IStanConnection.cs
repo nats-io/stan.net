@@ -14,7 +14,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     /// <summary>
     /// A connection represents a connection to the NATS Streaming subsystem.

@@ -45,7 +45,7 @@ using NATS.Client;
 // disable XML comment warnings
 #pragma warning disable 1591
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
     internal class PublishAck
     {

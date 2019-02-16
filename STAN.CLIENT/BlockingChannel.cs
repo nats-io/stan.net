@@ -15,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace STAN.CLIENT
+namespace STAN.Client
 {
 
     // This dictionary class is a capacity bound, threadsafe, dictionary.
