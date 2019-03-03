@@ -26,6 +26,8 @@ namespace STAN.Client
         internal long ackTimeout = StanConsts.DefaultConnectWait;
         internal string discoverPrefix = StanConsts.DefaultDiscoverPrefix;
         internal long maxPubAcksInflight = StanConsts.DefaultMaxPubAcksInflight;
+        internal int pingMaxOut = StanConsts.DefaultPingMaxOut;
+        internal int pingInterval = StanConsts.DefaultPingInterval;
 
         internal StanOptions() { }
 
@@ -46,6 +48,9 @@ namespace STAN.Client
             DiscoverPrefix = DeepCopy(options.DiscoverPrefix);
             MaxPubAcksInFlight = options.MaxPubAcksInFlight;
             NatsConn = options.natsConn;
+            PingInterval = options.PingInterval;
+            PingMaxOutstanding = options.PingMaxOutstanding;
+            ConnectionLostEventHandler = options.ConnectionLostEventHandler;
         }
 
         /// <summary>
@@ -76,7 +81,8 @@ namespace STAN.Client
         }
 
         /// <summary>
-        /// ConnectTimeout is an Option to set the timeout for establishing a connection.
+        /// ConnectTimeout is an Option to set the timeout for establishing a connection
+        /// in milliseconds.
         /// </summary>
         public int ConnectTimeout
         {
@@ -95,7 +101,7 @@ namespace STAN.Client
 
         /// <summary>
         /// PubAckWait is an option to set the timeout for waiting for an ACK 
-        /// for a published message.  The value must be greater than zero.
+        /// for a published message in milliseconds.  The value must be greater than zero.
         /// </summary>
         public long PubAckWait
         {
@@ -133,7 +139,7 @@ namespace STAN.Client
 
         /// <summary>
         /// MaxPubAcksInflight is an Option to set the maximum number 
-        /// of published  messages without outstanding ACKs from the server.
+        /// of published messages without outstanding ACKs from the server.
         /// </summary>
         public long MaxPubAcksInFlight
         {
@@ -149,6 +155,51 @@ namespace STAN.Client
                 maxPubAcksInflight = value;
             }
         }
+
+        /// <summary>
+        /// MaxPingsOut is an option to set the maximum number 
+        /// of outstanding pings with the streaming server.
+        /// See <see cref="StanConsts.DefaultPingMaxOut"/>.
+        /// </summary>
+        public int PingMaxOutstanding
+        {
+            get
+            {
+                return pingMaxOut;
+            }
+            set
+            {
+                if (value <= 2)
+                    throw new ArgumentOutOfRangeException("value", value, "PingMaxOutstanding must be greater than two.");
+
+                pingMaxOut = value;
+            }
+        }
+
+        /// <summary>
+        /// PingInterval is an option to set the interval of pings in milliseconds.
+        /// See <see cref="StanConsts.DefaultPingInterval"/>.
+        /// </summary>
+        public int PingInterval
+        {
+            get
+            {
+                return pingInterval;
+            }
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException("value", value, "PingInterval must be greater than zero.");
+
+                pingInterval = value;
+            }
+        }
+
+        /// <summary>
+        /// Represents the method that will handle an event raised
+        /// when a connection has been disconnected from a streaming server.
+        /// </summary>
+        public EventHandler<StanConnLostHandlerArgs> ConnectionLostEventHandler = null;
 
         /// <summary>
         /// Returns the default connection options.

@@ -122,4 +122,14 @@ namespace STAN.Client
         internal StanNoServerSupport() : base("Operation not supported by the server.") { }
         internal StanNoServerSupport(Exception e) : base("Operation not supported by the server.", e) { }
     }
+
+    /// <summary>
+    /// An exception indicating connectivity with the streaming server has 
+    /// been lost due to exceeding the maximum number of outstanding pings.
+    /// </summary>
+    public class StanMaxPingsException : StanException
+    {
+        internal StanMaxPingsException() : base("Connection lost due to PING failure.") { }
+        internal StanMaxPingsException(Exception e) : base(err: "Connection lost due to PING failure.", innerEx: e) { }
+    }
 }

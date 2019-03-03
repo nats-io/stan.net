@@ -75,7 +75,7 @@ namespace STAN.Client
         private void ackTimerCb(object state)
         {
             connection.removeAck(this.guidValue);
-            invokeHandler(guidValue, "Timeout occurred.");
+            InvokeHandler(guidValue, "Timeout occurred.");
         }
 
         internal void wait(int timeout)
@@ -109,7 +109,7 @@ namespace STAN.Client
             }
         }
 
-        internal void invokeHandler(string guidValue, string error)
+        internal void InvokeHandler(string guidValue, string error)
         {
             try
             {
@@ -133,6 +133,7 @@ namespace STAN.Client
         private Object mu = new Object();
 
         private readonly string clientID;
+        private readonly object connID; // This is a NUID that uniquely identifies connections.  Stored as a protobuf bytestring.
         private readonly string pubPrefix; // Publish prefix set by stan, append our subject.
         private readonly string subRequests; // Subject to send subscription requests.
         private readonly string unsubRequests; // Subject to send unsubscribe requests.
@@ -142,6 +143,17 @@ namespace STAN.Client
 
         private ISubscription ackSubscription;
         private ISubscription hbSubscription;
+        private ISubscription pingSubscription;
+
+        private object pingLock = new object();
+        private NUID pubNUID = new NUID();
+        private Timer pingTimer;
+        private readonly byte[] pingBytes;
+        private readonly string pingRequests;
+        private readonly string pingInbox;
+        private int pingInterval;
+        private int pingOut;
+        private int pingMaxOut;
 
         private IDictionary<string, AsyncSubscription> subMap = new Dictionary<string, AsyncSubscription>();
         private BlockingDictionary<string, PublishAck> pubAckMap;
@@ -158,18 +170,20 @@ namespace STAN.Client
         internal Connection(string stanClusterID, string clientID, StanOptions options)
         {
             this.clientID = clientID;
+            connID = Google.Protobuf.ByteString.CopyFrom(System.Text.Encoding.UTF8.GetBytes(pubNUID.Next));
 
-            if (options != null)
-                opts = new StanOptions(options);
-            else
-                opts = new StanOptions();
+            opts = (options != null) ? new StanOptions(options) : new StanOptions();
 
             if (opts.natsConn == null)
             {
                 ncOwned = true;
                 try
                 {
-                    nc = new ConnectionFactory().CreateConnection(opts.NatsURL);
+                    var nopts = ConnectionFactory.GetDefaultOptions();
+                    nopts.MaxReconnect = Options.ReconnectForever;
+                    nopts.Url = opts.NatsURL;
+                    // TODO:  disable buffering.
+                    nc = new ConnectionFactory().CreateConnection(nopts);
                 }
                 catch (Exception ex)
                 {
@@ -182,15 +196,34 @@ namespace STAN.Client
                 ncOwned = false;
             }
 
+            // Prepare a subscription on ping responses, even if we are not
+            // going to need it, so that if that fails, it fails before initiating
+            // a connection.
+            pingSubscription = nc.SubscribeAsync(newInbox(), processPingResponse); 
+
             // create a heartbeat inbox
             string hbInbox = newInbox();
             hbSubscription = nc.SubscribeAsync(hbInbox, processHeartBeat);
 
             string discoverSubject = opts.discoverPrefix + "." + stanClusterID;
 
-            ConnectRequest req = new ConnectRequest();
-            req.ClientID = this.clientID;
-            req.HeartbeatInbox = hbInbox;
+            // The streaming server expects seconds, but can handle millis
+            // millis are denoted by negative numbers.
+            int pi;
+            if (opts.PingInterval < 1000)
+                pi = opts.pingInterval * -1;
+            else
+                pi = opts.pingInterval / 1000;
+
+            ConnectRequest req = new ConnectRequest
+            {
+                ClientID = clientID,
+                HeartbeatInbox = hbInbox,
+                ConnID = (Google.Protobuf.ByteString)connID,
+                Protocol = StanConsts.protocolOne,
+                PingMaxOut = opts.PingMaxOutstanding,
+                PingInterval = pi
+            };
 
             Msg cr;
             try
@@ -234,6 +267,207 @@ namespace STAN.Client
             ackSubscription.SetPendingLimits(1024 * 1024, 32 * 1024 * 1024);
 
             pubAckMap = new BlockingDictionary<string, PublishAck>(opts.maxPubAcksInflight);
+
+            // TODO - check out sub map and chans
+
+            bool unsubPing = true;
+
+            // Do this with servers which are at least at protcolOne.
+            if (response.Protocol >= StanConsts.protocolOne)
+            {
+
+                // Note that in the future server may override client ping
+                // interval value sent in ConnectRequest, so use the
+                // value in ConnectResponse to decide if we send PINGs
+                // and at what interval.
+                // In tests, the interval could be negative to indicate
+                // milliseconds.
+                if (response.PingInterval != 0) {
+                    unsubPing = false;
+
+                    // These will be immutable
+                    pingRequests = response.PingRequests;
+                    pingInbox = pingSubscription.Subject;
+
+                    // negative values returned from the server are ms
+                    if (response.PingInterval < 0)
+                    {
+                        pingInterval = response.PingInterval * -1;
+                    }
+                    else
+                    {
+                        // if positive, the result is in seconds, but 
+                        // in the .NET clients we always use millis.
+                        pingInterval = response.PingInterval * 1000;
+                    }
+
+                    pingMaxOut = response.PingMaxOut;
+                    pingBytes = ProtocolSerializer.createPing(connID);
+
+                    lock (pingLock)
+                    {
+                        pingTimer = new Timer(pingServer, null, pingInterval, Timeout.Infinite);
+                    }
+                }
+            }
+            if (unsubPing)
+            {
+                pingSubscription.Unsubscribe();
+                pingSubscription = null;
+            }
+
+        }
+
+        // Sends a PING (containing the connection's ID) to the server at intervals
+        // specified by PingInterval option when connection is created.
+        // Everytime a PING is sent, the number of outstanding PINGs is increased.
+        // If the total number is > than the PingMaxOut option, then the connection
+        // is closed, and connection error callback invoked if one was specified.
+        private void pingServer(object state)
+        {
+            IConnection conn = null;
+            Exception pingEx = null;
+            bool lostConnection = false;
+
+            // we're closed, just exit
+            lock (pingLock)
+            {
+                if (pingTimer == null)
+                {
+                    return;
+                }
+
+                pingTimer = null;
+
+                pingOut++;
+                conn = nc;
+
+                if (pingOut > pingMaxOut)
+                {
+                    lostConnection = true;
+                    pingEx = new StanMaxPingsException();
+                }
+                else
+                {
+                    pingTimer = new Timer(pingServer, null, pingInterval, Timeout.Infinite);
+                }
+            }
+
+            if (lostConnection)
+            {
+                closeDueToPing(pingEx);
+                return;
+            }
+            
+            try
+            {
+                conn.Publish(pingRequests, pingInbox, pingBytes);
+            }
+            catch (Exception ex)
+            when (
+                ex is NATSConnectionClosedException || 
+                ex is NATSStaleConnectionException)
+            {
+                closeDueToPing(ex);
+            }
+        }
+
+        private void closeDueToPing(Exception ex)
+        {
+            lock (mu)
+            {
+                if (nc == null)
+                {
+                    return;
+                }
+
+
+                // Stop timer, unsubscribe, fail the pubs, etc..
+                cleanupOnClose(ex);
+
+                // No need to send Close prototol, so simply close the underlying
+                // NATS connection (if we own it, and if not already closed)
+                if (ncOwned && !nc.IsClosed())
+                {
+                    nc.Close();
+                }
+
+                // Mark this streaming connection as closed. Do this under pingMu lock.
+                lock (pingLock)
+                {
+                    nc = null;
+                }
+
+            }
+
+            // Schedule a task to invoke the callback.  This event handler is immutable,
+            // so it's OK to use directly.
+            if (opts.ConnectionLostEventHandler != null)
+            {
+                // Not ideal, but we really don't have a close to wait on this.
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        opts.ConnectionLostEventHandler(this, new StanConnLostHandlerArgs(this, ex));
+                    }
+                    catch { /* ignore, be nice to the background thread */ }
+                });
+            }
+        }
+
+        private void cleanupOnClose(Exception ex)
+        {
+            lock (pingLock)
+            {
+                pingTimer?.Dispose();
+            }
+
+            // Unsubscribe only if we have a connection...
+            if (nc != null && !nc.IsClosed()) {
+                ackSubscription?.Unsubscribe();
+                pingSubscription?.Unsubscribe();
+            }
+
+            // fail all pending pubs...
+            PublishAck pa;
+            var keys = pubAckMap.Keys;
+            foreach (string guid in keys)
+            {
+                if (pubAckMap.Remove(guid, out pa, 0))
+                {
+                    pa.InvokeHandler(guid, ex.Message == null ? "Connection Closed." : ex.Message);
+                }
+            }
+        }
+
+        private void processPingResponse(object sender, MsgHandlerEventArgs e)
+        {
+            // No data means OK (no need to unmarshall)
+            var data = e.Message.Data;
+            if (data?.Length > 0)
+            {
+                var pingResp = new PingResponse();
+                try
+                {
+                    ProtocolSerializer.unmarshal(data, pingResp);
+                }
+                catch
+                {
+                    return;
+                }
+
+                string err = pingResp.Error;
+                if (err?.Length > 0)
+                {
+                    closeDueToPing(new StanException(err));
+                }
+            }
+
+            lock (pingLock)
+            {
+                pingOut = 0;
+            }
         }
 
         private void processHeartBeat(object sender, MsgHandlerEventArgs args)
@@ -288,7 +522,7 @@ namespace STAN.Client
             PublishAck a = removeAck(pa.Guid);
 
             if (a != null)
-                a.invokeHandler(pa.Guid, pa.Error);
+                a.InvokeHandler(pa.Guid, pa.Error);
         }
 
         internal void processMsg(object sender, MsgHandlerEventArgs args)
@@ -336,7 +570,7 @@ namespace STAN.Client
 
             string subj = this.pubPrefix + "." + subject;
             string guidValue = newGUID();
-            byte[] b = ProtocolSerializer.createPubMsg(clientID, guidValue, subject, data);
+            byte[] b = ProtocolSerializer.createPubMsg(clientID, guidValue, subject, data, connID);
 
             PublishAck a = new PublishAck(this, guidValue, handler, opts.PubAckWait);
 
@@ -443,10 +677,12 @@ namespace STAN.Client
                     throw new StanNoServerSupport();
             }
 
-            UnsubscribeRequest usr = new UnsubscribeRequest();
-            usr.ClientID = clientID;
-            usr.Subject = subject;
-            usr.Inbox = ackInbox;
+            UnsubscribeRequest usr = new UnsubscribeRequest
+            {
+                ClientID = clientID,
+                Subject = subject,
+                Inbox = ackInbox
+            };
             byte[] b = ProtocolSerializer.marshal(usr);
 
             var r = lnc.Request(requestSubject, b, 2000);
@@ -503,36 +739,24 @@ namespace STAN.Client
 
             lock (mu)
             {
+                cleanupOnClose(null);
 
-                IConnection lnc = nc;
-                nc = null;
-
-                if (lnc == null)
-                    return;
-
-                if (lnc.IsClosed())
-                    return;
-
-                if (ackSubscription != null)
+                if (nc == null || nc.IsClosed())
                 {
-                    ackSubscription.Unsubscribe();
-                    ackSubscription = null;
+                    nc = null;
+                    return;
                 }
 
-                if (hbSubscription != null)
+                CloseRequest req = new CloseRequest
                 {
-                    hbSubscription.Unsubscribe();
-                    hbSubscription = null;
-                }
-
-                CloseRequest req = new CloseRequest();
-                req.ClientID = this.clientID;
+                    ClientID = clientID
+                };
 
                 try
                 {
-                    if (this.closeRequests != null)
+                    if (closeRequests != null)
                     {
-                        reply = lnc.Request(closeRequests, ProtocolSerializer.marshal(req));
+                        reply = nc.Request(closeRequests, ProtocolSerializer.marshal(req));
                     }
                 }
                 catch (StanBadSubscriptionException)
@@ -559,10 +783,12 @@ namespace STAN.Client
                     }
                 }
 
-                if (ncOwned && lnc != null)
+                if (ncOwned)
                 {
-                    lnc.Close();
+                    nc.Close();
                 }
+
+                nc = null;
             }
         }
 
@@ -578,7 +804,7 @@ namespace STAN.Client
 
         internal ProtocolSerializer ProtoSer
         {
-            get { return this.ps; }
+            get { return ps; }
         }
     }
 }

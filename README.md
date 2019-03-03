@@ -24,9 +24,11 @@ For convenience, the NATS streaming client can found on NuGet as [STAN.Client](h
 Alternatively, you can build the C# NATS streaming client yourself.  To build, you'll need an environment to build [Visual Studio](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx) and/or .NET core project files.
 
 ### .NET core
+
 From the directory the repository has been cloned into, either invoke `buildcore.bat` from the command line, or open the `STANcore.sln` project file in Visual Studio and build from there.
 
 ### .NET 4.5
+
 From the directory the repository has been cloned into, either invoke `build45.bat` from the command line, or open the `STANnet45.sln` project file in Visual Studio and build from there.
 
 ### API Documentation
@@ -156,6 +158,61 @@ var s = c.Subscribe("foo",  opts, (obj, args) =>
 NATS Streaming subscriptions **do not** support wildcards.
 
 ## Advanced Usage
+
+### Connection Status
+
+The fact that the NATS Streaming server and clients are not directly connected poses a challenge when it comes to know if a client is still valid.
+When a client disconnects, the streaming server is not notified, hence the importance of calling `Close()`. The server sends heartbeats
+to the client's private inbox and if it misses a certain number of responses, it will consider the client's connection lost and remove it
+from its state.
+
+Before version `0.6.0`, the client library was not sending PINGs to the streaming server to detect connection failure. This was problematic
+especially if an application was never sending data (had only subscriptions for instance). Picture the case where a client connects to a
+NATS Server which has a route to a NATS Streaming server (either connecting to a standalone NATS Server or the server it embeds). If the
+connection between the streaming server and the client's NATS Server is broken, the client's NATS connection would still be ok, yet, no
+communication with the streaming server is possible. This is why relying on `Conn.NatsConn()` to check the status is not helpful.
+
+Starting version `0.6.0` of this library and server `0.10.0`, the client library will now send PINGs at regular intervals (default is 5 seconds)
+and will close the streaming connection after a certain number of PINGs have been sent without any response (default is 3). When that
+happens, a callback - if one is registered - will be invoked to notify the user that the connection is permanently lost, and the reason
+for the failure.
+
+Here is how you would specify your own PING values and the callback:
+
+```csharp
+    // Send PINGs every 10 seconds, and fail after 5 PINGs without any response.
+    StanOptions so = StanOptions.GetDefaultOptions();
+    so.PingInterval = 10000;
+    so.PingMaxOutstanding = 5;
+    so.ConnectionLostEventHandler = (obj, args) =>
+    {
+        // handle the case where a connection has been lost
+    }
+
+    var sc = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, so);
+```
+
+Note that the only way to be notified is to set the callback. If the callback is not set, PINGs are still sent and the connection
+will be closed if needed, but the application won't know if it has only subscriptions.
+
+When the connection is lost, your application would have to re-create it and all subscriptions if any.
+
+When no NATS connection is provided, the library creates its own NATS connection and will now set the reconnect attempts to
+"infinite", which was not the case before. It should therefore be possible for the library to always reconnect, but this
+does not mean that the streaming connection will not be closed, even if you set a very high threshold for the PINGs max out
+value. Keep in mind that while the client is disconnected, the server is sending heartbeats to the clients too, and when not
+getting any response, it will remove that client from its state. When the communication is restored,
+the PINGs sent to the server will allow to detect this condition and report to the client that the connection is now closed.
+
+Also, while a client is "disconnected" from the server, another application with connectivity to the streaming server may
+connect and uses the same client ID. The server, when detecting the duplicate client ID, will try to contact the first client
+to know if it should reject the connect request of the second client. Since the communication between the server and the
+first client is broken, the server will not get a response and therefore will replace the first client with the second one.
+
+Prior to client `0.6.0` and server `0.10.0`, if the communication between the first client and server were to be restored,
+and the application would send messages, the server would accept those because the published messages client ID would be
+valid, although the client is not. With client at `0.6.0+` and server `0.10.0+`, additional information is sent with each
+message to allow the server to reject messages from a client that has been replaced by another client.
 
 ### Asynchronous Publishing
 

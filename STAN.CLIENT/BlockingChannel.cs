@@ -21,7 +21,7 @@ namespace STAN.Client
     internal sealed class BlockingDictionary<TKey, TValue>
     {
         IDictionary<TKey, TValue> d = new Dictionary<TKey, TValue>();
-        Object dLock   = new Object();
+        Object dLock = new Object();
         Object addLock = new Object();
         bool finished = false;
         long maxSize = 1024;
@@ -31,6 +31,17 @@ namespace STAN.Client
             lock (dLock)
             {
                 return d.Count >= maxSize;
+            }
+        }
+
+        internal ICollection<TKey> Keys
+        {
+            get
+            {
+                lock (dLock)
+                {
+                    return d.Keys;
+                }
             }
         }
 

@@ -66,6 +66,7 @@
     <Compile Include="..\..\STAN.Client\SubscriptionOptions.cs" />
     <Compile Include="..\..\STAN.Client\Properties\AssemblyInfo.cs" />
     <Compile Include="..\..\STAN.Client\Protocol.cs" />
+    <Compile Include="..\..\STAN.Client\StanConnLostHandlerArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\STAN.Client\pb\protocol.proto" />

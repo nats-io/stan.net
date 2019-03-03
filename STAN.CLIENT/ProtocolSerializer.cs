@@ -28,13 +28,15 @@ namespace STAN.Client
             ((IMessage)obj).MergeFrom(bytes);
         }
 
-        internal static byte[] createPubMsg(string clientID, string guidValue, string subject, byte[] data)
+        internal static byte[] createPubMsg(string clientID, string guidValue, string subject, byte[] data, object connID)
         {
-            PubMsg pm = new PubMsg();
-
-            pm.ClientID = clientID;
-            pm.Guid = guidValue;
-            pm.Subject = subject;
+            PubMsg pm = new PubMsg
+            {
+                ClientID = clientID,
+                Guid = guidValue,
+                Subject = subject,
+                ConnID = (ByteString)connID
+            };
             if (data != null)
                 pm.Data = ByteString.CopyFrom(data);
 
@@ -43,10 +45,21 @@ namespace STAN.Client
 
         internal static byte[] createAck(MsgProto mp)
         {
-            Ack a = new Ack();
-            a.Subject = mp.Subject;
-            a.Sequence = mp.Sequence;
+            Ack a = new Ack
+            {
+                Subject = mp.Subject,
+                Sequence = mp.Sequence
+            };
             return a.ToByteArray();
+        }
+
+        internal static byte[] createPing(object connID)
+        {
+            Ping p = new Ping
+            {
+                ConnID = (ByteString)connID
+            };
+            return p.ToByteArray();
         }
     }
 }

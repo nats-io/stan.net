@@ -10,7 +10,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-using NATS.Client;
 
 namespace STAN.Client
 {
@@ -22,7 +21,7 @@ namespace STAN.Client
         /// <summary>
         /// NATS C# streaming client version.
         /// </summary>
-	    static public readonly string Version = "0.0.1";
+	    static public readonly string Version = "0.1.5";
 
         /// <summary>
         /// DefaultNatsURL is the default URL the client connects to.
@@ -59,5 +58,20 @@ namespace STAN.Client
         /// DefaultMaxInflight indicates how many messages with outstanding ACKs the server can send.
         /// </summary>
         static public readonly int  DefaultMaxInflight = 1024;
-   }
+
+        /// <summary>
+        /// DefaultPingInterval is the default interval (in milliseconds) at which a connection sends a PING to the server.
+        /// </summary>
+        static public readonly int DefaultPingInterval = 5000;
+
+        /// <summary>
+        /// DefaultPingMaxOut is the number of PINGs without a response before the connection is considered lost.
+        /// </summary>
+        static public readonly int DefaultPingMaxOut = 3;
+
+        // Clients send connID in ConnectRequest and PubMsg, and the server
+        // listens and responds to client PINGs. The validity of the
+        // connection (based on connID) is checked on incoming PINGs.
+        static internal readonly int protocolOne = 1;
+    }
 }
