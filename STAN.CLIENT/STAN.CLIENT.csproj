@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+
+
   <PropertyGroup>
     <Description>STAN Client API</Description>
     <Copyright>Copyright © The NATS Authors 2017-2018</Copyright>
@@ -19,6 +21,8 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
   </PropertyGroup>
 
+
+
   <ItemGroup>
     <PackageReference Include="NATS.Client" Version="0.8.1" />
     <PackageReference Include="System.Reflection.Extensions" Version="4.3.0" />
@@ -31,3 +35,4 @@
   </ItemGroup>
 
 </Project>
+

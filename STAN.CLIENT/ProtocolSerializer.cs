@@ -28,14 +28,29 @@ namespace STAN.Client
             ((IMessage)obj).MergeFrom(bytes);
         }
 
-        internal static byte[] createPubMsg(string clientID, string guidValue, string subject, byte[] data, object connID)
+        internal static byte[] createConnectRequest(string clientID, string hbInbox, string connID, int protocol, int pingMaxOutstanding, int pingInterval)
+        {
+            var connectRequest = new ConnectRequest
+            {
+                ClientID = clientID,
+                HeartbeatInbox = hbInbox,
+                ConnID = ByteString.CopyFrom(System.Text.Encoding.UTF8.GetBytes(connID)),
+                Protocol = StanConsts.protocolOne,
+                PingMaxOut = pingMaxOutstanding,
+                PingInterval = pingInterval
+            };
+
+            return connectRequest.ToByteArray();
+        }
+
+        internal static byte[] createPubMsg(string clientID, string guidValue, string subject, byte[] data, string connID)
         {
             PubMsg pm = new PubMsg
             {
                 ClientID = clientID,
                 Guid = guidValue,
                 Subject = subject,
-                ConnID = (ByteString)connID
+                ConnID = ByteString.CopyFrom(System.Text.Encoding.UTF8.GetBytes(connID))
             };
             if (data != null)
                 pm.Data = ByteString.CopyFrom(data);
@@ -53,11 +68,11 @@ namespace STAN.Client
             return a.ToByteArray();
         }
 
-        internal static byte[] createPing(object connID)
+        internal static byte[] createPing(string connID)
         {
             Ping p = new Ping
             {
-                ConnID = (ByteString)connID
+                ConnID = ByteString.CopyFrom(System.Text.Encoding.UTF8.GetBytes(connID))
             };
             return p.ToByteArray();
         }

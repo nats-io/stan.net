@@ -133,7 +133,7 @@ namespace STAN.Client
         private Object mu = new Object();
 
         private readonly string clientID;
-        private readonly object connID; // This is a NUID that uniquely identifies connections.  Stored as a protobuf bytestring.
+        private readonly string connID; // This is a NUID that uniquely identifies connections.
         private readonly string pubPrefix; // Publish prefix set by stan, append our subject.
         private readonly string subRequests; // Subject to send subscription requests.
         private readonly string unsubRequests; // Subject to send unsubscribe requests.
@@ -170,7 +170,7 @@ namespace STAN.Client
         internal Connection(string stanClusterID, string clientID, StanOptions options)
         {
             this.clientID = clientID;
-            connID = Google.Protobuf.ByteString.CopyFrom(System.Text.Encoding.UTF8.GetBytes(pubNUID.Next));
+            connID = pubNUID.Next;
 
             opts = (options != null) ? new StanOptions(options) : new StanOptions();
 
@@ -215,21 +215,11 @@ namespace STAN.Client
             else
                 pi = opts.pingInterval / 1000;
 
-            ConnectRequest req = new ConnectRequest
-            {
-                ClientID = clientID,
-                HeartbeatInbox = hbInbox,
-                ConnID = (Google.Protobuf.ByteString)connID,
-                Protocol = StanConsts.protocolOne,
-                PingMaxOut = opts.PingMaxOutstanding,
-                PingInterval = pi
-            };
-
             Msg cr;
             try
             {
                 cr = nc.Request(discoverSubject,
-                    ProtocolSerializer.marshal(req),
+                    ProtocolSerializer.createConnectRequest(clientID, hbInbox, connID, StanConsts.protocolOne, opts.PingMaxOutstanding, pi),
                     opts.ConnectTimeout);
             }
             catch (NATSTimeoutException)
@@ -258,7 +248,7 @@ namespace STAN.Client
             unsubRequests = response.UnsubRequests;
             subCloseRequests = response.SubCloseRequests;
             closeRequests = response.CloseRequests;
-
+            
             // setup the Ack subscription
             ackSubject = StanConsts.DefaultACKPrefix + "." + newGUID();
             ackSubscription = nc.SubscribeAsync(ackSubject, processAck);
@@ -337,8 +327,6 @@ namespace STAN.Client
                     return;
                 }
 
-                pingTimer = null;
-
                 pingOut++;
                 conn = nc;
 
@@ -349,7 +337,7 @@ namespace STAN.Client
                 }
                 else
                 {
-                    pingTimer = new Timer(pingServer, null, pingInterval, Timeout.Infinite);
+                    pingTimer.Change(pingInterval, Timeout.Infinite);
                 }
             }
 
