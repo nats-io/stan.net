@@ -27,6 +27,4 @@
     <PackageReference Include="Google.Protobuf.Tools" Version="3.6.1" />
     <PackageReference Include="System.Runtime.Serialization.Json" Version="4.3.0" />
   </ItemGroup>
-
 </Project>
-
