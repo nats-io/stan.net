@@ -20,22 +20,37 @@ namespace STAN.Client
     /// </summary>
     public class StanAckHandlerArgs : EventArgs
     {
+        private string guid;
+        private string error;
+
         private StanAckHandlerArgs() { }
 
         internal StanAckHandlerArgs(string guid, string error)
         {
-            GUID = guid;
-            Error = error;
+            this.guid = guid;
+            this.error = error;
         }
 
         /// <summary>
         /// Contains the GUID of the acknowledged message.
         /// </summary>
-        public string GUID { get; }
+        public string GUID
+        {
+            get
+            {
+                return guid;
+            }
+        }
 
         /// <summary>
         /// Returns an error if applicable.
         /// </summary>
-        public string Error { get; }
+        public string Error
+        {
+            get
+            {
+                return this.error;
+            }
+        }
     }
 }
