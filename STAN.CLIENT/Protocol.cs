@@ -24,48 +24,41 @@ namespace STAN.Client {
     static ProtocolReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg5wcm90b2NvbC5wcm90bxILU1RBTi5DbGllbnQidgoGUHViTXNnEhAKCGNs",
+            "Cg5wcm90b2NvbC5wcm90bxILU1RBTi5DbGllbnQiZgoGUHViTXNnEhAKCGNs",
             "aWVudElEGAEgASgJEgwKBGd1aWQYAiABKAkSDwoHc3ViamVjdBgDIAEoCRIN",
-            "CgVyZXBseRgEIAEoCRIMCgRkYXRhGAUgASgMEg4KBmNvbm5JRBgGIAEoDBIO",
-            "CgZzaGEyNTYYCiABKAwiJQoGUHViQWNrEgwKBGd1aWQYASABKAkSDQoFZXJy",
-            "b3IYAiABKAkigQEKCE1zZ1Byb3RvEhAKCHNlcXVlbmNlGAEgASgEEg8KB3N1",
-            "YmplY3QYAiABKAkSDQoFcmVwbHkYAyABKAkSDAoEZGF0YRgEIAEoDBIRCgl0",
-            "aW1lc3RhbXAYBSABKAMSEwoLcmVkZWxpdmVyZWQYBiABKAgSDQoFQ1JDMzIY",
-            "CiABKA0iKAoDQWNrEg8KB3N1YmplY3QYASABKAkSEAoIc2VxdWVuY2UYAiAB",
-            "KAQihgEKDkNvbm5lY3RSZXF1ZXN0EhAKCGNsaWVudElEGAEgASgJEhYKDmhl",
-            "YXJ0YmVhdEluYm94GAIgASgJEhAKCHByb3RvY29sGAMgASgFEg4KBmNvbm5J",
-            "RBgEIAEoDBIUCgxwaW5nSW50ZXJ2YWwYBSABKAUSEgoKcGluZ01heE91dBgG",
-            "IAEoBSL1AQoPQ29ubmVjdFJlc3BvbnNlEhEKCXB1YlByZWZpeBgBIAEoCRIT",
-            "CgtzdWJSZXF1ZXN0cxgCIAEoCRIVCg11bnN1YlJlcXVlc3RzGAMgASgJEhUK",
-            "DWNsb3NlUmVxdWVzdHMYBCABKAkSDQoFZXJyb3IYBSABKAkSGAoQc3ViQ2xv",
-            "c2VSZXF1ZXN0cxgGIAEoCRIUCgxwaW5nUmVxdWVzdHMYByABKAkSFAoMcGlu",
-            "Z0ludGVydmFsGAggASgFEhIKCnBpbmdNYXhPdXQYCSABKAUSEAoIcHJvdG9j",
-            "b2wYCiABKAUSEQoJcHVibGljS2V5GGQgASgJIhYKBFBpbmcSDgoGY29ubklE",
-            "GAEgASgMIh0KDFBpbmdSZXNwb25zZRINCgVlcnJvchgBIAEoCSL6AQoTU3Vi",
-            "c2NyaXB0aW9uUmVxdWVzdBIQCghjbGllbnRJRBgBIAEoCRIPCgdzdWJqZWN0",
-            "GAIgASgJEg4KBnFHcm91cBgDIAEoCRINCgVpbmJveBgEIAEoCRITCgttYXhJ",
-            "bkZsaWdodBgFIAEoBRIVCg1hY2tXYWl0SW5TZWNzGAYgASgFEhMKC2R1cmFi",
-            "bGVOYW1lGAcgASgJEjEKDXN0YXJ0UG9zaXRpb24YCiABKA4yGi5TVEFOLkNs",
-            "aWVudC5TdGFydFBvc2l0aW9uEhUKDXN0YXJ0U2VxdWVuY2UYCyABKAQSFgoO",
-            "c3RhcnRUaW1lRGVsdGEYDCABKAMiNwoUU3Vic2NyaXB0aW9uUmVzcG9uc2US",
-            "EAoIYWNrSW5ib3gYAiABKAkSDQoFZXJyb3IYAyABKAkiWwoSVW5zdWJzY3Jp",
-            "YmVSZXF1ZXN0EhAKCGNsaWVudElEGAEgASgJEg8KB3N1YmplY3QYAiABKAkS",
-            "DQoFaW5ib3gYAyABKAkSEwoLZHVyYWJsZU5hbWUYBCABKAkiIAoMQ2xvc2VS",
-            "ZXF1ZXN0EhAKCGNsaWVudElEGAEgASgJIh4KDUNsb3NlUmVzcG9uc2USDQoF",
-            "ZXJyb3IYASABKAkqYAoNU3RhcnRQb3NpdGlvbhILCgdOZXdPbmx5EAASEAoM",
-            "TGFzdFJlY2VpdmVkEAESEgoOVGltZURlbHRhU3RhcnQQAhIRCg1TZXF1ZW5j",
-            "ZVN0YXJ0EAMSCQoFRmlyc3QQBGIGcHJvdG8z"));
+            "CgVyZXBseRgEIAEoCRIMCgRkYXRhGAUgASgMEg4KBnNoYTI1NhgKIAEoDCIl",
+            "CgZQdWJBY2sSDAoEZ3VpZBgBIAEoCRINCgVlcnJvchgCIAEoCSKBAQoITXNn",
+            "UHJvdG8SEAoIc2VxdWVuY2UYASABKAQSDwoHc3ViamVjdBgCIAEoCRINCgVy",
+            "ZXBseRgDIAEoCRIMCgRkYXRhGAQgASgMEhEKCXRpbWVzdGFtcBgFIAEoAxIT",
+            "CgtyZWRlbGl2ZXJlZBgGIAEoCBINCgVDUkMzMhgKIAEoDSIoCgNBY2sSDwoH",
+            "c3ViamVjdBgBIAEoCRIQCghzZXF1ZW5jZRgCIAEoBCI6Cg5Db25uZWN0UmVx",
+            "dWVzdBIQCghjbGllbnRJRBgBIAEoCRIWCg5oZWFydGJlYXRJbmJveBgCIAEo",
+            "CSKjAQoPQ29ubmVjdFJlc3BvbnNlEhEKCXB1YlByZWZpeBgBIAEoCRITCgtz",
+            "dWJSZXF1ZXN0cxgCIAEoCRIVCg11bnN1YlJlcXVlc3RzGAMgASgJEhUKDWNs",
+            "b3NlUmVxdWVzdHMYBCABKAkSDQoFZXJyb3IYBSABKAkSGAoQc3ViQ2xvc2VS",
+            "ZXF1ZXN0cxgGIAEoCRIRCglwdWJsaWNLZXkYZCABKAki+gEKE1N1YnNjcmlw",
+            "dGlvblJlcXVlc3QSEAoIY2xpZW50SUQYASABKAkSDwoHc3ViamVjdBgCIAEo",
+            "CRIOCgZxR3JvdXAYAyABKAkSDQoFaW5ib3gYBCABKAkSEwoLbWF4SW5GbGln",
+            "aHQYBSABKAUSFQoNYWNrV2FpdEluU2VjcxgGIAEoBRITCgtkdXJhYmxlTmFt",
+            "ZRgHIAEoCRIxCg1zdGFydFBvc2l0aW9uGAogASgOMhouU1RBTi5DbGllbnQu",
+            "U3RhcnRQb3NpdGlvbhIVCg1zdGFydFNlcXVlbmNlGAsgASgEEhYKDnN0YXJ0",
+            "VGltZURlbHRhGAwgASgDIjcKFFN1YnNjcmlwdGlvblJlc3BvbnNlEhAKCGFj",
+            "a0luYm94GAIgASgJEg0KBWVycm9yGAMgASgJIlsKElVuc3Vic2NyaWJlUmVx",
+            "dWVzdBIQCghjbGllbnRJRBgBIAEoCRIPCgdzdWJqZWN0GAIgASgJEg0KBWlu",
+            "Ym94GAMgASgJEhMKC2R1cmFibGVOYW1lGAQgASgJIiAKDENsb3NlUmVxdWVz",
+            "dBIQCghjbGllbnRJRBgBIAEoCSIeCg1DbG9zZVJlc3BvbnNlEg0KBWVycm9y",
+            "GAEgASgJKmAKDVN0YXJ0UG9zaXRpb24SCwoHTmV3T25seRAAEhAKDExhc3RS",
+            "ZWNlaXZlZBABEhIKDlRpbWVEZWx0YVN0YXJ0EAISEQoNU2VxdWVuY2VTdGFy",
+            "dBADEgkKBUZpcnN0EARiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::STAN.Client.StartPosition), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.PubMsg), global::STAN.Client.PubMsg.Parser, new[]{ "ClientID", "Guid", "Subject", "Reply", "Data", "ConnID", "Sha256" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.PubMsg), global::STAN.Client.PubMsg.Parser, new[]{ "ClientID", "Guid", "Subject", "Reply", "Data", "Sha256" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.PubAck), global::STAN.Client.PubAck.Parser, new[]{ "Guid", "Error" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.MsgProto), global::STAN.Client.MsgProto.Parser, new[]{ "Sequence", "Subject", "Reply", "Data", "Timestamp", "Redelivered", "CRC32" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.Ack), global::STAN.Client.Ack.Parser, new[]{ "Subject", "Sequence" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectRequest), global::STAN.Client.ConnectRequest.Parser, new[]{ "ClientID", "HeartbeatInbox", "Protocol", "ConnID", "PingInterval", "PingMaxOut" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectResponse), global::STAN.Client.ConnectResponse.Parser, new[]{ "PubPrefix", "SubRequests", "UnsubRequests", "CloseRequests", "Error", "SubCloseRequests", "PingRequests", "PingInterval", "PingMaxOut", "Protocol", "PublicKey" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.Ping), global::STAN.Client.Ping.Parser, new[]{ "ConnID" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.PingResponse), global::STAN.Client.PingResponse.Parser, new[]{ "Error" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectRequest), global::STAN.Client.ConnectRequest.Parser, new[]{ "ClientID", "HeartbeatInbox" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectResponse), global::STAN.Client.ConnectResponse.Parser, new[]{ "PubPrefix", "SubRequests", "UnsubRequests", "CloseRequests", "Error", "SubCloseRequests", "PublicKey" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.SubscriptionRequest), global::STAN.Client.SubscriptionRequest.Parser, new[]{ "ClientID", "Subject", "QGroup", "Inbox", "MaxInFlight", "AckWaitInSecs", "DurableName", "StartPosition", "StartSequence", "StartTimeDelta" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.SubscriptionResponse), global::STAN.Client.SubscriptionResponse.Parser, new[]{ "AckInbox", "Error" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.UnsubscribeRequest), global::STAN.Client.UnsubscribeRequest.Parser, new[]{ "ClientID", "Subject", "Inbox", "DurableName" }, null, null, null),
@@ -124,7 +117,6 @@ namespace STAN.Client {
       subject_ = other.subject_;
       reply_ = other.reply_;
       data_ = other.data_;
-      connID_ = other.connID_;
       sha256_ = other.sha256_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -204,20 +196,6 @@ namespace STAN.Client {
       }
     }
 
-    /// <summary>Field number for the "connID" field.</summary>
-    public const int ConnIDFieldNumber = 6;
-    private pb::ByteString connID_ = pb::ByteString.Empty;
-    /// <summary>
-    /// Connection ID. For servers that know about this field, clientID can be omitted
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString ConnID {
-      get { return connID_; }
-      set {
-        connID_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
     /// <summary>Field number for the "sha256" field.</summary>
     public const int Sha256FieldNumber = 10;
     private pb::ByteString sha256_ = pb::ByteString.Empty;
@@ -250,7 +228,6 @@ namespace STAN.Client {
       if (Subject != other.Subject) return false;
       if (Reply != other.Reply) return false;
       if (Data != other.Data) return false;
-      if (ConnID != other.ConnID) return false;
       if (Sha256 != other.Sha256) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -263,7 +240,6 @@ namespace STAN.Client {
       if (Subject.Length != 0) hash ^= Subject.GetHashCode();
       if (Reply.Length != 0) hash ^= Reply.GetHashCode();
       if (Data.Length != 0) hash ^= Data.GetHashCode();
-      if (ConnID.Length != 0) hash ^= ConnID.GetHashCode();
       if (Sha256.Length != 0) hash ^= Sha256.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -298,10 +274,6 @@ namespace STAN.Client {
         output.WriteRawTag(42);
         output.WriteBytes(Data);
       }
-      if (ConnID.Length != 0) {
-        output.WriteRawTag(50);
-        output.WriteBytes(ConnID);
-      }
       if (Sha256.Length != 0) {
         output.WriteRawTag(82);
         output.WriteBytes(Sha256);
@@ -328,9 +300,6 @@ namespace STAN.Client {
       }
       if (Data.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(Data);
-      }
-      if (ConnID.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ConnID);
       }
       if (Sha256.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(Sha256);
@@ -360,9 +329,6 @@ namespace STAN.Client {
       }
       if (other.Data.Length != 0) {
         Data = other.Data;
-      }
-      if (other.ConnID.Length != 0) {
-        ConnID = other.ConnID;
       }
       if (other.Sha256.Length != 0) {
         Sha256 = other.Sha256;
@@ -396,10 +362,6 @@ namespace STAN.Client {
           }
           case 42: {
             Data = input.ReadBytes();
-            break;
-          }
-          case 50: {
-            ConnID = input.ReadBytes();
             break;
           }
           case 82: {
@@ -1096,10 +1058,6 @@ namespace STAN.Client {
     public ConnectRequest(ConnectRequest other) : this() {
       clientID_ = other.clientID_;
       heartbeatInbox_ = other.heartbeatInbox_;
-      protocol_ = other.protocol_;
-      connID_ = other.connID_;
-      pingInterval_ = other.pingInterval_;
-      pingMaxOut_ = other.pingMaxOut_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -1136,62 +1094,6 @@ namespace STAN.Client {
       }
     }
 
-    /// <summary>Field number for the "protocol" field.</summary>
-    public const int ProtocolFieldNumber = 3;
-    private int protocol_;
-    /// <summary>
-    /// Protocol the client is at.
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int Protocol {
-      get { return protocol_; }
-      set {
-        protocol_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "connID" field.</summary>
-    public const int ConnIDFieldNumber = 4;
-    private pb::ByteString connID_ = pb::ByteString.Empty;
-    /// <summary>
-    /// Connection ID, a way to uniquely identify a connection (no connection should ever have the same)
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString ConnID {
-      get { return connID_; }
-      set {
-        connID_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "pingInterval" field.</summary>
-    public const int PingIntervalFieldNumber = 5;
-    private int pingInterval_;
-    /// <summary>
-    /// Interval at which client wishes to send PINGs (expressed in seconds).
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int PingInterval {
-      get { return pingInterval_; }
-      set {
-        pingInterval_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "pingMaxOut" field.</summary>
-    public const int PingMaxOutFieldNumber = 6;
-    private int pingMaxOut_;
-    /// <summary>
-    /// Maximum number of PINGs without a response after which the connection can be considered lost.
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int PingMaxOut {
-      get { return pingMaxOut_; }
-      set {
-        pingMaxOut_ = value;
-      }
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ConnectRequest);
@@ -1207,10 +1109,6 @@ namespace STAN.Client {
       }
       if (ClientID != other.ClientID) return false;
       if (HeartbeatInbox != other.HeartbeatInbox) return false;
-      if (Protocol != other.Protocol) return false;
-      if (ConnID != other.ConnID) return false;
-      if (PingInterval != other.PingInterval) return false;
-      if (PingMaxOut != other.PingMaxOut) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1219,10 +1117,6 @@ namespace STAN.Client {
       int hash = 1;
       if (ClientID.Length != 0) hash ^= ClientID.GetHashCode();
       if (HeartbeatInbox.Length != 0) hash ^= HeartbeatInbox.GetHashCode();
-      if (Protocol != 0) hash ^= Protocol.GetHashCode();
-      if (ConnID.Length != 0) hash ^= ConnID.GetHashCode();
-      if (PingInterval != 0) hash ^= PingInterval.GetHashCode();
-      if (PingMaxOut != 0) hash ^= PingMaxOut.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1244,22 +1138,6 @@ namespace STAN.Client {
         output.WriteRawTag(18);
         output.WriteString(HeartbeatInbox);
       }
-      if (Protocol != 0) {
-        output.WriteRawTag(24);
-        output.WriteInt32(Protocol);
-      }
-      if (ConnID.Length != 0) {
-        output.WriteRawTag(34);
-        output.WriteBytes(ConnID);
-      }
-      if (PingInterval != 0) {
-        output.WriteRawTag(40);
-        output.WriteInt32(PingInterval);
-      }
-      if (PingMaxOut != 0) {
-        output.WriteRawTag(48);
-        output.WriteInt32(PingMaxOut);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1273,18 +1151,6 @@ namespace STAN.Client {
       }
       if (HeartbeatInbox.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(HeartbeatInbox);
-      }
-      if (Protocol != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Protocol);
-      }
-      if (ConnID.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ConnID);
-      }
-      if (PingInterval != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PingInterval);
-      }
-      if (PingMaxOut != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PingMaxOut);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1303,18 +1169,6 @@ namespace STAN.Client {
       if (other.HeartbeatInbox.Length != 0) {
         HeartbeatInbox = other.HeartbeatInbox;
       }
-      if (other.Protocol != 0) {
-        Protocol = other.Protocol;
-      }
-      if (other.ConnID.Length != 0) {
-        ConnID = other.ConnID;
-      }
-      if (other.PingInterval != 0) {
-        PingInterval = other.PingInterval;
-      }
-      if (other.PingMaxOut != 0) {
-        PingMaxOut = other.PingMaxOut;
-      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -1332,22 +1186,6 @@ namespace STAN.Client {
           }
           case 18: {
             HeartbeatInbox = input.ReadString();
-            break;
-          }
-          case 24: {
-            Protocol = input.ReadInt32();
-            break;
-          }
-          case 34: {
-            ConnID = input.ReadBytes();
-            break;
-          }
-          case 40: {
-            PingInterval = input.ReadInt32();
-            break;
-          }
-          case 48: {
-            PingMaxOut = input.ReadInt32();
             break;
           }
         }
@@ -1390,10 +1228,6 @@ namespace STAN.Client {
       closeRequests_ = other.closeRequests_;
       error_ = other.error_;
       subCloseRequests_ = other.subCloseRequests_;
-      pingRequests_ = other.pingRequests_;
-      pingInterval_ = other.pingInterval_;
-      pingMaxOut_ = other.pingMaxOut_;
-      protocol_ = other.protocol_;
       publicKey_ = other.publicKey_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -1487,62 +1321,6 @@ namespace STAN.Client {
       }
     }
 
-    /// <summary>Field number for the "pingRequests" field.</summary>
-    public const int PingRequestsFieldNumber = 7;
-    private string pingRequests_ = "";
-    /// <summary>
-    /// Subject to use for PING requests
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string PingRequests {
-      get { return pingRequests_; }
-      set {
-        pingRequests_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "pingInterval" field.</summary>
-    public const int PingIntervalFieldNumber = 8;
-    private int pingInterval_;
-    /// <summary>
-    /// Interval at which client should send PINGs (expressed in seconds).
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int PingInterval {
-      get { return pingInterval_; }
-      set {
-        pingInterval_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "pingMaxOut" field.</summary>
-    public const int PingMaxOutFieldNumber = 9;
-    private int pingMaxOut_;
-    /// <summary>
-    /// Maximum number of PINGs without a response after which the connection can be considered lost
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int PingMaxOut {
-      get { return pingMaxOut_; }
-      set {
-        pingMaxOut_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "protocol" field.</summary>
-    public const int ProtocolFieldNumber = 10;
-    private int protocol_;
-    /// <summary>
-    /// Protocol version the server is at
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int Protocol {
-      get { return protocol_; }
-      set {
-        protocol_ = value;
-      }
-    }
-
     /// <summary>Field number for the "publicKey" field.</summary>
     public const int PublicKeyFieldNumber = 100;
     private string publicKey_ = "";
@@ -1576,10 +1354,6 @@ namespace STAN.Client {
       if (CloseRequests != other.CloseRequests) return false;
       if (Error != other.Error) return false;
       if (SubCloseRequests != other.SubCloseRequests) return false;
-      if (PingRequests != other.PingRequests) return false;
-      if (PingInterval != other.PingInterval) return false;
-      if (PingMaxOut != other.PingMaxOut) return false;
-      if (Protocol != other.Protocol) return false;
       if (PublicKey != other.PublicKey) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -1593,10 +1367,6 @@ namespace STAN.Client {
       if (CloseRequests.Length != 0) hash ^= CloseRequests.GetHashCode();
       if (Error.Length != 0) hash ^= Error.GetHashCode();
       if (SubCloseRequests.Length != 0) hash ^= SubCloseRequests.GetHashCode();
-      if (PingRequests.Length != 0) hash ^= PingRequests.GetHashCode();
-      if (PingInterval != 0) hash ^= PingInterval.GetHashCode();
-      if (PingMaxOut != 0) hash ^= PingMaxOut.GetHashCode();
-      if (Protocol != 0) hash ^= Protocol.GetHashCode();
       if (PublicKey.Length != 0) hash ^= PublicKey.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -1635,22 +1405,6 @@ namespace STAN.Client {
         output.WriteRawTag(50);
         output.WriteString(SubCloseRequests);
       }
-      if (PingRequests.Length != 0) {
-        output.WriteRawTag(58);
-        output.WriteString(PingRequests);
-      }
-      if (PingInterval != 0) {
-        output.WriteRawTag(64);
-        output.WriteInt32(PingInterval);
-      }
-      if (PingMaxOut != 0) {
-        output.WriteRawTag(72);
-        output.WriteInt32(PingMaxOut);
-      }
-      if (Protocol != 0) {
-        output.WriteRawTag(80);
-        output.WriteInt32(Protocol);
-      }
       if (PublicKey.Length != 0) {
         output.WriteRawTag(162, 6);
         output.WriteString(PublicKey);
@@ -1680,18 +1434,6 @@ namespace STAN.Client {
       }
       if (SubCloseRequests.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(SubCloseRequests);
-      }
-      if (PingRequests.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(PingRequests);
-      }
-      if (PingInterval != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PingInterval);
-      }
-      if (PingMaxOut != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PingMaxOut);
-      }
-      if (Protocol != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Protocol);
       }
       if (PublicKey.Length != 0) {
         size += 2 + pb::CodedOutputStream.ComputeStringSize(PublicKey);
@@ -1724,18 +1466,6 @@ namespace STAN.Client {
       }
       if (other.SubCloseRequests.Length != 0) {
         SubCloseRequests = other.SubCloseRequests;
-      }
-      if (other.PingRequests.Length != 0) {
-        PingRequests = other.PingRequests;
-      }
-      if (other.PingInterval != 0) {
-        PingInterval = other.PingInterval;
-      }
-      if (other.PingMaxOut != 0) {
-        PingMaxOut = other.PingMaxOut;
-      }
-      if (other.Protocol != 0) {
-        Protocol = other.Protocol;
       }
       if (other.PublicKey.Length != 0) {
         PublicKey = other.PublicKey;
@@ -1775,294 +1505,8 @@ namespace STAN.Client {
             SubCloseRequests = input.ReadString();
             break;
           }
-          case 58: {
-            PingRequests = input.ReadString();
-            break;
-          }
-          case 64: {
-            PingInterval = input.ReadInt32();
-            break;
-          }
-          case 72: {
-            PingMaxOut = input.ReadInt32();
-            break;
-          }
-          case 80: {
-            Protocol = input.ReadInt32();
-            break;
-          }
           case 802: {
             PublicKey = input.ReadString();
-            break;
-          }
-        }
-      }
-    }
-
-  }
-
-  /// <summary>
-  /// PING from client to server
-  /// </summary>
-  public sealed partial class Ping : pb::IMessage<Ping> {
-    private static readonly pb::MessageParser<Ping> _parser = new pb::MessageParser<Ping>(() => new Ping());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<Ping> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[6]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Ping() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Ping(Ping other) : this() {
-      connID_ = other.connID_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Ping Clone() {
-      return new Ping(this);
-    }
-
-    /// <summary>Field number for the "connID" field.</summary>
-    public const int ConnIDFieldNumber = 1;
-    private pb::ByteString connID_ = pb::ByteString.Empty;
-    /// <summary>
-    /// Connection ID
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString ConnID {
-      get { return connID_; }
-      set {
-        connID_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
-      return Equals(other as Ping);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(Ping other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (ConnID != other.ConnID) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (ConnID.Length != 0) hash ^= ConnID.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (ConnID.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteBytes(ConnID);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
-      int size = 0;
-      if (ConnID.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ConnID);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(Ping other) {
-      if (other == null) {
-        return;
-      }
-      if (other.ConnID.Length != 0) {
-        ConnID = other.ConnID;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 10: {
-            ConnID = input.ReadBytes();
-            break;
-          }
-        }
-      }
-    }
-
-  }
-
-  /// <summary>
-  /// PING response from the server
-  /// </summary>
-  public sealed partial class PingResponse : pb::IMessage<PingResponse> {
-    private static readonly pb::MessageParser<PingResponse> _parser = new pb::MessageParser<PingResponse>(() => new PingResponse());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<PingResponse> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[7]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PingResponse() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PingResponse(PingResponse other) : this() {
-      error_ = other.error_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public PingResponse Clone() {
-      return new PingResponse(this);
-    }
-
-    /// <summary>Field number for the "error" field.</summary>
-    public const int ErrorFieldNumber = 1;
-    private string error_ = "";
-    /// <summary>
-    /// Error string, empty/omitted if no error
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Error {
-      get { return error_; }
-      set {
-        error_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
-      return Equals(other as PingResponse);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(PingResponse other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (Error != other.Error) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (Error.Length != 0) hash ^= Error.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Error.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Error);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
-      int size = 0;
-      if (Error.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Error);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(PingResponse other) {
-      if (other == null) {
-        return;
-      }
-      if (other.Error.Length != 0) {
-        Error = other.Error;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 10: {
-            Error = input.ReadString();
             break;
           }
         }
@@ -2082,7 +1526,7 @@ namespace STAN.Client {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[8]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2496,7 +1940,7 @@ namespace STAN.Client {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[9]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2662,7 +2106,7 @@ namespace STAN.Client {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[10]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2890,7 +2334,7 @@ namespace STAN.Client {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[11]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3025,7 +2469,7 @@ namespace STAN.Client {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[12]; }
+      get { return global::STAN.Client.ProtocolReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
