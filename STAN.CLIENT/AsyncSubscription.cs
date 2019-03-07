@@ -64,36 +64,36 @@ namespace STAN.Client
         {
             _subject = subject;
 
-            // Listen for actual messages.
-            _inboxSub = _conn.NATSConnection.SubscribeAsync(Inbox, (sender, args) =>
-            {
-                if (!_disposed)
-                {
-                    var msg = new MsgProto();
-                    ProtocolSerializer.unmarshal(args.Message.Data, msg);
-
-                    handler(this, new StanMsgHandlerArgs(new StanMsg(msg, this)));
-
-                    if (!_options.ManualAcks)
-                    {
-                        try
-                        {
-                            Ack(msg);
-                        }
-                        catch (Exception)
-                        {
-                            /*
-                             * Ignore - subscriber could have closed the connection 
-                             * or there's been a connection error.  The server will 
-                             * resend the unacknowledged messages.
-                             */
-                        }
-                    }
-                }
-            });
-
             try
             {
+                // Listen for actual messages.
+                _inboxSub = _conn.NATSConnection.SubscribeAsync(Inbox, (sender, args) =>
+                {
+                    if (!_disposed)
+                    {
+                        var msg = new MsgProto();
+                        ProtocolSerializer.unmarshal(args.Message.Data, msg);
+
+                        handler(this, new StanMsgHandlerArgs(new StanMsg(msg, this)));
+
+                        if (!_options.ManualAcks)
+                        {
+                            try
+                            {
+                                Ack(msg);
+                            }
+                            catch (Exception)
+                            {
+                                /*
+                                 * Ignore - subscriber could have closed the connection 
+                                 * or there's been a connection error.  The server will 
+                                 * resend the unacknowledged messages.
+                                 */
+                            }
+                        }
+                    }
+                });
+
                 var sr = new SubscriptionRequest
                 {
                     ClientID = _conn.ClientID,
@@ -133,10 +133,10 @@ namespace STAN.Client
 
                 _ackInbox = r.AckInbox;
             }
-            catch
+            catch (Exception e)
             {
-                _inboxSub.Dispose();
-                throw;
+                _inboxSub?.Dispose();
+                throw e is NATSConnectionClosedException ? new StanConnectionClosedException(e) : e;
             }
         }
 

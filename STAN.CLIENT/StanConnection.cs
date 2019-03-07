@@ -326,10 +326,10 @@ namespace STAN.Client
             {
                 NATSConnection.Publish(subj, _ackSubject, b);
             }
-            catch
+            catch (Exception e)
             {
                 HandleAck(guid, null, false);
-                throw;
+                throw e is NATSConnectionClosedException ? new StanConnectionClosedException(e) : e;
             }
 
             ack.StartTimeoutMonitor();
