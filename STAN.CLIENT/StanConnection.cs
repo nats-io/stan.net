@@ -449,7 +449,8 @@ namespace STAN.Client
                 {
                     if (_closeRequests != null)
                     {
-                        Msg reply = NATSConnection.Request(_closeRequests, ProtocolSerializer.marshal(new CloseRequest { ClientID = ClientID }));
+                        var data = ProtocolSerializer.marshal(new CloseRequest { ClientID = ClientID });
+                        Msg reply = NATSConnection.Request(_closeRequests, data, _opts.CloseTimeout);
                         if (reply != null)
                         {
                             var resp = new CloseResponse();

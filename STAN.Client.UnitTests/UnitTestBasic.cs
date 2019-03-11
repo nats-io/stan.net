@@ -1806,5 +1806,29 @@ namespace STAN.Client.UnitTests
                 testSubscriberClose("durqueuesub", true);
             }
         }
+
+        [Fact]
+        public void TestStreamingServerGone()
+        {
+            using (new NatsServer())
+            {
+                using (var nss = new NatsStreamingServer(" -ns nats://127.0.0.1:4222"))
+                {
+                    var scClosed = new AutoResetEvent(false);
+
+                    Task.Run(() =>
+                    {
+                        var so = StanOptions.GetDefaultOptions();
+                        using (var sc = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, so))
+                        {
+                            nss.Shutdown();
+                        }
+                        scClosed.Set();
+                    });
+
+                    Assert.True(scClosed.WaitOne(20000));
+                }
+            }
+        }
     }
 }

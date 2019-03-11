@@ -22,8 +22,9 @@ namespace STAN.Client
     {
         internal string natsURL = StanConsts.DefaultNatsURL;
         internal IConnection natsConn = null;
-        internal int connectTimeout = StanConsts.DefaultConnectWait;
-        internal long ackTimeout = StanConsts.DefaultConnectWait;
+        internal int connectTimeout = StanConsts.DefaultConnectTimeout;
+        private int closeTimeout = StanConsts.DefaultCloseTimeout;
+        internal long ackTimeout = StanConsts.DefaultConnectTimeout;
         internal string discoverPrefix = StanConsts.DefaultDiscoverPrefix;
         internal long maxPubAcksInflight = StanConsts.DefaultMaxPubAcksInflight;
 
@@ -39,9 +40,9 @@ namespace STAN.Client
 
         internal StanOptions(StanOptions options)
         {
-            ackTimeout = options.ackTimeout;
             NatsURL = DeepCopy(options.NatsURL);
             ConnectTimeout = options.ConnectTimeout;
+            CloseTimeout = options.CloseTimeout;
             PubAckWait = options.PubAckWait;
             DiscoverPrefix = DeepCopy(options.DiscoverPrefix);
             MaxPubAcksInFlight = options.MaxPubAcksInFlight;
@@ -87,9 +88,27 @@ namespace STAN.Client
             set
             {
                 if (value <= 0)
-                    throw new ArgumentOutOfRangeException("value", value, "ConnectTimeout must be greater than zero.");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "ConnectTimeout must be greater than zero.");
 
                 connectTimeout = value;
+            }
+        }
+
+        /// <summary>
+        /// CloseTimeout is an option to set the timeout to use when closing a connection.
+        /// </summary>
+        public int CloseTimeout
+        {
+            get
+            {
+                return closeTimeout;
+            }
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "ConnectTimeout must be greater than zero.");
+
+                closeTimeout = value;
             }
         }
 
@@ -106,7 +125,7 @@ namespace STAN.Client
             set
             {
                 if (value <= 0)
-                    throw new ArgumentOutOfRangeException("value", value, "PubAckWait must be greater than zero.");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "PubAckWait must be greater than zero.");
 
                 ackTimeout = value;
             }
@@ -125,7 +144,7 @@ namespace STAN.Client
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException("value", "DiscoverPrefix cannot be null.");
+                    throw new ArgumentNullException(nameof(value), "DiscoverPrefix cannot be null.");
 
                 discoverPrefix = value;
             }
@@ -144,7 +163,7 @@ namespace STAN.Client
             set
             {
                 if (value <= 0)
-                    throw new ArgumentOutOfRangeException("value", value, "MaxPubAcksInFlight must be greater than zero.");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "MaxPubAcksInFlight must be greater than zero.");
 
                 maxPubAcksInflight = value;
             }

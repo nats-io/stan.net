@@ -30,9 +30,14 @@ namespace STAN.Client
         static public readonly string DefaultNatsURL = "nats://localhost:4222";
 
         /// <summary>
-        /// DefaultConnectWait is the default timeout used for the connect operation.
+        /// DefaultConnectTimeout is the default timeout used when connecting.
         /// </summary>
-        static public readonly int    DefaultConnectWait = 2000;
+        static public readonly int DefaultConnectTimeout = 2000;
+
+        /// <summary>
+        /// DefaultCloseTimeout is the default timeout used when closing a connection.
+        /// </summary>
+        static public readonly int DefaultCloseTimeout = 2000;
 
         /// <summary>
         /// DefaultDiscoverPrefix is the prefix subject used to connect to the NATS Streaming server.
