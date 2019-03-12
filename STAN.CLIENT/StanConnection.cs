@@ -240,28 +240,6 @@ namespace STAN.Client
 
         // auxiliary propertites and methods
 
-        private void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                _disposed = true;
-
-                if (disposing)
-                {
-                    // Dispose all managed resources.
-
-                    try
-                    {
-                        Close();
-                    }
-                    catch (Exception) {  /* ignore */ }
-
-                    GC.SuppressFinalize(this);
-                }
-                // Clean up unmanaged resources here.
-            }
-        }
-
         private void ProcessHeartBeat(object sender, MsgHandlerEventArgs args) => NATSConnection.Publish(args.Message.Reply, null);
 
         private PublishAck RemoveAck(string guid)
@@ -435,55 +413,62 @@ namespace STAN.Client
             return Subscribe(subject, qgroup, handler, options);
         }
 
-        public void Close()
+        public void Dispose()
         {
-            if (IsClosed)
-                return;
-
-            lock (_lock)
+            if (!_disposed)
             {
-                _ackSubscription?.Unsubscribe();
-                _hbSubscription?.Unsubscribe();
+                _disposed = true;
 
-                try
+                if (!IsClosed)
                 {
-                    if (_closeRequests != null)
+                    // Dispose all managed resources.
+
+                    void Unsubscribe(ISubscription sub)
                     {
-                        var data = ProtocolSerializer.marshal(new CloseRequest { ClientID = ClientID });
-                        Msg reply = NATSConnection.Request(_closeRequests, data, _opts.CloseTimeout);
-                        if (reply != null)
+                        try
                         {
-                            var resp = new CloseResponse();
+                            sub?.Unsubscribe();
+                        }
+                        catch { /* ignore (logging could also be added) */ }
+                    }
+
+                    lock (_lock)
+                    {
+                        Unsubscribe(_ackSubscription);
+                        Unsubscribe(_hbSubscription);
+
+                        if (_closeRequests != null)
+                        {
                             try
                             {
-                                ProtocolSerializer.unmarshal(reply.Data, resp);
+                                var data = ProtocolSerializer.marshal(new CloseRequest { ClientID = ClientID });
+                                Msg reply = NATSConnection.Request(_closeRequests, data, _opts.CloseTimeout);
+                                // Processing of the response is not needed, but keeping this for reference.
+                                if (reply != null)
+                                {
+                                    var resp = new CloseResponse();
+                                    ProtocolSerializer.unmarshal(reply.Data, resp);
+                                    if (!string.IsNullOrWhiteSpace(resp.Error))
+                                    {
+                                        // do not throw exception, consider logging instead
+                                    }
+                                }
                             }
-                            catch (Exception e)
-                            {
-                                throw new StanCloseRequestException(e);
-                            }
+                            catch { /* ignore (logging could also be added) */ }
+                        }
 
-                            if (!string.IsNullOrEmpty(resp.Error))
-                            {
-                                throw new StanCloseRequestException(resp.Error);
-                            }
+                        if (_ncOwned)
+                        {
+                            NATSConnection.Dispose();
                         }
                     }
+                }
 
-                    if (_ncOwned)
-                    {
-                        NATSConnection.Dispose();
-                    }
-                }
-                catch (StanBadSubscriptionException)
-                {
-                    // it's possible we never actually connected.
-                    return;
-                }
+                GC.SuppressFinalize(this);
             }
         }
 
-        public void Dispose() => Dispose(true);
+        public void Close() => Dispose();
 
         public string ClientID { get; }
 
