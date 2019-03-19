@@ -106,7 +106,7 @@ namespace STAN.Client
             set
             {
                 if (value <= 0)
-                    throw new ArgumentOutOfRangeException(nameof(value), value, "ConnectTimeout must be greater than zero.");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "CloseTimeout must be greater than zero.");
 
                 closeTimeout = value;
             }
