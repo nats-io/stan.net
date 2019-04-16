@@ -25,7 +25,20 @@ namespace STAN.Client
 
         private StanConnLostHandlerArgs() { }
 
-        internal StanConnLostHandlerArgs(IStanConnection connection, Exception exception)
+        /// <summary>
+        /// Constructor for generating StanConnLostHandler arguments.  Used for application unit testing.
+        /// </summary>
+        /// <remarks>
+        /// Objects of this type are normally generated internally by the NATS streaming client.
+        /// This constructor has been provided to facilitate application unit testing.
+        /// </remarks>
+        /// <param name="connection">The NATS streming connection.</param>
+        /// <param name="exception">An exception indicating the error.</param>
+        /// <remarks>
+        /// Exceptions include the <see cref="StanMaxPingsException"/>
+        /// and <see cref="StanException"/>
+        /// </remarks>
+        public StanConnLostHandlerArgs(IStanConnection connection, Exception exception)
         {
             sc = connection;
             connEx = exception;

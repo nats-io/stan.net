@@ -396,6 +396,65 @@ namespace NATSStreamingExamples
 }
 ```
 
+### Unit Testing Applications
+
+Testing in a distributed environment is difficult at best, so to facilitate
+unit testing, the NATS streaming client library has provided some constructors
+for objects normally created by the NATS client library.  These are not 
+recommended for use outside of a test environment.
+
+There are constructors available for `StanMsgHandlerArgs`,
+`StanMsg`, `StanAckHandlerArgs`, and `StanConnLostHandlerArgs`.  See the
+documentation or code for more information.
+
+Let's look at message handling as an example.  You have two options, either
+generate the `StanMsgHandlerArgs` and call your event handler directly, or
+construct a `StanMsg` to test with.
+
+```csharp
+
+// Application code to process a message
+void processMessageEventHandler(object o, StanMsgHandlerArgs args)
+{
+    // Your application code does something here.
+}
+```
+
+Testing would look something like this:
+
+```csharp
+[Fact]
+public void TestProcessMessageEventHandler()
+{
+    // Create a test args object
+    var mhArgs = new StanMsgHandlerArgs(
+        System.Text.Encoding.UTF8.GetBytes("NATS"),
+        true, "foo", 10000, 1234, null);
+
+    processMessageEventHandler(this, mhArgs);
+
+    // Check the results here
+}
+```
+
+Alternatively, you can create a `StanMsg` directly.
+
+```csharp
+[Fact]
+public void TestHandleDataMessage()
+{
+    StanMsg msg = new StanMsg(
+        System.Text.Encoding.UTF8.GetBytes("DATA"),
+        false, "bar", 0, 1234, null);
+
+    // Call your application code that handles a data message.
+    handleDataMessage(msg);
+}
+```
+
+While these faciliate unit testing, we always recommend testing
+your application code end to end.
+
 ## TODO
 
 - [ ] Rx API

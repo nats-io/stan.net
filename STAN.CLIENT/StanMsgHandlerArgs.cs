@@ -21,7 +21,29 @@ namespace STAN.Client
     {
         StanMsg msg = null;
 
-        internal StanMsgHandlerArgs(StanMsg m)
+        /// <summary>
+        ///  Constructor for generating a StanMsgHandlerArgs object.  Used for application unit testing.
+        /// </summary>
+        /// <remarks>
+        /// Objects of this type are normally generated internally by the NATS streaming client.
+        /// This constructor has been provided to facilitate application unit testing.
+        /// </remarks>
+        /// <param name="data">The message payload.</param>
+        /// <param name="redelivered">True if the message may have been redelivered.</param>
+        /// <param name="subject">Subject of the message.</param>
+        /// <param name="timestamp">Message timestamp, nanoseconds since epoch.(1/1/1970)</param>
+        /// <param name="sequence">Sequence number of the message.</param>
+        /// <param name="subscription">Subscription of the message.  Must be a valid streaming subscription or null.</param>
+        public StanMsgHandlerArgs(byte[] data, bool redelivered, string subject, long timestamp, ulong sequence, IStanSubscription subscription)
+        {
+            msg = new StanMsg(data, redelivered, subject, timestamp, sequence, subscription);
+        }
+
+        /// <summary>
+        /// Constructor for generating a StanMsgHandlerArgs object.  Used for application unit testing. 
+        /// </summary>
+        /// <param name="m">A NATS streaming message.</param>
+        public StanMsgHandlerArgs(StanMsg m)
         {
             msg = m;
         }
