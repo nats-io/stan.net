@@ -58,10 +58,19 @@ namespace STAN.Client.UnitTests
         [Fact]
         public void TestUnreachable()
         {
+            bool thrown = false;
             using (new NatsStreamingServer())
             {
-                Assert.Throws<StanConnectRequestTimeoutException>(
-                    () => new StanConnectionFactory().CreateConnection("invalid", CLIENT_ID));
+                try
+                {
+                    new StanConnectionFactory().CreateConnection("invalid-cluster", CLIENT_ID);
+                }
+                catch (StanConnectRequestTimeoutException se)
+                {
+                    thrown = true;
+                    Assert.Contains("invalid-cluster", se.Message);
+                }
+                Assert.True(thrown);
             }
         }
 
@@ -2151,6 +2160,59 @@ namespace STAN.Client.UnitTests
                     Assert.True(count == total);
                 }
             }
+        }
+
+        void streamingMessageEventHandler(object o, StanMsgHandlerArgs args)
+        {
+
+        }
+        /// <summary>
+        /// Test methods exposed to facilitate user application unit testing.
+        /// </summary>
+        [Fact]
+        public void TestUnitTestMethods()
+        {
+            var mhArgs = new StanMsgHandlerArgs(
+                System.Text.Encoding.UTF8.GetBytes("N"),
+                true, "foo", 10000, null);
+
+            EventHandler<StanMsgHandlerArgs> eh = (obj, args) =>
+            {
+                var m = args.Message;
+                Assert.True(m != null);
+                Assert.True(m.Data[0] == (byte)'N');
+                Assert.True(m.Redelivered == true);
+                Assert.Equal("foo", m.Subject);
+                Assert.Equal(10000, m.Time);
+            };
+            eh(this, mhArgs);
+
+            StanMsg msg = new StanMsg(
+                System.Text.Encoding.UTF8.GetBytes("N"),
+                true, "foo", 10000, null);
+            Assert.True(msg != null);
+            Assert.True(msg.Data[0] == (byte)'N');
+            Assert.True(msg.Redelivered == true);
+            Assert.Equal("foo", msg.Subject);
+            Assert.Equal(10000, msg.Time);
+
+            string guid = "abcdefg";
+            string error = "stan: invalid subject";
+
+            var ahArgs = new StanAckHandlerArgs(guid, error);
+            EventHandler<StanAckHandlerArgs> ah = (obj, args) =>
+            {
+                Assert.Equal(error, args.Error);
+                Assert.Equal(guid, args.GUID);
+            };
+            ah(this, ahArgs);
+
+            var clArgs = new StanConnLostHandlerArgs(null, new Exception("error"));
+            EventHandler<StanConnLostHandlerArgs> sclh = (obj, args) =>
+            {
+                Assert.Equal("error", args.ConnectionException.Message);
+            };
+            sclh(this, clArgs);
         }
     }
 }
