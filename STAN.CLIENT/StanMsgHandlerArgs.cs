@@ -32,10 +32,11 @@ namespace STAN.Client
         /// <param name="redelivered">True if the message may have been redelivered.</param>
         /// <param name="subject">Subject of the message.</param>
         /// <param name="timestamp">Message timestamp, nanoseconds since epoch.(1/1/1970)</param>
-        /// <param name="subscription">Subscription of the message.  May be null.</param>
-        public StanMsgHandlerArgs(byte[] data, bool redelivered, string subject, long timestamp, IStanSubscription subscription)
+        /// <param name="sequence">Sequence number of the message.</param>
+        /// <param name="subscription">Subscription of the message.  Must be a valid streaming subscription or null.</param>
+        public StanMsgHandlerArgs(byte[] data, bool redelivered, string subject, long timestamp, ulong sequence, IStanSubscription subscription)
         {
-            msg = new StanMsg(data, redelivered, subject, timestamp, subscription);
+            msg = new StanMsg(data, redelivered, subject, timestamp, sequence, subscription);
         }
 
         /// <summary>

@@ -2174,7 +2174,7 @@ namespace STAN.Client.UnitTests
         {
             var mhArgs = new StanMsgHandlerArgs(
                 System.Text.Encoding.UTF8.GetBytes("N"),
-                true, "foo", 10000, null);
+                true, "foo", 10000, 999999, null);
 
             EventHandler<StanMsgHandlerArgs> eh = (obj, args) =>
             {
@@ -2184,17 +2184,19 @@ namespace STAN.Client.UnitTests
                 Assert.True(m.Redelivered == true);
                 Assert.Equal("foo", m.Subject);
                 Assert.Equal(10000, m.Time);
+                Assert.True(999999 == m.Sequence);
             };
             eh(this, mhArgs);
 
             StanMsg msg = new StanMsg(
                 System.Text.Encoding.UTF8.GetBytes("N"),
-                true, "foo", 10000, null);
+                true, "foo", 10000, 999999, null);
             Assert.True(msg != null);
             Assert.True(msg.Data[0] == (byte)'N');
             Assert.True(msg.Redelivered == true);
             Assert.Equal("foo", msg.Subject);
             Assert.Equal(10000, msg.Time);
+            Assert.True(999999 == msg.Sequence);
 
             string guid = "abcdefg";
             string error = "stan: invalid subject";
