@@ -16,7 +16,7 @@
         <language />
         <tags>NATS Messaging Cloud Publish Subscribe PubSub Streaming Persistence</tags>
         <dependencies>
-            <dependency id="Google.Protobuf" version="3.6"/>
+            <dependency id="Google.Protobuf" version="3.7"/>
             <dependency id="NATS.Client" version="0.8.1" />
         </dependencies>
     </metadata>
