@@ -1,5 +1,6 @@
 var class_s_t_a_n_1_1_client_1_1_stan_msg =
 [
+    [ "StanMsg", "class_s_t_a_n_1_1_client_1_1_stan_msg.html#adfb31553a71655f90b89419ed016b33e", null ],
     [ "Ack", "class_s_t_a_n_1_1_client_1_1_stan_msg.html#a79bac3a89e431bcc7b0203a9eb1b37ca", null ],
     [ "Data", "class_s_t_a_n_1_1_client_1_1_stan_msg.html#a88fd7323af6a810594f9082fb3ad4df5", null ],
     [ "Redelivered", "class_s_t_a_n_1_1_client_1_1_stan_msg.html#accdd96cb49cfcf9571e5e2ecb71a5828", null ],

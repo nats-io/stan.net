@@ -1,5 +1,31 @@
 var searchData=
 [
-  ['time',['Time',['../class_s_t_a_n_1_1_client_1_1_stan_msg.html#a1ee4cb7055299dcdcec48a676ed2120c',1,'STAN::Client::StanMsg']]],
-  ['timestamp',['TimeStamp',['../class_s_t_a_n_1_1_client_1_1_stan_msg.html#aea63c3fc0c8e085f69ac493742722626',1,'STAN::Client::StanMsg']]]
+  ['client',['Client',['../namespace_s_t_a_n_1_1_client.html',1,'STAN']]],
+  ['sequence',['Sequence',['../class_s_t_a_n_1_1_client_1_1_stan_msg.html#afc838bb563f2bee33c7f708c83a96de2',1,'STAN::Client::StanMsg']]],
+  ['stan',['STAN',['../namespace_s_t_a_n.html',1,'']]],
+  ['stanackhandlerargs',['StanAckHandlerArgs',['../class_s_t_a_n_1_1_client_1_1_stan_ack_handler_args.html',1,'STAN.Client.StanAckHandlerArgs'],['../class_s_t_a_n_1_1_client_1_1_stan_ack_handler_args.html#a0926a4b185b1b1225828e1614ed51337',1,'STAN.Client.StanAckHandlerArgs.StanAckHandlerArgs()']]],
+  ['stanbadsubscriptionexception',['StanBadSubscriptionException',['../class_s_t_a_n_1_1_client_1_1_stan_bad_subscription_exception.html',1,'STAN::Client']]],
+  ['stancloserequestexception',['StanCloseRequestException',['../class_s_t_a_n_1_1_client_1_1_stan_close_request_exception.html',1,'STAN::Client']]],
+  ['stanconnectionclosedexception',['StanConnectionClosedException',['../class_s_t_a_n_1_1_client_1_1_stan_connection_closed_exception.html',1,'STAN::Client']]],
+  ['stanconnectionexception',['StanConnectionException',['../class_s_t_a_n_1_1_client_1_1_stan_connection_exception.html',1,'STAN::Client']]],
+  ['stanconnectionfactory',['StanConnectionFactory',['../class_s_t_a_n_1_1_client_1_1_stan_connection_factory.html',1,'STAN::Client']]],
+  ['stanconnectrequestexception',['StanConnectRequestException',['../class_s_t_a_n_1_1_client_1_1_stan_connect_request_exception.html',1,'STAN::Client']]],
+  ['stanconnectrequesttimeoutexception',['StanConnectRequestTimeoutException',['../class_s_t_a_n_1_1_client_1_1_stan_connect_request_timeout_exception.html',1,'STAN::Client']]],
+  ['stanconnlosthandlerargs',['StanConnLostHandlerArgs',['../class_s_t_a_n_1_1_client_1_1_stan_conn_lost_handler_args.html',1,'STAN.Client.StanConnLostHandlerArgs'],['../class_s_t_a_n_1_1_client_1_1_stan_conn_lost_handler_args.html#ac7252aabd75b4e12eae75a6272f5de78',1,'STAN.Client.StanConnLostHandlerArgs.StanConnLostHandlerArgs()']]],
+  ['stanconsts',['StanConsts',['../class_s_t_a_n_1_1_client_1_1_stan_consts.html',1,'STAN::Client']]],
+  ['stanexception',['StanException',['../class_s_t_a_n_1_1_client_1_1_stan_exception.html',1,'STAN::Client']]],
+  ['stanmanualackexception',['StanManualAckException',['../class_s_t_a_n_1_1_client_1_1_stan_manual_ack_exception.html',1,'STAN::Client']]],
+  ['stanmaxpingsexception',['StanMaxPingsException',['../class_s_t_a_n_1_1_client_1_1_stan_max_pings_exception.html',1,'STAN::Client']]],
+  ['stanmsg',['StanMsg',['../class_s_t_a_n_1_1_client_1_1_stan_msg.html',1,'STAN.Client.StanMsg'],['../class_s_t_a_n_1_1_client_1_1_stan_msg.html#adfb31553a71655f90b89419ed016b33e',1,'STAN.Client.StanMsg.StanMsg()']]],
+  ['stanmsghandlerargs',['StanMsgHandlerArgs',['../class_s_t_a_n_1_1_client_1_1_stan_msg_handler_args.html',1,'STAN.Client.StanMsgHandlerArgs'],['../class_s_t_a_n_1_1_client_1_1_stan_msg_handler_args.html#ab45aa9372920f961b075244ac97c8880',1,'STAN.Client.StanMsgHandlerArgs.StanMsgHandlerArgs(byte[] data, bool redelivered, string subject, long timestamp, ulong sequence, IStanSubscription subscription)'],['../class_s_t_a_n_1_1_client_1_1_stan_msg_handler_args.html#a588940afc33f33ada3509e730b9aeb61',1,'STAN.Client.StanMsgHandlerArgs.StanMsgHandlerArgs(StanMsg m)']]],
+  ['stannoserversupport',['StanNoServerSupport',['../class_s_t_a_n_1_1_client_1_1_stan_no_server_support.html',1,'STAN::Client']]],
+  ['stanoptions',['StanOptions',['../class_s_t_a_n_1_1_client_1_1_stan_options.html',1,'STAN::Client']]],
+  ['stanpublishacktimeoutexception',['StanPublishAckTimeoutException',['../class_s_t_a_n_1_1_client_1_1_stan_publish_ack_timeout_exception.html',1,'STAN::Client']]],
+  ['stansubscriptionoptions',['StanSubscriptionOptions',['../class_s_t_a_n_1_1_client_1_1_stan_subscription_options.html',1,'STAN::Client']]],
+  ['stantimeoutexception',['StanTimeoutException',['../class_s_t_a_n_1_1_client_1_1_stan_timeout_exception.html',1,'STAN::Client']]],
+  ['startat',['StartAt',['../class_s_t_a_n_1_1_client_1_1_stan_subscription_options.html#ab4e7b27664d1a7156345730856faadac',1,'STAN.Client.StanSubscriptionOptions.StartAt(ulong sequence)'],['../class_s_t_a_n_1_1_client_1_1_stan_subscription_options.html#a42eed1db2c51f0e4f4b96cd0924f27d1',1,'STAN.Client.StanSubscriptionOptions.StartAt(DateTime time)'],['../class_s_t_a_n_1_1_client_1_1_stan_subscription_options.html#a0f8a79cacaaa708b4121f3750405d35f',1,'STAN.Client.StanSubscriptionOptions.StartAt(TimeSpan duration)']]],
+  ['startwithlastreceived',['StartWithLastReceived',['../class_s_t_a_n_1_1_client_1_1_stan_subscription_options.html#af839934b05f7894966551ddc6b3f251b',1,'STAN::Client::StanSubscriptionOptions']]],
+  ['subject',['Subject',['../class_s_t_a_n_1_1_client_1_1_stan_msg.html#af073a6e698133ac02480f31d1ed1c4ba',1,'STAN::Client::StanMsg']]],
+  ['subscribe',['Subscribe',['../interface_s_t_a_n_1_1_client_1_1_i_stan_connection.html#aa2317cda37f33f7c572fb18c1d8735c2',1,'STAN.Client.IStanConnection.Subscribe(string subject, EventHandler&lt; StanMsgHandlerArgs &gt; handler)'],['../interface_s_t_a_n_1_1_client_1_1_i_stan_connection.html#ac216692da889b12c6d770924c7863d64',1,'STAN.Client.IStanConnection.Subscribe(string subject, StanSubscriptionOptions options, EventHandler&lt; StanMsgHandlerArgs &gt; handler)'],['../interface_s_t_a_n_1_1_client_1_1_i_stan_connection.html#a04d9a7370dd48e8ca7f9db3c6d8a8cbc',1,'STAN.Client.IStanConnection.Subscribe(string subject, string qgroup, EventHandler&lt; StanMsgHandlerArgs &gt; handler)'],['../interface_s_t_a_n_1_1_client_1_1_i_stan_connection.html#ab597f6cd1c00b826510a711132f8a1ca',1,'STAN.Client.IStanConnection.Subscribe(string subject, string qgroup, StanSubscriptionOptions options, EventHandler&lt; StanMsgHandlerArgs &gt; handler)']]],
+  ['subscription',['Subscription',['../class_s_t_a_n_1_1_client_1_1_stan_msg.html#a8dd9eb538f5d3c78dab2471fa4baf48d',1,'STAN::Client::StanMsg']]]
 ];

@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['natsconn',['NatsConn',['../class_s_t_a_n_1_1_client_1_1_stan_options.html#a7119c66f161f0f7e37ba9ac17e1ca7d5',1,'STAN::Client::StanOptions']]],
-  ['natsconnection',['NATSConnection',['../interface_s_t_a_n_1_1_client_1_1_i_stan_connection.html#a99c635c300e453953910496675d955ee',1,'STAN::Client::IStanConnection']]],
-  ['natsurl',['NatsURL',['../class_s_t_a_n_1_1_client_1_1_stan_options.html#a4e1d48154771277eb82fed3d3274a044',1,'STAN::Client::StanOptions']]]
+  ['manualacks',['ManualAcks',['../class_s_t_a_n_1_1_client_1_1_stan_subscription_options.html#ac5dc6eada12d8d21595a1d278d0b2b12',1,'STAN::Client::StanSubscriptionOptions']]],
+  ['maxinflight',['MaxInflight',['../class_s_t_a_n_1_1_client_1_1_stan_subscription_options.html#ad5e104db7d237d5b515642971ae62cfb',1,'STAN::Client::StanSubscriptionOptions']]],
+  ['maxpubacksinflight',['MaxPubAcksInFlight',['../class_s_t_a_n_1_1_client_1_1_stan_options.html#a6d2fea4c5eda9565af8961e492849eef',1,'STAN::Client::StanOptions']]],
+  ['message',['Message',['../class_s_t_a_n_1_1_client_1_1_stan_msg_handler_args.html#a7b5c476bbcc3c8c481c8047a350d67a6',1,'STAN::Client::StanMsgHandlerArgs']]]
 ];

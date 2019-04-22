@@ -4,6 +4,7 @@ var hierarchy =
     [ "STAN.Client.IStanSubscription", "interface_s_t_a_n_1_1_client_1_1_i_stan_subscription.html", null ],
     [ "STAN.Client.StanAckHandlerArgs", "class_s_t_a_n_1_1_client_1_1_stan_ack_handler_args.html", null ],
     [ "STAN.Client.StanConnectionFactory", "class_s_t_a_n_1_1_client_1_1_stan_connection_factory.html", null ],
+    [ "STAN.Client.StanConnLostHandlerArgs", "class_s_t_a_n_1_1_client_1_1_stan_conn_lost_handler_args.html", null ],
     [ "STAN.Client.StanConsts", "class_s_t_a_n_1_1_client_1_1_stan_consts.html", null ],
     [ "STAN.Client.StanException", "class_s_t_a_n_1_1_client_1_1_stan_exception.html", [
       [ "STAN.Client.StanBadSubscriptionException", "class_s_t_a_n_1_1_client_1_1_stan_bad_subscription_exception.html", null ],
@@ -12,6 +13,8 @@ var hierarchy =
       [ "STAN.Client.StanConnectionException", "class_s_t_a_n_1_1_client_1_1_stan_connection_exception.html", null ],
       [ "STAN.Client.StanConnectRequestException", "class_s_t_a_n_1_1_client_1_1_stan_connect_request_exception.html", null ],
       [ "STAN.Client.StanManualAckException", "class_s_t_a_n_1_1_client_1_1_stan_manual_ack_exception.html", null ],
+      [ "STAN.Client.StanMaxPingsException", "class_s_t_a_n_1_1_client_1_1_stan_max_pings_exception.html", null ],
+      [ "STAN.Client.StanNoServerSupport", "class_s_t_a_n_1_1_client_1_1_stan_no_server_support.html", null ],
       [ "STAN.Client.StanPublishAckTimeoutException", "class_s_t_a_n_1_1_client_1_1_stan_publish_ack_timeout_exception.html", null ],
       [ "STAN.Client.StanTimeoutException", "class_s_t_a_n_1_1_client_1_1_stan_timeout_exception.html", [
         [ "STAN.Client.StanConnectRequestTimeoutException", "class_s_t_a_n_1_1_client_1_1_stan_connect_request_timeout_exception.html", null ]
