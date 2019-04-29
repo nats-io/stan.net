@@ -12,6 +12,7 @@
 // limitations under the License.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace STAN.Client
@@ -34,13 +35,16 @@ namespace STAN.Client
             }
         }
 
+        /// <summary>
+        /// Gets a snapshot of the keys in the dictionary.
+        /// </summary>
         internal ICollection<TKey> Keys
         {
             get
             {
                 lock (dLock)
                 {
-                    return d.Keys;
+                    return d.Keys.ToArray();
                 }
             }
         }
