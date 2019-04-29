@@ -23,7 +23,7 @@ namespace STAN.Client
         internal string natsURL = StanConsts.DefaultNatsURL;
         internal IConnection natsConn = null;
         internal int connectTimeout = StanConsts.DefaultConnectWait;
-        internal long ackTimeout = StanConsts.DefaultConnectWait;
+        internal long ackTimeout = StanConsts.DefaultAckWait;
         internal string discoverPrefix = StanConsts.DefaultDiscoverPrefix;
         internal long maxPubAcksInflight = StanConsts.DefaultMaxPubAcksInflight;
         internal int pingMaxOut = StanConsts.DefaultPingMaxOut;
