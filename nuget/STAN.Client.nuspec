@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>STAN.Client</id>
-        <version>0.1.5.0</version>
+        <version>0.1.6.0</version>
         <title>NATS Streaming .NET Client</title>
         <authors>The NATS Authors</authors>
         <owners>CNCF</owners>
