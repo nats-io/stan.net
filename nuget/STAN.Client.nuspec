@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>STAN.Client</id>
-        <version>0.1.6.0</version>
+        <version>0.1.7.0</version>
         <title>NATS Streaming .NET Client</title>
         <authors>The NATS Authors</authors>
         <owners>CNCF</owners>
@@ -11,7 +11,7 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>NATS acts as a central nervous system for distributed systems at scale, such as mobile devices, IoT networks, and cloud native infrastructure.  This is the .NET Streaming client API.</description>
         <summary>NATS Streaming .NET Client</summary>
-        <releaseNotes>See https://github.com/nats-io/csharp-nats-streaming/releases/v0.1.6</releaseNotes>
+        <releaseNotes>See https://github.com/nats-io/csharp-nats-streaming/releases/v0.1.7</releaseNotes>
         <copyright>Copyright 2017-2019 The NATS Authors</copyright>
         <language />
         <repository type="git" url="https://github.com/nats-io/csharp-nats-streaming" />
