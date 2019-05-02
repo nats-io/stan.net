@@ -450,7 +450,7 @@ namespace STAN.Client
             {
                 if (pubAckMap.Remove(guid, out pa, 0))
                 {
-                    pa.InvokeHandler(guid, ex.Message == null ? "Connection Closed." : ex.Message);
+                    pa.InvokeHandler(guid, ex == null ? "Connection Closed." : ex.Message);
                 }
             }
         }

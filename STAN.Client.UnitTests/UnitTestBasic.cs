@@ -762,6 +762,38 @@ namespace STAN.Client.UnitTests
         }
 
         [Fact]
+        public void TestCloseWithAcksInFlight()
+        {
+            using (new NatsStreamingServer())
+            {
+                var c = DefaultConnection;
+                bool okMessage = false;
+
+                EventHandler<StanAckHandlerArgs> ah = (o, a) =>
+                {
+                    if (a.Error != null)
+                    {
+                        okMessage = a.Error.Contains("Closed");
+                    }
+                    else
+                    {
+                        // Stack up the event handlers
+                        Thread.Sleep(1000);
+                    }
+                };
+
+                for (int i = 0; i < 25; i++)
+                {
+                    c.Publish("foo", null, ah);
+                }
+
+                c.Close();
+
+                Assert.True(okMessage);
+            }
+        }
+
+        [Fact]
         public void TestDoubleClose()
         {
             using (new NatsStreamingServer())
