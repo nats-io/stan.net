@@ -189,11 +189,9 @@ namespace STAN.Client
                 ncOwned = true;
                 try
                 {
-                    var nopts = ConnectionFactory.GetDefaultOptions();
-                    nopts.MaxReconnect = Options.ReconnectForever;
-                    nopts.Url = opts.NatsURL;
+                    nc = new ConnectionFactory().CreateConnection(opts.NatsURL);
+                    nc.Opts.MaxReconnect = Options.ReconnectForever;
                     // TODO:  disable buffering.
-                    nc = new ConnectionFactory().CreateConnection(nopts);
                 }
                 catch (Exception ex)
                 {

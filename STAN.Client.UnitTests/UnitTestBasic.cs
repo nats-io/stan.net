@@ -2248,5 +2248,20 @@ namespace STAN.Client.UnitTests
             };
             sclh(this, clArgs);
         }
+        [Fact]
+        public void TestMultipleNatsUrl()
+        {
+
+            using (new NatsStreamingServer())
+            {
+                var opts = StanOptions.GetDefaultOptions();
+                opts.NatsURL = "nats://127.0.0.1:4222,nats://127.0.0.1:4222";
+                opts.ConnectTimeout = 5000;
+                using (var c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
+                {
+                    c.Close();
+                }
+            }
+        }
     }
 }
