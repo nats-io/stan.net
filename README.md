@@ -33,7 +33,7 @@ From the directory the repository has been cloned into, either invoke `build45.b
 
 ### API Documentation
 
-[Current API Documentation](http://nats-io.github.io/csharp-nats-streaming)
+[Current API Documentation](http://nats-io.github.io/stan.net)
 
 Doxygen is used for building the API documentation.  To build the API documentation, change directories to `doc` and run the following command:
 
