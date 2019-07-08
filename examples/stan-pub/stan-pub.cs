@@ -11,12 +11,12 @@ namespace STAN.Example.Publish
     {
         static readonly string usageText =
 @"Usage: stan-pub
-	-url <url> NATS Streaming server URL(s)
-	-cluster <cluster name> NATS Streaming cluster name
-	-clientid <client ID> NATS Streaming client ID
+    -url <url> NATS Streaming server URL(s)
+    -cluster <cluster name> NATS Streaming cluster name
+    -clientid <client ID> NATS Streaming client ID
     -subject <subject> subject to publish on, defaults to foo.
     -message <message payload>  Text to send in the messages.
-	-async Asynchronous publish mode
+    -async Asynchronous publish mode
     -verbose verbose mode (affects performance).
 ";
         Dictionary<string, string> parsedArgs = new Dictionary<string, string>();
@@ -28,7 +28,7 @@ namespace STAN.Example.Publish
         string clusterID = "test-cluster";
         byte[] payload   = Encoding.UTF8.GetBytes("hello");
         bool verbose = false;
-        bool async = true;
+        bool async = false;
        
         StanOptions cOpts = StanOptions.GetDefaultOptions();
 
@@ -85,7 +85,7 @@ namespace STAN.Example.Publish
 
                 sw.Stop();
 
-                Console.Write("Published {0} msgs with acknowldegements in {1} seconds ", count, sw.Elapsed.TotalSeconds);
+                Console.Write("Published {0} msgs with acknowledgements in {1} seconds ", count, sw.Elapsed.TotalSeconds);
                 Console.WriteLine("({0} msgs/second).",
                     (int)(count / sw.Elapsed.TotalSeconds));
             }
@@ -104,7 +104,7 @@ namespace STAN.Example.Publish
 
             for (int i = 0; i < args.Length; i++)
             {
-                if (args[i].Equals("-verbose"))
+                if (args[i].Equals("-verbose") || args[i].Equals("-async"))
                 {
                     parsedArgs.Add(args[i], "true");
                 }
@@ -138,6 +138,9 @@ namespace STAN.Example.Publish
 
             if (parsedArgs.ContainsKey("-verbose"))
                 verbose = true;
+
+            if (parsedArgs.ContainsKey("-async"))
+                async = true;
         }
 
         private void banner()
@@ -149,6 +152,7 @@ namespace STAN.Example.Publish
             Console.WriteLine("  Url: {0}", url);
             Console.WriteLine("  Payload is {0} bytes.",
                 payload != null ? payload.Length : 0);
+            Console.WriteLine("  Publish Mode is {0}.", async ? "Asynchronous" : "Synchronous (blocking)");
         }
 
         public static void Main(string[] args)
