@@ -25,8 +25,8 @@
     <files>
         <file src="lib\net45\STAN.Client.DLL" target="lib\net45\STAN.Client.DLL" />
         <file src="lib\net45\STAN.Client.XML" target="lib\net45\STAN.Client.XML" />
-        <file src="lib\netstandard1.6\STAN.Client.DLL" target="lib\netstandard1.6\STAN.Client.DLL" />
-        <file src="lib\netstandard1.6\STAN.Client.XML" target="lib\netstandard1.6\STAN.Client.XML" />
+        <file src="lib\netstandard1.6\STAN.Client.dll" target="lib\netstandard1.6\STAN.Client.dll" />
+        <file src="lib\netstandard1.6\STAN.Client.xml" target="lib\netstandard1.6\STAN.Client.xml" />
         <file src="lib\netstandard1.6\STAN.Client.deps.json" target="lib\netstandard1.6\STAN.Client.deps.json" />                
     </files>
 </package>
