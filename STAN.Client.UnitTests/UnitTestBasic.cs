@@ -1982,9 +1982,9 @@ namespace STAN.Client.UnitTests
             opts.AllowReconnect = false;
             opts.Url = url1;
             var nc1 = cf.CreateConnection(opts);
-            opts.Url = url1;
 
             // create conn 2, wait for a message
+            opts.Url = url2;
             var nc2 = cf.CreateConnection(opts);
             nc2.SubscribeAsync("routecheck", (obj, args) =>
             {
@@ -2088,8 +2088,8 @@ namespace STAN.Client.UnitTests
 
             // Create a NATS streaming server with an embedded NATS server
             // clustered with an external NATS server.
-            string s1Args = " -p 4222 -cluster \"nats://127.0.0.1:6222\" -routes \"nats://127.0.0.1:6333\" --no_advertise=true";
-            string s2Args = " -p 4333 -cluster \"nats://127.0.0.1:6333\" -routes \"nats://127.0.0.1:6222\" --no_advertise=true";
+            string s1Args = " -p 4222 -m 8222 -cluster \"nats://127.0.0.1:6222\" -routes \"nats://127.0.0.1:6333\" --no_advertise=true";
+            string s2Args = " -p 4333 -m 8333 -cluster \"nats://127.0.0.1:6333\" -routes \"nats://127.0.0.1:6222\" --no_advertise=true";
             using (new NatsStreamingServer(s1Args))
             {
                 using (new NatsServer(s2Args))
@@ -2248,6 +2248,7 @@ namespace STAN.Client.UnitTests
             };
             sclh(this, clArgs);
         }
+
         [Fact]
         public void TestMultipleNatsUrl()
         {
@@ -2261,6 +2262,146 @@ namespace STAN.Client.UnitTests
                 {
                     c.Close();
                 }
+            }
+        }
+
+        [Fact]
+        public void TestPublishReconnectDeadlock()
+        {
+            IStanConnection c;
+            AutoResetEvent disconnected = new AutoResetEvent(false);
+            AutoResetEvent reconnected = new AutoResetEvent(false);
+
+            using (var server = new NatsStreamingServer("-st FILE -dir ."))
+            {
+                var nOpts = ConnectionFactory.GetDefaultOptions();
+                nOpts.Url = "nats://127.0.0.1:4222";
+                nOpts.MaxReconnect = Options.ReconnectForever;
+                nOpts.ReconnectedEventHandler = (obj, args) =>
+                {
+                    reconnected.Set();
+                };
+
+                nOpts.DisconnectedEventHandler = (obj, args) =>
+                {
+                    disconnected.Set();
+                };
+
+
+                var opts = StanOptions.GetDefaultOptions();
+                opts.NatsConn = new ConnectionFactory().CreateConnection(nOpts);
+
+                // make sure we don't time out on pings if this takes awhile.
+                opts.PingInterval = 60000;
+                opts.PingMaxOutstanding = 10;
+
+                // timeout faster on the publish acks.
+                opts.PubAckWait = 250;
+
+                // connect and publish one message.
+                c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
+                c.Publish("foo", null);
+            }
+            // server will shutdown here.
+
+            // Wait until we're disconnected.
+            Assert.True(disconnected.WaitOne(10000));
+
+            // ensure we can't publish messages with any of the expected
+            // connections and won't deadlock.
+            for (int i = 0; i < 4; i++)
+            {
+                try
+                {
+                    c.Publish("foo", null);
+                }
+                catch (StanTimeoutException) { }
+                catch (StanConnectionClosedException) { }
+                catch (StanConnectionException) { }
+            }
+
+            // start the server again...
+            using (var server = new NatsStreamingServer("-st FILE -dir ."))
+            {
+                // Wait until we're reconnected.
+                Assert.True(reconnected.WaitOne(10000));
+
+                // ensure we can publish a few messages.
+                for (int i = 0; i < 4; i++)
+                {
+                    c.Publish("foo", null);
+                }
+
+            }
+        }
+
+
+        [Fact]
+        public void TestPublishReconnectDeadlockThreaded()
+        {
+            IStanConnection c;
+            AutoResetEvent publishOK = new AutoResetEvent(false);
+            AutoResetEvent publishFail = new AutoResetEvent(false);
+            Task pubTask = null;
+
+            using (var server = new NatsStreamingServer("-st FILE -dir ."))
+            {
+                var nOpts = ConnectionFactory.GetDefaultOptions();
+                nOpts.Url = "nats://127.0.0.1:4222";
+                nOpts.MaxReconnect = Options.ReconnectForever;
+                var opts = StanOptions.GetDefaultOptions();
+                opts.NatsConn = new ConnectionFactory().CreateConnection(nOpts);
+
+                // make sure we don't time out on pings if this takes awhile.
+                opts.PingInterval = 60000;
+                opts.PingMaxOutstanding = 10;
+
+                // timeout faster on the publish acks.
+                opts.PubAckWait = 250;
+
+                // connect and publish one message.
+                c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
+
+                long finished = 0;
+                pubTask = new Task(() =>
+                {
+                    while (Interlocked.Read(ref finished) == 0)
+                    {
+                        try
+                        {
+                            c.Publish("foo", null);
+                            publishOK.Set();
+                        }
+                        catch
+                        {
+                            /// Either a timeout or connection exception....
+                            publishFail.Set();
+                        }
+                        Thread.Sleep(50);
+
+                    }
+                });
+                pubTask.Start();
+
+                // Make sure we have published
+                Assert.True(publishOK.WaitOne(10000));
+
+            }
+            // server will shutdown here.
+
+            // Wait until we've failed publishing...
+            Assert.True(publishFail.WaitOne(10000));
+
+            // start the server again...
+            using (var server = new NatsStreamingServer("-st FILE -dir ."))
+            {
+                // Make sure we can publish again.
+                publishOK.Reset();
+                Assert.True(publishOK.WaitOne(10000));
+
+                // Make sure we're done with failures.
+                publishFail.Reset();
+                Assert.False(publishFail.WaitOne(500));
             }
         }
     }

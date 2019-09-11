@@ -101,12 +101,15 @@ namespace STAN.Client
 
     /// <summary>
     /// An exception representing the case when a connection cannot be established
-    /// with the NATS streaming server.
+    /// with the NATS streaming server or an operation is attempted while the underlying
+    /// NATS connection is reconnecting.
     /// </summary>
     public class StanConnectionException : StanException
     {
         internal StanConnectionException() : base("Invalid connection.") { }
         internal StanConnectionException(Exception e) : base("Invalid connection.", e) { }
+        internal StanConnectionException(string msg) : base(msg) { }
+
     }
 
     /// <summary>
