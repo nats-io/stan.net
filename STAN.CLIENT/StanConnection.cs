@@ -598,7 +598,7 @@ namespace STAN.Client
                     throw new StanConnectionException("The NATS connection is reconnecting");
 
                 a = new PublishAck(this, guidValue, handler, opts.PubAckWait);
-                while (!pubAckMap.TryAdd(guidValue,a))
+                while (!pubAckMap.TryAdd(guidValue, a))
                 {
                     var bd = pubAckMap;
 
