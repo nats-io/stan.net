@@ -1,11 +1,11 @@
 install:
   - appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-  - appveyor DownloadFile https://github.com/nats-io/nats-streaming-server/releases/download/v0.12.0/nats-streaming-server-v0.12.0-windows-amd64.zip
-  - appveyor DownloadFile https://github.com/nats-io/gnatsd/releases/download/v1.4.1/gnatsd-v1.4.1-windows-amd64.zip
-  - 7z e nats-streaming-server-v0.12.0-windows-amd64.zip nats-streaming-server.exe -r -oc:\projects\nss\build
-  - 7z e  gnatsd-v1.4.1-windows-amd64.zip gnatsd.exe -r -oc:\projects\nss\build
+  - appveyor DownloadFile https://github.com/nats-io/nats-streaming-server/releases/download/v0.16.0/nats-streaming-server-v0.16.0-windows-amd64.zip
+  - appveyor DownloadFile https://github.com/nats-io/nats-server/releases/download/v2.0.4/nats-server-v2.0.4-windows-amd64.zip 
+  - 7z e nats-streaming-server-v0.16.0-windows-amd64.zip nats-streaming-server.exe -r -oc:\projects\nss\build
+  - 7z e nats-server-v2.0.4-windows-amd64.zip nats-server.exe -r -oc:\projects\nss\build
   - cmd: set PATH=%PATH%;C:\projects\nss\build
-  - cmd: gnatsd -version
+  - cmd: nats-server -version
   - cmd: nats-streaming-server.exe -version
 
 # to add several configurations to build matrix:

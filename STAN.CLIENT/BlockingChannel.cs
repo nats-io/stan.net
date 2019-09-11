@@ -24,7 +24,6 @@ namespace STAN.Client
         IDictionary<TKey, TValue> d = new Dictionary<TKey, TValue>();
         Object dLock = new Object();
         Object addLock = new Object();
-        bool finished = false;
         long maxSize = 1024;
 
         private bool isAtCapacity()
@@ -70,7 +69,7 @@ namespace STAN.Client
             this.maxSize = maxSize;
         }
 
-        internal bool Remove(TKey key, out TValue value, int timeout)
+        internal bool Remove(TKey key, out TValue value)
         {
             bool rv = false;
             bool wasAtCapacity = false;
@@ -79,33 +78,7 @@ namespace STAN.Client
 
             lock (dLock)
             {
-                if (!finished)
-                {
-                    // check and wait if empty
-                    while (d.Count == 0)
-                    {
-                        if (timeout < 0)
-                        {
-                            Monitor.Wait(dLock);
-                        }
-                        else
-                        {
-                            if (timeout > 0)
-                            {
-                                if (Monitor.Wait(dLock, timeout) == false)
-                                {
-                                    throw new Exception("timeout");
-                                }
-                            }
-                        }
-                    }
-
-                    if (!finished)
-                    {
-                        rv = d.TryGetValue(key, out value);
-                    }
-                }
-
+                rv = d.TryGetValue(key, out value);
                 if (rv)
                 {
                     wasAtCapacity = d.Count >= maxSize;
@@ -154,7 +127,6 @@ namespace STAN.Client
         {
             lock (dLock)
             {
-                finished = true;
                 Monitor.Pulse(dLock);
             }
         }

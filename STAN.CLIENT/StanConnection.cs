@@ -74,8 +74,10 @@ namespace STAN.Client
 
         private void ackTimerCb(object state)
         {
-            connection.removeAck(this.guidValue);
-            InvokeHandler(guidValue, "Timeout occurred.");
+            if (connection.removeAck(guidValue) != null)
+            {
+                InvokeHandler(guidValue, "Timeout occurred.");
+            }
         }
 
         internal void wait(int timeout)
@@ -86,14 +88,14 @@ namespace STAN.Client
                 {
                     Monitor.Wait(cond, timeout);
                 }
+                if (ex != null)
+                    throw ex;
             }
         }
 
         internal void wait()
         {
             wait(Timeout.Infinite);
-            if (ex != null)
-                throw ex;
         }
 
         internal void complete()
@@ -446,7 +448,7 @@ namespace STAN.Client
             var keys = pubAckMap.Keys;
             foreach (string guid in keys)
             {
-                if (pubAckMap.Remove(guid, out pa, 0))
+                if (pubAckMap.Remove(guid, out pa))
                 {
                     pa.InvokeHandler(guid, ex == null ? "Connection Closed." : ex.Message);
                 }
@@ -502,10 +504,11 @@ namespace STAN.Client
 
             lock (mu)
             {
-                pubAckMap.Remove(guid, out a, 0);
+                if (pubAckMap.Remove(guid, out a))
+                    return a;
             }
 
-            return a;
+            return null;
         }
 
         public IConnection NATSConnection
@@ -584,14 +587,17 @@ namespace STAN.Client
             string subj = this.pubPrefix + "." + subject;
             string guidValue = newGUID();
             byte[] b = ProtocolSerializer.createPubMsg(clientID, guidValue, subject, data, connID);
-
-            PublishAck a = new PublishAck(this, guidValue, handler, opts.PubAckWait);
+            PublishAck a = null;
 
             lock (mu)
             {
                 if (nc == null)
                     throw new StanConnectionClosedException();
 
+                if (nc.IsReconnecting())
+                    throw new StanConnectionException("The NATS connection is reconnecting");
+
+                a = new PublishAck(this, guidValue, handler, opts.PubAckWait);
                 while (!pubAckMap.TryAdd(guidValue, a))
                 {
                     var bd = pubAckMap;
