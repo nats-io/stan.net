@@ -116,8 +116,8 @@ namespace STAN.Client.UnitTests
 
     class NatsServer : RunnableServer
     {
-        public NatsServer() : base("gnatsd") { }
-        public NatsServer(string args) : base("gnatsd", args) { }
+        public NatsServer() : base("nats-server") { }
+        public NatsServer(string args) : base("nats-server", args) { }
     }
 
     class NatsStreamingServer : RunnableServer
