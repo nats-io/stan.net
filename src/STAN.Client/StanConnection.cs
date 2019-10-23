@@ -435,6 +435,7 @@ namespace STAN.Client
             lock (pingLock)
             {
                 pingTimer?.Dispose();
+                pingTimer = null;
             }
 
             // Unsubscribe only if we have a connection...
