@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>netcoreapp2.2;net45</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+    <Description>NATS Streaming Subscriber Example</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\STAN.Client\STAN.Client.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -3,7 +3,6 @@
 NATS Streaming is an extremely performant, lightweight reliable streaming platform powered by [NATS](https://nats.io).
 
 [![License Apache 2.0](https://img.shields.io/badge/License-Apache2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Build status](https://ci.appveyor.com/api/projects/status/55r49k0apwdh94s5?svg=true)](https://ci.appveyor.com/project/NATS-CI47222/csharp-nats-streaming)
 [![API Documentation](https://img.shields.io/badge/doc-Doxygen-brightgreen.svg?style=flat)](http://nats-io.github.io/stan.net)
 [![NuGet](https://img.shields.io/nuget/v/STAN.Client.svg?maxAge=2592000)](https://www.nuget.org/packages/STAN.Client)
 
@@ -17,19 +16,45 @@ NATS Streaming provides the following high-level feature set:
 ## Notes
 - Please raise issues or ask questions via the [Issue Tracker](https://github.com/nats-io/csharp-nats-streaming/issues).  For general discussion, visit our slack channel.  Requests to join can be made [here](https://join.slack.com/t/natsio/shared_invite/enQtMzE2NDkxNDI2NTE1LTc5ZDEzYTkwYWZkYWQ5YjY1MzBjMWZmYzA5OGQxMzlkMGQzMjYxNGM3MWYxMjNiYmNjNzIwMTVjMWE2ZDgxZGM).
 
-## Installation
+## Getting started
+The easiest and recommended way to start using the NATS streaming client in your .NET projects, is to use the [NuGet package]((https://www.nuget.org/packages/STAN.Client)). For examples on how to use the client, see below or in any of the included sample projects.
 
-For convenience, the NATS streaming client can found on NuGet as [STAN.Client](https://www.nuget.org/packages/STAN.Client/).  
+## Get up and running with the source code
+First, download the source code:
 
-Alternatively, you can build the C# NATS streaming client yourself.  To build, you'll need an environment to build [Visual Studio](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx) and/or .NET core project files.
+```text
+git clone git@github.com:nats-io/stan.net.git
+```
 
-### .NET core
+### Project files
+The repository contains several projects, all located under `src\`
 
-From the directory the repository has been cloned into, either invoke `buildcore.bat` from the command line, or open the `STANcore.sln` project file in Visual Studio and build from there.
+* STAN.Client - The NATS.Client assembly
+* Tests
+    * IntegrationTests - XUnit tests, verifying the client integration with `nats-streaming-server.exe` and `nats-server.exe` (ensure you have both in your path to run these).
+    * UnitTests - XUnit tests that requires no dependencies
+* Samples
+    * StanPub - A sample publisher.
+    * StanSub - A samble subscriber.
 
-### .NET 4.5
+### .NET Core SDK
+.NET Core SDK style projects are used, so ensure your environment (command line, VSCode, Visual Studio, etc) supports the targetted .NET Core SDK in `src\global.json` as well as .NET Framework 4.5 or greater.
 
-From the directory the repository has been cloned into, either invoke `build45.bat` from the command line, or open the `STANnet45.sln` project file in Visual Studio and build from there.
+### Visual Studio
+The recommendation is to load `src\STAN.sln` into Visual Studio 2019 (Visual Studio 2017 works as well). .NET Core SDK style projects are used to multitarget different frameworks, so when working with the source code (debugging, running tets etc) you might need to mind the "context" of the current framework.
+
+ XML documentation is generated (in `Release`), so code completion, context help, etc, will be available in the editor.
+
+### Command line
+Since .NET Core SDK style projects are used, you can use the .NET SDK to build, run tests, pack etc.
+
+E.g. to [build](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build):
+
+```text
+dotnet build src\STAN.sln -c Release
+```
+
+This will build the respective `STAN.Client.dll`, samples etc in Release mode, with only requiring the .NET Core SDK and the .NET Platform.
 
 ### API Documentation
 
@@ -38,7 +63,7 @@ From the directory the repository has been cloned into, either invoke `build45.b
 Doxygen is used for building the API documentation.  To build the API documentation, change directories to `doc` and run the following command:
 
 ```
-build_doc.bat
+doc\build_doc.bat
 ```
 
 Doxygen will build the NATS .NET Streaming Client API documentation, placing it in the `doc\STAN.Client\html` directory.
