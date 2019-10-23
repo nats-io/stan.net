@@ -2269,7 +2269,8 @@ namespace IntegrationTests
         [Fact]
         public void TestPublishReconnectDeadlock()
         {
-            IStanConnection c;
+            IStanConnection stanConn;
+            IConnection natsConn;
             AutoResetEvent disconnected = new AutoResetEvent(false);
             AutoResetEvent reconnected = new AutoResetEvent(false);
 
@@ -2290,7 +2291,7 @@ namespace IntegrationTests
 
 
                 var opts = StanOptions.GetDefaultOptions();
-                opts.NatsConn = new ConnectionFactory().CreateConnection(nOpts);
+                opts.NatsConn = natsConn = new ConnectionFactory().CreateConnection(nOpts);
 
                 // make sure we don't time out on pings if this takes awhile.
                 opts.PingInterval = 60000;
@@ -2300,8 +2301,8 @@ namespace IntegrationTests
                 opts.PubAckWait = 250;
 
                 // connect and publish one message.
-                c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
-                c.Publish("foo", null);
+                stanConn = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
+                stanConn.Publish("foo", null);
             }
             // server will shutdown here.
 
@@ -2314,7 +2315,7 @@ namespace IntegrationTests
             {
                 try
                 {
-                    c.Publish("foo", null);
+                    stanConn.Publish("foo", null);
                 }
                 catch (StanTimeoutException) { }
                 catch (StanConnectionClosedException) { }
@@ -2330,17 +2331,22 @@ namespace IntegrationTests
                 // ensure we can publish a few messages.
                 for (int i = 0; i < 4; i++)
                 {
-                    c.Publish("foo", null);
+                    stanConn.Publish("foo", null);
                 }
-
             }
+
+            natsConn.Close();
+            stanConn.Close();
+            natsConn.Dispose();
+            stanConn.Dispose();
         }
 
 
         [Fact]
         public void TestPublishReconnectDeadlockThreaded()
         {
-            IStanConnection c;
+            IStanConnection stanConn;
+            IConnection natsConn;
             AutoResetEvent publishOK = new AutoResetEvent(false);
             AutoResetEvent publishFail = new AutoResetEvent(false);
             Task pubTask = null;
@@ -2351,7 +2357,7 @@ namespace IntegrationTests
                 nOpts.Url = "nats://127.0.0.1:4222";
                 nOpts.MaxReconnect = Options.ReconnectForever;
                 var opts = StanOptions.GetDefaultOptions();
-                opts.NatsConn = new ConnectionFactory().CreateConnection(nOpts);
+                opts.NatsConn = natsConn = new ConnectionFactory().CreateConnection(nOpts);
 
                 // make sure we don't time out on pings if this takes awhile.
                 opts.PingInterval = 60000;
@@ -2361,7 +2367,7 @@ namespace IntegrationTests
                 opts.PubAckWait = 250;
 
                 // connect and publish one message.
-                c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
+                stanConn = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
 
                 long finished = 0;
                 pubTask = new Task(() =>
@@ -2370,7 +2376,7 @@ namespace IntegrationTests
                     {
                         try
                         {
-                            c.Publish("foo", null);
+                            stanConn.Publish("foo", null);
                             publishOK.Set();
                         }
                         catch
@@ -2404,6 +2410,12 @@ namespace IntegrationTests
                 publishFail.Reset();
                 Assert.False(publishFail.WaitOne(500));
             }
+
+            natsConn.Close();
+            stanConn.Close();
+
+            natsConn.Dispose();
+            stanConn.Dispose();
         }
     }
 }
