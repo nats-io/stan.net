@@ -26,8 +26,6 @@ namespace IntegrationTests
     {
         public BasicTests(BasicTestsContext context) : base(context) { }
 
-        const int DEFAULT_WAIT = 10000;
-
         EventHandler<StanMsgHandlerArgs> noopMh = (obj, args) => { /* NOOP */ };
 
         static byte[] getPayload(string s)
@@ -149,7 +147,7 @@ namespace IntegrationTests
                         err = args.Error;
                         ev.Set();
                     });
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
 
                 Assert.False(string.IsNullOrWhiteSpace(pubGuid));
@@ -177,7 +175,7 @@ namespace IntegrationTests
                         ev.Set();
                     });
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
 
                 Assert.False(string.IsNullOrWhiteSpace(pubGuid));
@@ -256,7 +254,7 @@ namespace IntegrationTests
                         {
                             c.Publish("foo", payload);
                         }
-                        Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                        Assert.True(ev.WaitOne(Context.DefaultWait));
                     }
                 }
             }
@@ -308,7 +306,7 @@ namespace IntegrationTests
                         {
                             c.Publish("foo", payload);
                         }
-                        Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                        Assert.True(ev.WaitOne(Context.DefaultWait));
                     }
                 }
             }
@@ -350,7 +348,7 @@ namespace IntegrationTests
 
                     sub.Unsubscribe();
 
-                    ev.WaitOne(DEFAULT_WAIT);
+                    ev.WaitOne(Context.DefaultWait);
 
                     if (ex != null)
                         throw ex;
@@ -391,7 +389,7 @@ namespace IntegrationTests
                     sOpts.StartAt(6);
                     c.Subscribe("foo", sOpts, eh);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
             }
 
@@ -453,7 +451,7 @@ namespace IntegrationTests
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
                     sOpts.StartAt(startTime);
                     var s = c.Subscribe("foo", sOpts, eh);
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
             }
 
@@ -530,7 +528,7 @@ namespace IntegrationTests
                     sOpts.StartAt(DateTime.UtcNow - startTime);
                     c.Subscribe("foo", sOpts, eh);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT * 20));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 20));
                 }
             }
 
@@ -609,7 +607,7 @@ namespace IntegrationTests
                     sOpts.DeliverAllAvailable();
                     c.Subscribe("foo", sOpts, eh);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
             }
 
@@ -682,7 +680,7 @@ namespace IntegrationTests
                     }).Start();
 
                     s.Unsubscribe();
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
             }
         }
@@ -859,7 +857,7 @@ namespace IntegrationTests
                             }
                         }
                     });
-                    Assert.True(evFirstSetReceived.WaitOne(DEFAULT_WAIT));
+                    Assert.True(evFirstSetReceived.WaitOne(Context.DefaultWait));
                     Assert.True(thrownEx == null);
 
                     // Wait a bit longer for other messages which would be an error.
@@ -873,7 +871,7 @@ namespace IntegrationTests
                         m.Ack();
                     }
 
-                    evAllReceived.WaitOne(DEFAULT_WAIT);
+                    evAllReceived.WaitOne(Context.DefaultWait);
 
                     s.Unsubscribe();
 
@@ -909,7 +907,7 @@ namespace IntegrationTests
 
                     c.Publish("foo", null);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                     s.Unsubscribe();
                     Assert.IsAssignableFrom<StanManualAckException>(thrownEx);
                 }
@@ -960,9 +958,9 @@ namespace IntegrationTests
                             evAllReceived.Set();
                         }
                     });
-                    Assert.True(evFirstSetReceived.WaitOne(DEFAULT_WAIT));
+                    Assert.True(evFirstSetReceived.WaitOne(Context.DefaultWait));
                     Assert.True(Interlocked.Read(ref received) == toSend);
-                    Assert.True(evAllReceived.WaitOne(DEFAULT_WAIT));
+                    Assert.True(evAllReceived.WaitOne(Context.DefaultWait));
                     Assert.True(Interlocked.Read(ref received) == 2 * toSend);
                 }
             }
@@ -1101,7 +1099,7 @@ namespace IntegrationTests
 
                     // If this succeeds, it means that we got all messages first delivered,
                     // and then at least 2 * toSend messages received as redelivered.
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT * 10));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 10));
 
                     Thread.Sleep(ackRedeliveryTime + 100);
 
@@ -1179,7 +1177,7 @@ namespace IntegrationTests
                         }
                     });
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                     Assert.True(Interlocked.Read(ref received) == 10);
                 }
 
@@ -1206,7 +1204,7 @@ namespace IntegrationTests
                     // check that durables with the same name but different subject are OK.
                     c2.Subscribe("bar", sOpts, eh).Unsubscribe();
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
 
                     // toSend+1 to count the unacked message after closing in the callback above.
                     Assert.True(Interlocked.Read(ref received) == toSend + 1);
@@ -1269,7 +1267,7 @@ namespace IntegrationTests
                     for (int i = 0; i < toSend; i++)
                         c.Publish("foo", null);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
 
                 Assert.False(unknownSubscription);
@@ -1342,7 +1340,7 @@ namespace IntegrationTests
                         c.Publish("foo", null);
 
                     subBlock.Set();
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT * 2));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 2));
 
                     s1.Unsubscribe();
                     s2.Unsubscribe();
@@ -1398,7 +1396,7 @@ namespace IntegrationTests
                     for (int i = 0; i < toSend; i++)
                         c.Publish("foo", null);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT * 2));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 2));
 
                     s1.Unsubscribe();
                     s2.Unsubscribe();
@@ -1458,7 +1456,7 @@ namespace IntegrationTests
                     for (int i = 0; i < toSend; i++)
                         c.Publish("foo", null);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT * 3));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 3));
 
                     s1.Unsubscribe();
                     s2.Unsubscribe();
@@ -1509,7 +1507,7 @@ namespace IntegrationTests
                             ev.Set();
                     });
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                     // wait for redelivery
                     Thread.Sleep(1500);
                 }
@@ -1560,13 +1558,13 @@ namespace IntegrationTests
                         }
                     }).Start();
 
-                    pubBatch.WaitOne(DEFAULT_WAIT);
+                    pubBatch.WaitOne(Context.DefaultWait);
 
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
                     sOpts.DeliverAllAvailable();
                     using (var s = c.Subscribe("foo", sOpts, eh))
                     {
-                        ev.WaitOne(DEFAULT_WAIT);
+                        ev.WaitOne(Context.DefaultWait);
                         // wait to see if any duplicate messages are sent
                         Thread.Sleep(250);
                     }
@@ -1777,7 +1775,7 @@ namespace IntegrationTests
                     sub = sc.Subscribe(channel, so, eh);
 
                 // wait for the first message
-                Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                Assert.True(ev.WaitOne(Context.DefaultWait));
                 Assert.False(error, "invalid message seq received.");
 
                 // Wait a bit to reduce risk of server processing unsubscribe before ACK

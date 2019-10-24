@@ -46,6 +46,7 @@ namespace IntegrationTests
         public ConnectionFactory NatsConnectionFactory { get; } = new ConnectionFactory();
         public string ClusterId { get; }
         public string ClientId { get; }
+        public int DefaultWait => 10000;
 
         static SuiteContext()
         {
