@@ -22,7 +22,7 @@ using Xunit;
 
 namespace IntegrationTests
 {
-    public class TestBasic
+    public class BasicTests
     {
         static readonly int DEFAULT_WAIT = 10000;
         static readonly string CLUSTER_ID = "test-cluster";
