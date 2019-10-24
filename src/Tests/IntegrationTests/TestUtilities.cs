@@ -21,13 +21,10 @@ namespace IntegrationTests
     public abstract class RunnableServer : IDisposable
     {
         Process p;
-        readonly string executablePath;
 
-        protected RunnableServer(string exeName, string args = null)
+        protected RunnableServer(string exeName, string args, Func<bool> isRunning)
         {
-            cleanupExistingServers(exeName);
-            executablePath = exeName + ".exe";
-            ProcessStartInfo psInfo = createProcessStartInfo(args);
+            var psInfo = createProcessStartInfo($"{exeName}.exe", args);
 
             try
             {
@@ -39,17 +36,15 @@ namespace IntegrationTests
                         break;
                 }
 
-                if (p.HasExited)
-                {
+                if (p == null || p.HasExited)
                     throw new Exception("Unable to start process.");
-                }
 
                 Thread.Sleep(1000);
             }
             catch (Exception ex)
             {
                 p = null;
-                throw new Exception(string.Format("{0} {1} failure with error: {2}", psInfo.FileName, psInfo.Arguments, ex.Message));
+                throw new Exception($"{psInfo.FileName} {psInfo.Arguments} failure with error: {ex.Message}");
             }
         }
 
@@ -68,7 +63,7 @@ namespace IntegrationTests
             }
         }
 
-        private static void cleanupExistingServers(string procname)
+        protected static void CleanupExistingServers(string procname)
         {
             Func<Process[]> getProcesses = () => Process.GetProcessesByName(procname);
 
@@ -92,9 +87,9 @@ namespace IntegrationTests
             Thread.Sleep(500);
         }
 
-        private ProcessStartInfo createProcessStartInfo(string args)
+        private ProcessStartInfo createProcessStartInfo(string exe, string args)
         {
-            var ps = new ProcessStartInfo(executablePath)
+            var ps = new ProcessStartInfo(exe)
             {
                 UseShellExecute = false,
                 Arguments = args,
@@ -108,11 +103,11 @@ namespace IntegrationTests
             return ps;
         }
 
-        private bool isRunning()
+        protected static bool IsRunning(TestServerInfo serverInfo)
         {
             try
             {
-                using (var cn = new ConnectionFactory().CreateConnection())
+                using (var cn = new ConnectionFactory().CreateConnection(serverInfo.Url))
                 {
                     cn.Close();
 
@@ -140,15 +135,40 @@ namespace IntegrationTests
 
     public class NatsServer : RunnableServer
     {
-        public NatsServer(string args = null) : base("nats-server", args) { }
+        private const string ProcName = "nats-server";
+
+        static NatsServer() => RunnableServer.CleanupExistingServers(ProcName);
+
+        private NatsServer(string args, Func<bool> isRunning) : base(ProcName, args, isRunning) { }
+
+        public static NatsServer Start(TestServerInfo serverInfo, string additionalArgs = null)
+        {
+            var args = $"-a {serverInfo.Address} -p {serverInfo.Port} {additionalArgs}";
+
+            return new NatsServer(args, () => IsRunning(serverInfo));
+        }
     }
 
     public class NatsStreamingServer : RunnableServer
     {
-        public NatsStreamingServer(string clusterId) : base("nats-streaming-server", BuildArgs(clusterId)) { }
-        public NatsStreamingServer(string clusterId, string args) : base("nats-streaming-server", BuildArgs(clusterId, args)) { }
+        private const string ProcName = "nats-streaming-server";
 
-        private static string BuildArgs(string clusterId, string additionalArgs = null)
-            => $"-cid {clusterId ?? throw new ArgumentNullException(nameof(clusterId))} {additionalArgs}";
+        static NatsStreamingServer() => RunnableServer.CleanupExistingServers(ProcName);
+
+        private NatsStreamingServer(string args, Func<bool> isRunning) : base(ProcName, args, isRunning) { }
+
+        public static NatsStreamingServer StartWithEmbedded(TestServerInfo serverInfo, string clusterId, string additionalArgs = null)
+        {
+            var args = $"-cid {clusterId} -a {serverInfo.Address} -p {serverInfo.Port} {additionalArgs}";
+
+            return new NatsStreamingServer(args, () => IsRunning(serverInfo));
+        }
+
+        public static NatsStreamingServer StartWithExternal(TestServerInfo serverInfo, string clusterId, string additionalArgs = null)
+        {
+            var args = $"-cid {clusterId} -ns tcp://{serverInfo.Address}:{serverInfo.Port} {additionalArgs}";
+
+            return new NatsStreamingServer(args, () => IsRunning(serverInfo));
+        }
     }
 }

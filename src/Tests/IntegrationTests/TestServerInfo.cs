@@ -17,12 +17,13 @@ namespace IntegrationTests
     {
         public int Port { get; }
 
+        public string Address => "127.0.0.1";
         public string Url { get; }
 
         public TestServerInfo(int port)
         {
             Port = port;
-            Url = $"nats://127.0.0.1:{port}";
+            Url = $"nats://{Address}:{port}";
         }
 
         public override string ToString() => Url;

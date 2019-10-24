@@ -19,11 +19,11 @@ using Xunit;
 
 namespace IntegrationTests
 {
-    public abstract class TestSuite<TSuiteContext> : IClassFixture<TSuiteContext> where TSuiteContext : class
+    public abstract class TestSuite<TContext> : IClassFixture<TContext> where TContext : class
     {
-        protected TSuiteContext Context { get; }
+        protected TContext Context { get; }
 
-        protected TestSuite(TSuiteContext context)
+        protected TestSuite(TContext context)
         {
             Context = context;
         }
@@ -34,11 +34,13 @@ namespace IntegrationTests
     /// </summary>
     public static class TestSeedPorts
     {
-        public const int DefaultSuiteNormalServers = 4222; //2pc
-        public const int DefaultSuiteNormalClusterServers = 6222; //2pc
+        public const int BasicTestsNormalServers = 4222; //2pc
+        public const int BasicTestsClusterServers = 6222; //2pc
+
+        public const int PingTests = 11490; //1pc
     }
 
-    public abstract class SuiteContext
+    public abstract class TestContext
     {
         private const string TestDataDirPath = "./stan-test-data-eddc7adb06bd4b49a381ccec87fe9f41";
 
@@ -48,7 +50,7 @@ namespace IntegrationTests
         public string ClientId { get; }
         public int DefaultWait => 10000;
 
-        static SuiteContext()
+        static TestContext()
         {
             try
             {
@@ -62,50 +64,70 @@ namespace IntegrationTests
             }
         }
 
-        protected SuiteContext(string clusterId = null, string clientId = null)
+        protected TestContext(string clusterId = null, string clientId = null)
         {
             ClusterId = clusterId ?? Guid.NewGuid().ToString("N");
             ClientId = clientId ?? Guid.NewGuid().ToString("N");
         }
 
-        public StanOptions GetTestOptions(int port = 4222, int timeout = 5000)
+        public StanOptions GetStanTestOptions(TestServerInfo serverInfo, int timeout = 5000)
         {
             var opts = StanOptions.GetDefaultOptions();
-            opts.NatsURL = $"nats://127.0.0.1:{port}";
+            opts.NatsURL = serverInfo.Url;
             opts.ConnectTimeout = timeout;
 
             return opts;
         }
 
-        public IStanConnection GetStanConnection(string clusterId = null, string clientId = null, StanOptions opts = null)
-            => StanConnectionFactory.CreateConnection(clusterId ?? ClusterId, clientId ?? ClientId, opts ?? GetTestOptions());
+        public Options GetNatsTestOptions(TestServerInfo serverInfo)
+        {
+            var opts = ConnectionFactory.GetDefaultOptions();
+            opts.Url = serverInfo.Url;
 
-        public IConnection GetNatsConnection(Options opts = null) =>
-            opts == null
-                ? NatsConnectionFactory.CreateConnection()
-                : NatsConnectionFactory.CreateConnection(opts);
+            return opts;
+        }
+
+        public IStanConnection GetStanConnection(StanOptions opts, string clusterId = null, string clientId = null)
+            => StanConnectionFactory.CreateConnection(clusterId ?? ClusterId, clientId ?? ClientId, opts);
+
+        public IStanConnection GetStanConnection(TestServerInfo serverInfo, string clusterId = null, string clientId = null)
+            => StanConnectionFactory.CreateConnection(clusterId ?? ClusterId, clientId ?? ClientId, GetStanTestOptions(serverInfo));
+
+        public IConnection GetNatsConnection(Options opts) => NatsConnectionFactory.CreateConnection(opts);
+
+        public IConnection GetNatsConnection(TestServerInfo serverInfo) => NatsConnectionFactory.CreateConnection(GetNatsTestOptions(serverInfo));
 
         public string GenerateStorageDirPath() => $"{TestDataDirPath}/{ClusterId}";
 
-        public NatsStreamingServer StartStreamingServer(string args = null)
-            => new NatsStreamingServer(ClusterId, args);
+        public NatsStreamingServer StartStreamingServerWithEmbedded(TestServerInfo serverInfo, string args = null)
+            => NatsStreamingServer.StartWithEmbedded(serverInfo, ClusterId, args);
 
-        public NatsServer StartNatsServer(string args = null)
-            => new NatsServer(args);
+        public NatsStreamingServer StartStreamingServerWithExternal(TestServerInfo serverInfo, string args = null)
+            => NatsStreamingServer.StartWithExternal(serverInfo, ClusterId, args);
+
+        public NatsServer StartNatsServer(TestServerInfo serverInfo, string args = null)
+            => NatsServer.Start(serverInfo, args);
     }
 
-    public class BasicTestsContext : SuiteContext
+    public class BasicTestsContext : TestContext
     {
-        private const int SeedPortNormalServers = TestSeedPorts.DefaultSuiteNormalServers;
+        private const int SeedPortNormalServers = TestSeedPorts.BasicTestsNormalServers;
 
         public readonly TestServerInfo DefaultServer = new TestServerInfo(Defaults.Port);
 
         public readonly TestServerInfo Server1 = new TestServerInfo(SeedPortNormalServers);
         public readonly TestServerInfo Server2 = new TestServerInfo(SeedPortNormalServers + 1);
 
-        private const int SeedPortClusterServers = TestSeedPorts.DefaultSuiteNormalClusterServers;
+        private const int SeedPortClusterServers = TestSeedPorts.BasicTestsClusterServers;
 
         public readonly TestServerInfo ClusterServer1 = new TestServerInfo(SeedPortClusterServers);
         public readonly TestServerInfo ClusterServer2 = new TestServerInfo(SeedPortClusterServers + 1);
+    }
+
+    public class PingTestsContext : TestContext
+    {
+        private const int SeedPort = TestSeedPorts.PingTests;
+
+        public readonly TestServerInfo Server1 = new TestServerInfo(SeedPort);
     }
 }
