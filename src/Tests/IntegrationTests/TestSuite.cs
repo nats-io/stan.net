@@ -92,38 +92,6 @@ namespace IntegrationTests
 
         public NatsServer StartNatsServer(string args = null)
             => new NatsServer(args);
-
-        //public Options GetTestOptionsWithDefaultTimeout(int? port = null)
-        //{
-        //    var opts = ConnectionFactory.GetDefaultOptions();
-
-        //    if (port.HasValue)
-        //        opts.Url = $"nats://localhost:{port.Value}";
-
-        //    return opts;
-        //}
-
-        //public Options GetTestOptions(int? port = null)
-        //{
-        //    var opts = GetTestOptionsWithDefaultTimeout(port);
-        //    opts.Timeout = 10000;
-
-        //    return opts;
-        //}
-
-        //public IConnection OpenConnection(int? port = null)
-        //{
-        //    var opts = GetTestOptions(port);
-
-        //    return ConnectionFactory.CreateConnection(opts);
-        //}
-
-        //public IEncodedConnection OpenEncodedConnectionWithDefaultTimeout(int? port = null)
-        //{
-        //    var opts = GetTestOptionsWithDefaultTimeout(port);
-
-        //    return ConnectionFactory.CreateEncodedConnection(opts);
-        //}
     }
 
     public class BasicTestsContext : SuiteContext
