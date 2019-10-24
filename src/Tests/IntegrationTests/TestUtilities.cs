@@ -18,12 +18,12 @@ using NATS.Client;
 
 namespace IntegrationTests
 {
-    class RunnableServer : IDisposable
+    public abstract class RunnableServer : IDisposable
     {
         Process p;
         readonly string executablePath;
 
-        public RunnableServer(string exeName, string args = null)
+        protected RunnableServer(string exeName, string args = null)
         {
             cleanupExistingServers(exeName);
             executablePath = exeName + ".exe";
@@ -138,15 +138,17 @@ namespace IntegrationTests
         void IDisposable.Dispose() => Shutdown();
     }
 
-    class NatsServer : RunnableServer
+    public class NatsServer : RunnableServer
     {
-        public NatsServer() : base("nats-server") { }
-        public NatsServer(string args) : base("nats-server", args) { }
+        public NatsServer(string args = null) : base("nats-server", args) { }
     }
 
-    class NatsStreamingServer : RunnableServer
+    public class NatsStreamingServer : RunnableServer
     {
-        public NatsStreamingServer() : base("nats-streaming-server") { }
-        public NatsStreamingServer(string args) : base("nats-streaming-server", args) { }
+        public NatsStreamingServer(string clusterId) : base("nats-streaming-server", BuildArgs(clusterId)) { }
+        public NatsStreamingServer(string clusterId, string args) : base("nats-streaming-server", BuildArgs(clusterId, args)) { }
+
+        private static string BuildArgs(string clusterId, string additionalArgs = null)
+            => $"-cid {clusterId ?? throw new ArgumentNullException(nameof(clusterId))} {additionalArgs}";
     }
 }
