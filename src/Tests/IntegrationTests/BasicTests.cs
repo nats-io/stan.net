@@ -24,22 +24,31 @@ namespace IntegrationTests
 {
     public class BasicTests
     {
-        static readonly int DEFAULT_WAIT = 10000;
-        static readonly string CLUSTER_ID = "test-cluster";
-        static readonly string CLIENT_ID = "me";
+        const int DEFAULT_WAIT = 10000;
+        const string CLUSTER_ID = "test-cluster";
+        const string CLIENT_ID = "me";
+
+        readonly StanConnectionFactory stanConnectionFactory = new StanConnectionFactory();
+        readonly ConnectionFactory natsConnectionFactory = new ConnectionFactory();
 
         EventHandler<StanMsgHandlerArgs> noopMh = (obj, args) => { /* NOOP */ };
 
-        internal IStanConnection DefaultConnection
+        internal StanOptions getDefaultTestOptions()
         {
-            get
-            {
-                var opts = StanOptions.GetDefaultOptions();
-                opts.NatsURL = "nats://127.0.0.1:4222";
-                opts.ConnectTimeout = 5000;
-                return new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
-            }
+            var opts = StanOptions.GetDefaultOptions();
+            opts.NatsURL = "nats://127.0.0.1:4222";
+            opts.ConnectTimeout = 5000;
+
+            return opts;
         }
+
+        internal IStanConnection getStanConnection(string clusterId = CLUSTER_ID, string clientId = CLIENT_ID, StanOptions opts = null)
+            => stanConnectionFactory.CreateConnection(clusterId, clientId, opts ?? getDefaultTestOptions());
+
+        internal IConnection getNatsConnection(Options opts = null) =>
+            opts == null
+                ? natsConnectionFactory.CreateConnection()
+                : natsConnectionFactory.CreateConnection(opts);
 
         internal static byte[] getPayload(string s)
         {
@@ -53,7 +62,7 @@ namespace IntegrationTests
         public void TestNoServer()
         {
             // Do not start a streaming server.
-            Assert.Throws<StanConnectionException>(() => DefaultConnection);
+            Assert.Throws<StanConnectionException>(() => getStanConnection());
         }
 
         [Fact]
@@ -64,7 +73,7 @@ namespace IntegrationTests
             {
                 try
                 {
-                    using(new StanConnectionFactory().CreateConnection("invalid-cluster", CLIENT_ID)){}
+                    using(getStanConnection("invalid-cluster")){}
                 }
                 catch (StanConnectRequestTimeoutException se)
                 {
@@ -80,11 +89,11 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (IConnection nc = new ConnectionFactory().CreateConnection())
+                using (var nc = getNatsConnection())
                 {
                     var opts = StanOptions.GetDefaultOptions();
                     opts.NatsConn = nc;
-                    using(var sc = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
+                    using(var sc = getStanConnection(opts: opts))
                         sc.Close();
 
                     Assert.True(nc.IsClosed() == false);
@@ -98,7 +107,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using(var c = DefaultConnection)
+                using(var c = getStanConnection())
                     c.Close();
             }
         }
@@ -108,7 +117,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     c.Publish("foo", getPayload("hello"));
                     c.Publish("foo", null);
@@ -125,7 +134,7 @@ namespace IntegrationTests
                 opts.MaxPubAcksInFlight = 2;
                 opts.PubAckWait = 10 * 1000;
 
-                using (var c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
+                using (var c = getStanConnection(opts: opts))
                 {
                     for (int i = 0; i < 10; i++)
                     {
@@ -152,7 +161,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     pubGuid = c.Publish("foo", getPayload("hello"), (obj, args) =>
                     {
@@ -179,7 +188,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     pubGuid = c.Publish("foo", getPayload("hello"), (obj, args) =>
                     {
@@ -202,7 +211,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     var sub = c.Subscribe("foo", noopMh);
                     sub.Unsubscribe();
@@ -215,7 +224,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     var sub = c.Subscribe("foo", "bar", noopMh);
                     sub.Unsubscribe();
@@ -234,7 +243,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     int subCount = 0;
                     // Test using here for unsubscribe
@@ -286,7 +295,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     int subCount = 0;
                     // Test using here for unsubscribe
@@ -337,7 +346,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     for (int i = 0; i < count; i++)
                     {
@@ -381,7 +390,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     for (int i = 1; i <= count; i++)
                     {
@@ -431,7 +440,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     for (int i = 1; i <= 5; i++)
                     {
@@ -507,7 +516,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     for (int i = 1; i <= 5; i++)
                     {
@@ -564,7 +573,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     var opts = StanSubscriptionOptions.GetDefaultOptions();
 
@@ -599,7 +608,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     for (int i = 1; i <= count; i++)
                     {
@@ -642,7 +651,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     bool received = false;
 
@@ -679,7 +688,7 @@ namespace IntegrationTests
             {
                 var cOpts = StanOptions.GetDefaultOptions();
                 cOpts.PubAckWait = 50;
-                using (var c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, cOpts))
+                using (var c = getStanConnection(opts: cOpts))
                 {
                     AutoResetEvent ev = new AutoResetEvent(false);
 
@@ -705,7 +714,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     List<IStanSubscription> subs = new List<IStanSubscription>();
 
@@ -727,11 +736,11 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     Assert.Throws<StanConnectRequestException>(() =>
                     {
-                        using (DefaultConnection) {}
+                        using (getStanConnection()) {}
                     });
                 }
             }
@@ -744,7 +753,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     var s = c.Subscribe("foo", (obj, args) => { received = true; });
 
@@ -769,7 +778,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     EventHandler<StanAckHandlerArgs> ah = (o, a) =>
                     {
@@ -801,7 +810,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     c.Close();
                     c.Close();
@@ -819,7 +828,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     long nr;
 
@@ -902,7 +911,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
 
                     var s = c.Subscribe("foo", (obj, args) =>
@@ -936,7 +945,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     long nr;
 
@@ -988,7 +997,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     for (int i = 0; i < toSend; i++)
                     {
@@ -1041,7 +1050,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     int toSend = count;
                     AutoResetEvent ev = new AutoResetEvent(false);
@@ -1165,7 +1174,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c1 = DefaultConnection)
+                using (var c1 = getStanConnection())
                 {
                     for (int i = 0; i < toSend; i++)
                     {
@@ -1194,7 +1203,7 @@ namespace IntegrationTests
                     Assert.True(Interlocked.Read(ref received) == 10);
                 }
 
-                using (var c2 = DefaultConnection)
+                using (var c2 = getStanConnection())
                 {
                     EventHandler<StanMsgHandlerArgs> eh = (obj, args) =>
                     {
@@ -1272,7 +1281,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     s1 = c.Subscribe("foo", "bar", mh);
                     s2 = c.Subscribe("foo", "bar", mh);
@@ -1344,7 +1353,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     s1 = c.Subscribe("foo", "bar", mh);
                     s2 = c.Subscribe("foo", "bar", mh);
@@ -1396,7 +1405,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
                     sOpts.ManualAcks = true;
@@ -1456,7 +1465,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
                     sOpts.ManualAcks = true;
@@ -1490,7 +1499,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     for (int i = 0; i < toSend; i++)
                     {
@@ -1547,7 +1556,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     EventHandler<StanMsgHandlerArgs> eh = (obj, args) =>
                     {
@@ -1591,7 +1600,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer(" -mc 5"))
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     for (int i = 0; i < 5; i++)
                     {
@@ -1608,7 +1617,7 @@ namespace IntegrationTests
             int toSend = 100;
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     for (int i = 0; i < toSend - 1; i++)
                     {
@@ -1631,7 +1640,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     var nc = c.NATSConnection;
                     Assert.True(nc.State == ConnState.CONNECTED);
@@ -1642,11 +1651,11 @@ namespace IntegrationTests
                     Assert.True(c.NATSConnection == null);
                 }
 
-                using (var nc2 = new ConnectionFactory().CreateConnection())
+                using (var nc2 = getNatsConnection())
                 {
                     var opts = StanOptions.GetDefaultOptions();
                     opts.NatsConn = nc2;
-                    using (var c2 = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
+                    using (var c2 = getStanConnection(opts: opts))
                     {
                         Assert.True(nc2 == c2.NATSConnection);
                         c2.Close();
@@ -1668,8 +1677,7 @@ namespace IntegrationTests
                 opts.PubAckWait = 4000;
                 opts.MaxPubAcksInFlight = 1;
 
-                using (var c = new StanConnectionFactory().CreateConnection(
-                    CLUSTER_ID, CLIENT_ID, opts))
+                using (var c = getStanConnection(opts: opts))
                 {
                     var sw = Stopwatch.StartNew();
 
@@ -1693,7 +1701,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     var guid = await c.PublishAsync("foo", null);
                     Assert.False(string.IsNullOrWhiteSpace(guid));
@@ -1711,7 +1719,7 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     // make sure it simply works without blocking.
                     Stopwatch sw = Stopwatch.StartNew();
@@ -1747,7 +1755,7 @@ namespace IntegrationTests
 
             using (new NatsStreamingServer())
             {
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     for (int i = 0; i < 10; i++)
                     {
@@ -1760,7 +1768,7 @@ namespace IntegrationTests
 
         private void testSubscriberClose(string channel, bool useQG)
         {
-            using (var sc = DefaultConnection)
+            using (var sc = getStanConnection())
             {
                 int received = 0;
                 bool error = false;
@@ -1831,7 +1839,7 @@ namespace IntegrationTests
             using (new NatsStreamingServer())
             {
                 StanOptions so = StanOptions.GetDefaultOptions();
-                using (var c = DefaultConnection)
+                using (var c = getStanConnection())
                 {
                     var sub = c.Subscribe("foo", (obj, args) => { });
                     try
@@ -1892,7 +1900,7 @@ namespace IntegrationTests
                 int count = 0;
                 int pingIvl = 1000;
                 var exceeded = new AutoResetEvent(false);
-                using (var nc = new ConnectionFactory().CreateConnection())
+                using (var nc = getNatsConnection())
                 {
                     nc.SubscribeAsync(StanConsts.DefaultDiscoverPrefix + "." + CLUSTER_ID + ".pings", (obj, args) =>
                     {
@@ -1910,7 +1918,7 @@ namespace IntegrationTests
                     opts.PingInterval = pingIvl;
                     opts.ConnectionLostEventHandler = (obj, args) => { connLostEvent.Set(); };
 
-                    using (new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
+                    using (getStanConnection(opts: opts))
                     {
                         // wait for pings, give us an extra ping just in case.
                         Assert.True(exceeded.WaitOne(60000 + pingIvl * (StanConsts.DefaultPingMaxOut + 2)));
@@ -1940,7 +1948,7 @@ namespace IntegrationTests
                         ev.Set();
                     };
 
-                    using (var sc = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, so))
+                    using (var sc = getStanConnection(opts: so))
                     {
                         nss.Shutdown();
                         Assert.True(ev.WaitOne(20000));
@@ -1963,7 +1971,7 @@ namespace IntegrationTests
                     ev.Set();
                 };
 
-                using(var sc = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, so))
+                using(var sc = getStanConnection(opts: so))
                     sc.Close();
 
                 // ensure handler is not called
@@ -1980,18 +1988,16 @@ namespace IntegrationTests
             AutoResetEvent ev = new AutoResetEvent(false);
             bool routeEstablished = false;
 
-            var cf = new ConnectionFactory();
-
             // create conn 1
             var opts = ConnectionFactory.GetDefaultOptions();
             opts.AllowReconnect = false;
             opts.Url = url1;
-            using (var nc1 = cf.CreateConnection(opts))
+            using (var nc1 = getNatsConnection(opts))
             {
 
                 // create conn 2, wait for a message
                 opts.Url = url2;
-                using (var nc2 = cf.CreateConnection(opts))
+                using (var nc2 = getNatsConnection(opts))
                 {
                     nc2.SubscribeAsync("routecheck", (obj, args) => { ev.Set(); });
                     nc2.Flush();
@@ -2030,7 +2036,6 @@ namespace IntegrationTests
         public void TestPingResponseError()
         {
             IStanConnection sc1;
-            StanConnectionFactory scf = new StanConnectionFactory();
             string errStr = "";
 
             var ev = new AutoResetEvent(false);
@@ -2058,7 +2063,7 @@ namespace IntegrationTests
                         ev.Set();
                     };
 
-                    sc1 = scf.CreateConnection(CLUSTER_ID, CLIENT_ID, so);
+                    sc1 = getStanConnection(opts: so);
                     sc1.Publish("foo", null);
 
                     // Falling out of this block will stop the server
@@ -2070,7 +2075,7 @@ namespace IntegrationTests
                 //
                 // Create a new connection to the streaming server's embedded NATS server,
                 // and publish.  This replaces the sc1 client.
-                using(var c = scf.CreateConnection(CLUSTER_ID, CLIENT_ID))
+                using(var c = getStanConnection())
                     c.Publish("foo", null);
 
                 // now restart the clustered NATS server and let the client reconnect.  Eventually, the
@@ -2090,7 +2095,6 @@ namespace IntegrationTests
         public void TestPubFailsOnClientReplaced()
         {
             IStanConnection sc1;
-            StanConnectionFactory scf = new StanConnectionFactory();
 
             var ev = new AutoResetEvent(false);
 
@@ -2106,7 +2110,6 @@ namespace IntegrationTests
                         "Route was not established.");
                     // Connect to the routed NATS server, and set ping values
                     // to speed up the test and be resilient to slow CI instances.
-                    var cf = new ConnectionFactory();
                     var no = ConnectionFactory.GetDefaultOptions();
                     no.Url = "nats://127.0.0.1:4333";
                     no.MaxReconnect = Options.ReconnectForever;
@@ -2117,8 +2120,8 @@ namespace IntegrationTests
                     };
 
                     var so = StanOptions.GetDefaultOptions();
-                    so.NatsConn = cf.CreateConnection(no);
-                    sc1 = scf.CreateConnection(CLUSTER_ID, CLIENT_ID, so);
+                    so.NatsConn = getNatsConnection(no);
+                    sc1 = getStanConnection(opts: so);
                     sc1.Publish("foo", null);
                     // Falling out of this block will stop the server
                 }
@@ -2129,7 +2132,7 @@ namespace IntegrationTests
                 //
                 // Create a new connection to the streaming server's embedded NATS server,
                 // and publish.  This replaces the sc1 client.
-                using(var c = scf.CreateConnection(CLUSTER_ID, CLIENT_ID))
+                using(var c = getStanConnection())
                     c.Publish("foo", null);
 
                 // now restart the clustered NATS server and let the client reconnect.  Eventually, the
@@ -2147,19 +2150,18 @@ namespace IntegrationTests
         public void TestPingCloseUnlockPubCalls()
         {
             // FIXME - this seems to take too long... no deadlock, but unecessary blocking?
-            StanConnectionFactory scf = new StanConnectionFactory();
             using (new NatsServer())
             {
                 string nssArgs = " -ns tcp://127.0.0.1:4222";
                 using (var nss = new NatsStreamingServer(nssArgs))
                 {
                     var ev = new AutoResetEvent(false);
-                    var so = StanOptions.GetDefaultOptions();
-                    so.PingInterval = 50;
-                    so.PingMaxOutstanding = 10;
-                    so.PubAckWait = 100;
-                    
-                    using (var sc = scf.CreateConnection(CLUSTER_ID, CLIENT_ID))
+                    //var so = StanOptions.GetDefaultOptions();
+                    //so.PingInterval = 50;
+                    //so.PingMaxOutstanding = 10;
+                    //so.PubAckWait = 100;
+
+                    using (var sc = getStanConnection())
                     {
                         int total = 10;
                         long count = 0;
@@ -2265,7 +2267,7 @@ namespace IntegrationTests
                 var opts = StanOptions.GetDefaultOptions();
                 opts.NatsURL = "nats://127.0.0.1:4222,nats://127.0.0.1:4222";
                 opts.ConnectTimeout = 5000;
-                using (var c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
+                using (var c = getStanConnection(opts: opts))
                 {
                     c.Close();
                 }
@@ -2297,7 +2299,7 @@ namespace IntegrationTests
 
 
                 var opts = StanOptions.GetDefaultOptions();
-                opts.NatsConn = natsConn = new ConnectionFactory().CreateConnection(nOpts);
+                opts.NatsConn = natsConn = getNatsConnection(nOpts);
 
                 // make sure we don't time out on pings if this takes awhile.
                 opts.PingInterval = 60000;
@@ -2307,7 +2309,7 @@ namespace IntegrationTests
                 opts.PubAckWait = 250;
 
                 // connect and publish one message.
-                stanConn = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
+                stanConn = getStanConnection(opts: opts);
                 stanConn.Publish("foo", null);
             }
             // server will shutdown here.
@@ -2363,7 +2365,7 @@ namespace IntegrationTests
                 nOpts.Url = "nats://127.0.0.1:4222";
                 nOpts.MaxReconnect = Options.ReconnectForever;
                 var opts = StanOptions.GetDefaultOptions();
-                opts.NatsConn = natsConn = new ConnectionFactory().CreateConnection(nOpts);
+                opts.NatsConn = natsConn = getNatsConnection(nOpts);
 
                 // make sure we don't time out on pings if this takes awhile.
                 opts.PingInterval = 60000;
@@ -2373,7 +2375,7 @@ namespace IntegrationTests
                 opts.PubAckWait = 250;
 
                 // connect and publish one message.
-                stanConn = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
+                stanConn = getStanConnection(opts: opts);
 
                 long finished = 0;
                 pubTask = new Task(() =>
