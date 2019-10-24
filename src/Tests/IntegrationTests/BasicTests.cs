@@ -1838,7 +1838,6 @@ namespace IntegrationTests
         {
             using (new NatsStreamingServer())
             {
-                StanOptions so = StanOptions.GetDefaultOptions();
                 using (var c = getStanConnection())
                 {
                     var sub = c.Subscribe("foo", (obj, args) => { });
