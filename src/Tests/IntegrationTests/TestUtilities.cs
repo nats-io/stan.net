@@ -12,7 +12,6 @@
 // limitations under the License.
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using NATS.Client;
@@ -22,20 +21,21 @@ namespace IntegrationTests
     class RunnableServer : IDisposable
     {
         Process p;
-        string executablePath;
+        readonly string executablePath;
 
-        public void init(string exeName, string args)
+        public RunnableServer(string exeName, string args = null)
         {
-            TestUtilities.CleanupExistingServers(exeName);
+            cleanupExistingServers(exeName);
             executablePath = exeName + ".exe";
             ProcessStartInfo psInfo = createProcessStartInfo(args);
+
             try
             {
                 p = Process.Start(psInfo);
                 for (int i = 1; i <= 20; i++)
                 {
                     Thread.Sleep(100 * i);
-                    if (IsRunning())
+                    if (isRunning())
                         break;
                 }
 
@@ -53,92 +53,6 @@ namespace IntegrationTests
             }
         }
 
-        public RunnableServer(string exeName)
-        {
-            init(exeName, null);
-        }
-
-        public RunnableServer(string exeName, string args)
-        {
-            init(exeName, args);
-        }
-
-        private ProcessStartInfo createProcessStartInfo(string args)
-        {
-            var ps = new ProcessStartInfo(executablePath)
-            {
-                UseShellExecute = false,
-                Arguments = args,
-                WorkingDirectory = Environment.CurrentDirectory,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true,
-                ErrorDialog = false,
-                RedirectStandardError = true
-            };
-
-            return ps;
-        }
-
-        public bool IsRunning()
-        {
-            try
-            {
-                using (var cn = new ConnectionFactory().CreateConnection())
-                {
-                    cn.Close();
-
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public void Shutdown()
-        {
-            if (p == null)
-                return;
-
-            try
-            {
-                var successfullyClosed = p.CloseMainWindow() || p.WaitForExit(100);
-                if (!successfullyClosed)
-                    p.Kill();
-
-                p.Close();
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
-            p = null;
-        }
-
-        void IDisposable.Dispose()
-        {
-            Shutdown();
-        }
-    }
-
-    class NatsServer : RunnableServer
-    {
-        public NatsServer() : base("nats-server") { }
-        public NatsServer(string args) : base("nats-server", args) { }
-    }
-
-    class NatsStreamingServer : RunnableServer
-    {
-        public NatsStreamingServer() : base("nats-streaming-server") { }
-        public NatsStreamingServer(string args) : base("nats-streaming-server", args) { }
-    }
-
-    class TestUtilities
-    {
-        object mu = new object();
-
         private static void stopProcess(Process p)
         {
             try
@@ -154,7 +68,7 @@ namespace IntegrationTests
             }
         }
 
-        internal static void CleanupExistingServers(string procname)
+        private static void cleanupExistingServers(string procname)
         {
             Func<Process[]> getProcesses = () => Process.GetProcessesByName(procname);
 
@@ -177,5 +91,62 @@ namespace IntegrationTests
 
             Thread.Sleep(500);
         }
+
+        private ProcessStartInfo createProcessStartInfo(string args)
+        {
+            var ps = new ProcessStartInfo(executablePath)
+            {
+                UseShellExecute = false,
+                Arguments = args,
+                WorkingDirectory = Environment.CurrentDirectory,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                ErrorDialog = false,
+                RedirectStandardError = true
+            };
+
+            return ps;
+        }
+
+        private bool isRunning()
+        {
+            try
+            {
+                using (var cn = new ConnectionFactory().CreateConnection())
+                {
+                    cn.Close();
+
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public void Shutdown()
+        {
+            if (p == null)
+                return;
+
+            stopProcess(p);
+
+            p = null;
+        }
+
+        void IDisposable.Dispose() => Shutdown();
+    }
+
+    class NatsServer : RunnableServer
+    {
+        public NatsServer() : base("nats-server") { }
+        public NatsServer(string args) : base("nats-server", args) { }
+    }
+
+    class NatsStreamingServer : RunnableServer
+    {
+        public NatsStreamingServer() : base("nats-streaming-server") { }
+        public NatsStreamingServer(string args) : base("nats-streaming-server", args) { }
     }
 }
