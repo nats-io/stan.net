@@ -34,10 +34,8 @@ namespace IntegrationTests
     /// </summary>
     public static class TestSeedPorts
     {
-        public const int BasicTestsNormalServers = 4222; //2pc
-        public const int BasicTestsClusterServers = 6222; //2pc
-
-        public const int PingTests = 11490; //1pc
+        public const int ClusterTests = 11490; //4pc
+        public const int PingTests = 11494; //1pc
     }
 
     public abstract class TestContext
@@ -111,17 +109,17 @@ namespace IntegrationTests
 
     public class BasicTestsContext : TestContext
     {
-        private const int SeedPortNormalServers = TestSeedPorts.BasicTestsNormalServers;
-
         public readonly TestServerInfo DefaultServer = new TestServerInfo(Defaults.Port);
+    }
 
-        public readonly TestServerInfo Server1 = new TestServerInfo(SeedPortNormalServers);
-        public readonly TestServerInfo Server2 = new TestServerInfo(SeedPortNormalServers + 1);
+    public class ClusterTestsContext : TestContext
+    {
+        private const int SeedPort = TestSeedPorts.ClusterTests;
 
-        private const int SeedPortClusterServers = TestSeedPorts.BasicTestsClusterServers;
-
-        public readonly TestServerInfo ClusterServer1 = new TestServerInfo(SeedPortClusterServers);
-        public readonly TestServerInfo ClusterServer2 = new TestServerInfo(SeedPortClusterServers + 1);
+        public readonly TestServerInfo Server1 = new TestServerInfo(SeedPort);
+        public readonly TestServerInfo Server2 = new TestServerInfo(SeedPort + 1);
+        public readonly TestServerInfo ClusterServer1 = new TestServerInfo(SeedPort + 2);
+        public readonly TestServerInfo ClusterServer2 = new TestServerInfo(SeedPort + 3);
     }
 
     public class PingTestsContext : TestContext
