@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2018 The NATS Authors
+﻿// Copyright 2015-2019 The NATS Authors
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -22,26 +22,13 @@ using Xunit;
 
 namespace IntegrationTests
 {
-    public class TestBasic
+    public class BasicTests : TestSuite<BasicTestsContext>
     {
-        static readonly int DEFAULT_WAIT = 10000;
-        static readonly string CLUSTER_ID = "test-cluster";
-        static readonly string CLIENT_ID = "me";
+        public BasicTests(BasicTestsContext context) : base(context) { }
 
         EventHandler<StanMsgHandlerArgs> noopMh = (obj, args) => { /* NOOP */ };
 
-        internal IStanConnection DefaultConnection
-        {
-            get
-            {
-                var opts = StanOptions.GetDefaultOptions();
-                opts.NatsURL = "nats://127.0.0.1:4222";
-                opts.ConnectTimeout = 5000;
-                return new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
-            }
-        }
-
-        internal static byte[] getPayload(string s)
+        static byte[] getPayload(string s)
         {
             if (s == null)
                 return null;
@@ -53,18 +40,18 @@ namespace IntegrationTests
         public void TestNoServer()
         {
             // Do not start a streaming server.
-            Assert.Throws<StanConnectionException>(() => DefaultConnection);
+            Assert.Throws<StanConnectionException>(() => Context.GetStanConnection(Context.DefaultServer));
         }
 
         [Fact]
         public void TestUnreachable()
         {
             bool thrown = false;
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
                 try
                 {
-                    using(new StanConnectionFactory().CreateConnection("invalid-cluster", CLIENT_ID)){}
+                    using(Context.GetStanConnection(Context.DefaultServer, "invalid-cluster")){}
                 }
                 catch (StanConnectRequestTimeoutException se)
                 {
@@ -78,13 +65,13 @@ namespace IntegrationTests
         [Fact]
         public void TestNatsConnNotClosedOnClose()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (IConnection nc = new ConnectionFactory().CreateConnection())
+                using (var nc = Context.GetNatsConnection(Context.DefaultServer))
                 {
-                    var opts = StanOptions.GetDefaultOptions();
+                    var opts = Context.GetStanTestOptions(Context.DefaultServer);
                     opts.NatsConn = nc;
-                    using(var sc = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
+                    using(var sc = Context.GetStanConnection(opts: opts))
                         sc.Close();
 
                     Assert.True(nc.IsClosed() == false);
@@ -96,9 +83,9 @@ namespace IntegrationTests
         [Fact]
         public void TestBasicConnect()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using(var c = DefaultConnection)
+                using(var c = Context.GetStanConnection(Context.DefaultServer))
                     c.Close();
             }
         }
@@ -106,9 +93,9 @@ namespace IntegrationTests
         [Fact]
         public void TestBasicPublish()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     c.Publish("foo", getPayload("hello"));
                     c.Publish("foo", null);
@@ -119,13 +106,13 @@ namespace IntegrationTests
         [Fact]
         public void TestBasicPubAcksInFlight()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                var opts = StanOptions.GetDefaultOptions();
+                var opts = Context.GetStanTestOptions(Context.DefaultServer);
                 opts.MaxPubAcksInFlight = 2;
                 opts.PubAckWait = 10 * 1000;
 
-                using (var c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
+                using (var c = Context.GetStanConnection(opts: opts))
                 {
                     for (int i = 0; i < 10; i++)
                     {
@@ -150,9 +137,9 @@ namespace IntegrationTests
             string pubGuid = null;
             string err = null;
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     pubGuid = c.Publish("foo", getPayload("hello"), (obj, args) =>
                     {
@@ -160,7 +147,7 @@ namespace IntegrationTests
                         err = args.Error;
                         ev.Set();
                     });
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
 
                 Assert.False(string.IsNullOrWhiteSpace(pubGuid));
@@ -177,9 +164,9 @@ namespace IntegrationTests
             string pubGuid = null;
             string err = null;
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     pubGuid = c.Publish("foo", getPayload("hello"), (obj, args) =>
                     {
@@ -188,7 +175,7 @@ namespace IntegrationTests
                         ev.Set();
                     });
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
 
                 Assert.False(string.IsNullOrWhiteSpace(pubGuid));
@@ -200,9 +187,9 @@ namespace IntegrationTests
         [Fact]
         public void TestBasicSubscription()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     var sub = c.Subscribe("foo", noopMh);
                     sub.Unsubscribe();
@@ -213,9 +200,9 @@ namespace IntegrationTests
         [Fact]
         public void TestBasicQueueSubscription()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     var sub = c.Subscribe("foo", "bar", noopMh);
                     sub.Unsubscribe();
@@ -232,9 +219,9 @@ namespace IntegrationTests
             int count = 10;
             var ev = new AutoResetEvent(false);
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     int subCount = 0;
                     // Test using here for unsubscribe
@@ -267,7 +254,7 @@ namespace IntegrationTests
                         {
                             c.Publish("foo", payload);
                         }
-                        Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                        Assert.True(ev.WaitOne(Context.DefaultWait));
                     }
                 }
             }
@@ -284,9 +271,9 @@ namespace IntegrationTests
             int count = 10;
             var ev = new AutoResetEvent(false);
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     int subCount = 0;
                     // Test using here for unsubscribe
@@ -319,7 +306,7 @@ namespace IntegrationTests
                         {
                             c.Publish("foo", payload);
                         }
-                        Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                        Assert.True(ev.WaitOne(Context.DefaultWait));
                     }
                 }
             }
@@ -335,9 +322,9 @@ namespace IntegrationTests
 
             AutoResetEvent ev = new AutoResetEvent(false);
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 0; i < count; i++)
                     {
@@ -361,7 +348,7 @@ namespace IntegrationTests
 
                     sub.Unsubscribe();
 
-                    ev.WaitOne(DEFAULT_WAIT);
+                    ev.WaitOne(Context.DefaultWait);
 
                     if (ex != null)
                         throw ex;
@@ -379,9 +366,9 @@ namespace IntegrationTests
 
             AutoResetEvent ev = new AutoResetEvent(false);
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 1; i <= count; i++)
                     {
@@ -402,7 +389,7 @@ namespace IntegrationTests
                     sOpts.StartAt(6);
                     c.Subscribe("foo", sOpts, eh);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
             }
 
@@ -429,9 +416,9 @@ namespace IntegrationTests
 
             AutoResetEvent ev = new AutoResetEvent(false);
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 1; i <= 5; i++)
                     {
@@ -464,7 +451,7 @@ namespace IntegrationTests
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
                     sOpts.StartAt(startTime);
                     var s = c.Subscribe("foo", sOpts, eh);
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
             }
 
@@ -505,9 +492,9 @@ namespace IntegrationTests
 
             AutoResetEvent ev = new AutoResetEvent(false);
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 1; i <= 5; i++)
                     {
@@ -541,7 +528,7 @@ namespace IntegrationTests
                     sOpts.StartAt(DateTime.UtcNow - startTime);
                     c.Subscribe("foo", sOpts, eh);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT * 20));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 20));
                 }
             }
 
@@ -562,9 +549,9 @@ namespace IntegrationTests
         [Fact]
         public void TestSubscriptionStartAtWithEmptyStore()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     var opts = StanSubscriptionOptions.GetDefaultOptions();
 
@@ -597,9 +584,9 @@ namespace IntegrationTests
 
             AutoResetEvent ev = new AutoResetEvent(false);
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 1; i <= count; i++)
                     {
@@ -620,7 +607,7 @@ namespace IntegrationTests
                     sOpts.DeliverAllAvailable();
                     c.Subscribe("foo", sOpts, eh);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
             }
 
@@ -640,9 +627,9 @@ namespace IntegrationTests
         [Fact]
         public void TestUnsubscribe()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     bool received = false;
 
@@ -675,11 +662,11 @@ namespace IntegrationTests
         [Fact]
         public void TestUnsubscribeWhileConnClosing()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                var cOpts = StanOptions.GetDefaultOptions();
+                var cOpts = Context.GetStanTestOptions(Context.DefaultServer);
                 cOpts.PubAckWait = 50;
-                using (var c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, cOpts))
+                using (var c = Context.GetStanConnection(opts: cOpts))
                 {
                     AutoResetEvent ev = new AutoResetEvent(false);
 
@@ -693,7 +680,7 @@ namespace IntegrationTests
                     }).Start();
 
                     s.Unsubscribe();
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
             }
         }
@@ -703,9 +690,9 @@ namespace IntegrationTests
         {
             int count = 1000;
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     List<IStanSubscription> subs = new List<IStanSubscription>();
 
@@ -725,13 +712,13 @@ namespace IntegrationTests
         [Fact]
         public void TestDupClientID()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     Assert.Throws<StanConnectRequestException>(() =>
                     {
-                        using (DefaultConnection) {}
+                        using (Context.GetStanConnection(Context.DefaultServer)) {}
                     });
                 }
             }
@@ -742,9 +729,9 @@ namespace IntegrationTests
         {
             bool received = false;
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     var s = c.Subscribe("foo", (obj, args) => { received = true; });
 
@@ -767,9 +754,9 @@ namespace IntegrationTests
         {
             bool okMessage = false;
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     EventHandler<StanAckHandlerArgs> ah = (o, a) =>
                     {
@@ -799,9 +786,9 @@ namespace IntegrationTests
         [Fact]
         public void TestDoubleClose()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     c.Close();
                     c.Close();
@@ -817,9 +804,9 @@ namespace IntegrationTests
             AutoResetEvent evFirstSetReceived = new AutoResetEvent(false);
             Exception thrownEx = null;
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     long nr;
 
@@ -870,7 +857,7 @@ namespace IntegrationTests
                             }
                         }
                     });
-                    Assert.True(evFirstSetReceived.WaitOne(DEFAULT_WAIT));
+                    Assert.True(evFirstSetReceived.WaitOne(Context.DefaultWait));
                     Assert.True(thrownEx == null);
 
                     // Wait a bit longer for other messages which would be an error.
@@ -884,7 +871,7 @@ namespace IntegrationTests
                         m.Ack();
                     }
 
-                    evAllReceived.WaitOne(DEFAULT_WAIT);
+                    evAllReceived.WaitOne(Context.DefaultWait);
 
                     s.Unsubscribe();
 
@@ -900,9 +887,9 @@ namespace IntegrationTests
             AutoResetEvent ev = new AutoResetEvent(false);
             Exception thrownEx = null;
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
 
                     var s = c.Subscribe("foo", (obj, args) =>
@@ -920,7 +907,7 @@ namespace IntegrationTests
 
                     c.Publish("foo", null);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                     s.Unsubscribe();
                     Assert.IsAssignableFrom<StanManualAckException>(thrownEx);
                 }
@@ -934,9 +921,9 @@ namespace IntegrationTests
             AutoResetEvent evAllReceived = new AutoResetEvent(false);
             AutoResetEvent evFirstSetReceived = new AutoResetEvent(false);
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     long nr;
 
@@ -971,9 +958,9 @@ namespace IntegrationTests
                             evAllReceived.Set();
                         }
                     });
-                    Assert.True(evFirstSetReceived.WaitOne(DEFAULT_WAIT));
+                    Assert.True(evFirstSetReceived.WaitOne(Context.DefaultWait));
                     Assert.True(Interlocked.Read(ref received) == toSend);
-                    Assert.True(evAllReceived.WaitOne(DEFAULT_WAIT));
+                    Assert.True(evAllReceived.WaitOne(Context.DefaultWait));
                     Assert.True(Interlocked.Read(ref received) == 2 * toSend);
                 }
             }
@@ -986,9 +973,9 @@ namespace IntegrationTests
             bool redelivered = false;
             AutoResetEvent ev = new AutoResetEvent(false);
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 0; i < toSend; i++)
                     {
@@ -1039,9 +1026,9 @@ namespace IntegrationTests
 
         private void testRedelivery(int count, bool useQueueSub)
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     int toSend = count;
                     AutoResetEvent ev = new AutoResetEvent(false);
@@ -1112,7 +1099,7 @@ namespace IntegrationTests
 
                     // If this succeeds, it means that we got all messages first delivered,
                     // and then at least 2 * toSend messages received as redelivered.
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT * 10));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 10));
 
                     Thread.Sleep(ackRedeliveryTime + 100);
 
@@ -1163,9 +1150,9 @@ namespace IntegrationTests
             sOpts.DeliverAllAvailable();
             sOpts.DurableName = "durable-foo";
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c1 = DefaultConnection)
+                using (var c1 = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 0; i < toSend; i++)
                     {
@@ -1190,11 +1177,11 @@ namespace IntegrationTests
                         }
                     });
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                     Assert.True(Interlocked.Read(ref received) == 10);
                 }
 
-                using (var c2 = DefaultConnection)
+                using (var c2 = Context.GetStanConnection(Context.DefaultServer))
                 {
                     EventHandler<StanMsgHandlerArgs> eh = (obj, args) =>
                     {
@@ -1217,7 +1204,7 @@ namespace IntegrationTests
                     // check that durables with the same name but different subject are OK.
                     c2.Subscribe("bar", sOpts, eh).Unsubscribe();
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
 
                     // toSend+1 to count the unacked message after closing in the callback above.
                     Assert.True(Interlocked.Read(ref received) == toSend + 1);
@@ -1270,9 +1257,9 @@ namespace IntegrationTests
                     ev.Set();
             };
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     s1 = c.Subscribe("foo", "bar", mh);
                     s2 = c.Subscribe("foo", "bar", mh);
@@ -1280,7 +1267,7 @@ namespace IntegrationTests
                     for (int i = 0; i < toSend; i++)
                         c.Publish("foo", null);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                 }
 
                 Assert.False(unknownSubscription);
@@ -1342,9 +1329,9 @@ namespace IntegrationTests
                     ev.Set();
             };
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     s1 = c.Subscribe("foo", "bar", mh);
                     s2 = c.Subscribe("foo", "bar", mh);
@@ -1353,7 +1340,7 @@ namespace IntegrationTests
                         c.Publish("foo", null);
 
                     subBlock.Set();
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT * 2));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 2));
 
                     s1.Unsubscribe();
                     s2.Unsubscribe();
@@ -1394,9 +1381,9 @@ namespace IntegrationTests
                 // Do not ack s2
             };
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
                     sOpts.ManualAcks = true;
@@ -1409,7 +1396,7 @@ namespace IntegrationTests
                     for (int i = 0; i < toSend; i++)
                         c.Publish("foo", null);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT * 2));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 2));
 
                     s1.Unsubscribe();
                     s2.Unsubscribe();
@@ -1454,9 +1441,9 @@ namespace IntegrationTests
                 // Do not ack s2
             };
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
                     sOpts.ManualAcks = true;
@@ -1469,7 +1456,7 @@ namespace IntegrationTests
                     for (int i = 0; i < toSend; i++)
                         c.Publish("foo", null);
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT * 3));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 3));
 
                     s1.Unsubscribe();
                     s2.Unsubscribe();
@@ -1488,9 +1475,9 @@ namespace IntegrationTests
             object msgsLock = new object();
             AutoResetEvent ev = new AutoResetEvent(false);
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 0; i < toSend; i++)
                     {
@@ -1520,7 +1507,7 @@ namespace IntegrationTests
                             ev.Set();
                     });
 
-                    Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                    Assert.True(ev.WaitOne(Context.DefaultWait));
                     // wait for redelivery
                     Thread.Sleep(1500);
                 }
@@ -1545,9 +1532,9 @@ namespace IntegrationTests
             long received = 0;
             long sent = 0;
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     EventHandler<StanMsgHandlerArgs> eh = (obj, args) =>
                     {
@@ -1571,13 +1558,13 @@ namespace IntegrationTests
                         }
                     }).Start();
 
-                    pubBatch.WaitOne(DEFAULT_WAIT);
+                    pubBatch.WaitOne(Context.DefaultWait);
 
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
                     sOpts.DeliverAllAvailable();
                     using (var s = c.Subscribe("foo", sOpts, eh))
                     {
-                        ev.WaitOne(DEFAULT_WAIT);
+                        ev.WaitOne(Context.DefaultWait);
                         // wait to see if any duplicate messages are sent
                         Thread.Sleep(250);
                     }
@@ -1589,9 +1576,9 @@ namespace IntegrationTests
         [Fact]
         public void TestMaxChannels()
         {
-            using (new NatsStreamingServer(" -mc 5"))
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer, " -mc 5"))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 0; i < 5; i++)
                     {
@@ -1606,9 +1593,9 @@ namespace IntegrationTests
         public void TestRaceAckOnClose()
         {
             int toSend = 100;
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 0; i < toSend - 1; i++)
                     {
@@ -1629,9 +1616,9 @@ namespace IntegrationTests
         [Fact]
         public void TestNatsConn()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     var nc = c.NATSConnection;
                     Assert.True(nc.State == ConnState.CONNECTED);
@@ -1642,11 +1629,11 @@ namespace IntegrationTests
                     Assert.True(c.NATSConnection == null);
                 }
 
-                using (var nc2 = new ConnectionFactory().CreateConnection())
+                using (var nc2 = Context.GetNatsConnection(Context.DefaultServer))
                 {
-                    var opts = StanOptions.GetDefaultOptions();
+                    var opts = Context.GetStanTestOptions(Context.DefaultServer);
                     opts.NatsConn = nc2;
-                    using (var c2 = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
+                    using (var c2 = Context.GetStanConnection(opts: opts))
                     {
                         Assert.True(nc2 == c2.NATSConnection);
                         c2.Close();
@@ -1661,15 +1648,14 @@ namespace IntegrationTests
         [Fact(Skip = "HANGS SOMETIMES")]
         public void TestMaxPubAckInflight()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
                 AutoResetEvent ev = new AutoResetEvent(false);
-                var opts = StanOptions.GetDefaultOptions();
+                var opts = Context.GetStanTestOptions(Context.DefaultServer);
                 opts.PubAckWait = 4000;
                 opts.MaxPubAcksInFlight = 1;
 
-                using (var c = new StanConnectionFactory().CreateConnection(
-                    CLUSTER_ID, CLIENT_ID, opts))
+                using (var c = Context.GetStanConnection(opts: opts))
                 {
                     var sw = Stopwatch.StartNew();
 
@@ -1691,9 +1677,9 @@ namespace IntegrationTests
 
         private async void testAsyncPublishAPI()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     var guid = await c.PublishAsync("foo", null);
                     Assert.False(string.IsNullOrWhiteSpace(guid));
@@ -1709,9 +1695,9 @@ namespace IntegrationTests
 
         private async void testAsyncPublishAPIParallel()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     // make sure it simply works without blocking.
                     Stopwatch sw = Stopwatch.StartNew();
@@ -1745,9 +1731,9 @@ namespace IntegrationTests
         {
             List<Task<string>> pubs = new List<Task<string>>();
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     for (int i = 0; i < 10; i++)
                     {
@@ -1760,7 +1746,7 @@ namespace IntegrationTests
 
         private void testSubscriberClose(string channel, bool useQG)
         {
-            using (var sc = DefaultConnection)
+            using (var sc = Context.GetStanConnection(Context.DefaultServer))
             {
                 int received = 0;
                 bool error = false;
@@ -1789,7 +1775,7 @@ namespace IntegrationTests
                     sub = sc.Subscribe(channel, so, eh);
 
                 // wait for the first message
-                Assert.True(ev.WaitOne(DEFAULT_WAIT));
+                Assert.True(ev.WaitOne(Context.DefaultWait));
                 Assert.False(error, "invalid message seq received.");
 
                 // Wait a bit to reduce risk of server processing unsubscribe before ACK
@@ -1828,10 +1814,9 @@ namespace IntegrationTests
         [Fact]
         public void TestSubscriberClose()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                StanOptions so = StanOptions.GetDefaultOptions();
-                using (var c = DefaultConnection)
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     var sub = c.Subscribe("foo", (obj, args) => { });
                     try
@@ -1859,103 +1844,13 @@ namespace IntegrationTests
             }
         }
 
-        private void TestPingIntervalFail(int value)
-        {
-            var opts = StanOptions.GetDefaultOptions();
-            Assert.Throws<ArgumentOutOfRangeException>(() => { opts.PingInterval = value; });
-        }
-
-        private void TestPingMaxOutFail(int value)
-        {
-            var opts = StanOptions.GetDefaultOptions();
-            Assert.Throws<ArgumentOutOfRangeException>(() => { opts.PingMaxOutstanding = value; });
-        }
-
-        [Fact]
-        public void TestPingParameters()
-        {
-            using (new NatsStreamingServer())
-            {
-                TestPingIntervalFail(-1);
-                TestPingIntervalFail(0);
-                TestPingMaxOutFail(-1);
-                TestPingMaxOutFail(0);
-                TestPingMaxOutFail(1);
-            }
-        }
-
-        [Fact]
-        public void TestPingsNatsConnGone()
-        {
-            using (new NatsStreamingServer())
-            {
-                int count = 0;
-                int pingIvl = 1000;
-                var exceeded = new AutoResetEvent(false);
-                using (var nc = new ConnectionFactory().CreateConnection())
-                {
-                    nc.SubscribeAsync(StanConsts.DefaultDiscoverPrefix + "." + CLUSTER_ID + ".pings", (obj, args) =>
-                    {
-                        count++;
-                        if (count > StanConsts.DefaultPingMaxOut)
-                        {
-                            exceeded.Set();
-                        }
-                    });
-                    nc.Flush();
-
-                    var connLostEvent = new AutoResetEvent(false);
-                    var opts = StanOptions.GetDefaultOptions();
-                    opts.NatsConn = nc;
-                    opts.PingInterval = pingIvl;
-                    opts.ConnectionLostEventHandler = (obj, args) => { connLostEvent.Set(); };
-
-                    using (new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
-                    {
-                        // wait for pings, give us an extra ping just in case.
-                        Assert.True(exceeded.WaitOne(60000 + pingIvl * (StanConsts.DefaultPingMaxOut + 2)));
-
-                        // Close the NATS connection, wait for the error handler to fire (with 10s of slack).
-                        nc.Close();
-                        Assert.True(connLostEvent.WaitOne(120000 + (pingIvl * StanConsts.DefaultPingMaxOut)));
-                    }
-                }
-            }
-        }
-
-        [Fact]
-        public void TestPingStreamingServerGone()
-        {
-            using (new NatsServer())
-            {
-                using (var nss = new NatsStreamingServer(" -ns nats://127.0.0.1:4222"))
-                {
-                    AutoResetEvent ev = new AutoResetEvent(false);
-
-                    StanOptions so = StanOptions.GetDefaultOptions();
-                    so.PingInterval = 200;
-                    so.PingMaxOutstanding = 3;
-                    so.ConnectionLostEventHandler = (obj, args) =>
-                    {
-                        ev.Set();
-                    };
-
-                    using (var sc = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, so))
-                    {
-                        nss.Shutdown();
-                        Assert.True(ev.WaitOne(20000));
-                    }
-                }
-            }
-        }
-
         [Fact]
         public void TestConnErrHandlerNotCalledOnNormalClose()
         {
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
                 var ev = new AutoResetEvent(false);
-                var so = StanOptions.GetDefaultOptions();
+                var so = Context.GetStanTestOptions(Context.DefaultServer);
                 so.PingInterval = 100;
                 so.PingMaxOutstanding = 3;
                 so.ConnectionLostEventHandler = (obj, args) =>
@@ -1963,245 +1858,11 @@ namespace IntegrationTests
                     ev.Set();
                 };
 
-                using(var sc = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, so))
+                using(var sc = Context.GetStanConnection(opts: so))
                     sc.Close();
 
                 // ensure handler is not called
                 Assert.False(ev.WaitOne(2000));
-            }
-        }
-
-        // This method connects to two servers, and attempts to send
-        // messages through them for a number of iterations over a timeout.
-        // If a message has been received, we know there is connectivity
-        // (a route) between the url1 and url2 server endpoints.
-        private bool waitForRoute(string url1, string url2, int timeout)
-        {
-            AutoResetEvent ev = new AutoResetEvent(false);
-            bool routeEstablished = false;
-
-            var cf = new ConnectionFactory();
-
-            // create conn 1
-            var opts = ConnectionFactory.GetDefaultOptions();
-            opts.AllowReconnect = false;
-            opts.Url = url1;
-            using (var nc1 = cf.CreateConnection(opts))
-            {
-
-                // create conn 2, wait for a message
-                opts.Url = url2;
-                using (var nc2 = cf.CreateConnection(opts))
-                {
-                    nc2.SubscribeAsync("routecheck", (obj, args) => { ev.Set(); });
-                    nc2.Flush();
-
-                    for (int i = 0; i < 10 && routeEstablished == false; i++)
-                    {
-                        nc1.Publish("routecheck", null);
-                        nc1.Flush();
-                        routeEstablished = ev.WaitOne(timeout / 10);
-                    }
-
-                    nc1.Close();
-                    nc2.Close();
-                }
-            }
-
-            return routeEstablished;
-        }
-
-        // This will test a ping response error, with the error
-        // being that a client has been replaced.
-        //
-        // 1) Cluster the embedded NATS server in the streaming server
-        //    with an external CORE nats server but do not advertise so
-        //    core NATS clients will only reconnect to the server they are
-        //    configured with.
-        // 2) Create a STAN client on the external server
-        // 3) Kill the external server.  The streaming server knows of the client,
-        //    who will attempt to reconnect to the killed server, effectively 
-        //    "pausing" the client.
-        // 4) Connect another client with the same ID to the running embedded 
-        //    NATS server.
-        // 5) Restart the external server.  The original client will reconnect, and
-        //    we check that it gets a ping response that it has been replaced.
-        [Fact]
-        public void TestPingResponseError()
-        {
-            IStanConnection sc1;
-            StanConnectionFactory scf = new StanConnectionFactory();
-            string errStr = "";
-
-            var ev = new AutoResetEvent(false);
-
-            // Create a NATS streaming server with an embedded NATS server
-            // clustered with an external NATS server.
-            string s1Args = " -p 4222 -cluster \"nats://127.0.0.1:6222\" -routes \"nats://127.0.0.1:6333\" --no_advertise=true";
-            string s2Args = " -p 4333 -cluster \"nats://127.0.0.1:6333\" -routes \"nats://127.0.0.1:6222\" --no_advertise=true";
-            using (new NatsStreamingServer(s1Args))
-            {
-                using (new NatsServer(s2Args))
-                {
-                    Assert.True(waitForRoute("nats://127.0.0.1:4222", "nats://127.0.0.1:4333", 30000), 
-                        "Route was not established.");
-
-                    // Connect to the routed NATS server, and set ping values
-                    // to speed up the test and be resilient to slow CI instances.
-                    var so = StanOptions.GetDefaultOptions();
-                    so.NatsURL = "nats://127.0.0.1:4333";
-                    so.PingInterval = 1000;
-                    so.PingMaxOutstanding = 120;
-                    so.ConnectionLostEventHandler = (obj, args) =>
-                    {
-                        errStr = args.ConnectionException.Message;
-                        ev.Set();
-                    };
-
-                    sc1 = scf.CreateConnection(CLUSTER_ID, CLIENT_ID, so);
-                    sc1.Publish("foo", null);
-
-                    // Falling out of this block will stop the server
-                }
-
-                // Now the NATS server is down and the internal NATS connection in sc1
-                // is attempting to reconnect.  It can't find the streaming server's embedded
-                // server in the cluster because the servers do not advertise.
-                //
-                // Create a new connection to the streaming server's embedded NATS server,
-                // and publish.  This replaces the sc1 client.
-                using(var c = scf.CreateConnection(CLUSTER_ID, CLIENT_ID))
-                    c.Publish("foo", null);
-
-                // now restart the clustered NATS server and let the client reconnect.  Eventually, the
-                // nats connection in sc1 reconnects, and we get a client replaced message.
-                using (new NatsServer(s2Args))
-                {
-                    // ensure handler on the first conn is called
-                    Assert.True(ev.WaitOne(30000));
-                    Assert.Contains("replaced", errStr);
-                }
-            }
-        }
-
-        // See TestPingResponseError above for general structure, except here we 
-        // test for errors in publish.
-        [Fact]
-        public void TestPubFailsOnClientReplaced()
-        {
-            IStanConnection sc1;
-            StanConnectionFactory scf = new StanConnectionFactory();
-
-            var ev = new AutoResetEvent(false);
-
-            // Create a NATS streaming server with an embedded NATS server
-            // clustered with an external NATS server.
-            string s1Args = " -p 4222 -m 8222 -cluster \"nats://127.0.0.1:6222\" -routes \"nats://127.0.0.1:6333\" --no_advertise=true";
-            string s2Args = " -p 4333 -m 8333 -cluster \"nats://127.0.0.1:6333\" -routes \"nats://127.0.0.1:6222\" --no_advertise=true";
-            using (new NatsStreamingServer(s1Args))
-            {
-                using (new NatsServer(s2Args))
-                {
-                    Assert.True(waitForRoute("nats://127.0.0.1:4222", "nats://127.0.0.1:4333", 30000),
-                        "Route was not established.");
-                    // Connect to the routed NATS server, and set ping values
-                    // to speed up the test and be resilient to slow CI instances.
-                    var cf = new ConnectionFactory();
-                    var no = ConnectionFactory.GetDefaultOptions();
-                    no.Url = "nats://127.0.0.1:4333";
-                    no.MaxReconnect = Options.ReconnectForever;
-                    no.ReconnectWait = 250;
-                    no.ReconnectedEventHandler = (obj, args) =>
-                    {
-                        ev.Set();
-                    };
-
-                    var so = StanOptions.GetDefaultOptions();
-                    so.NatsConn = cf.CreateConnection(no);
-                    sc1 = scf.CreateConnection(CLUSTER_ID, CLIENT_ID, so);
-                    sc1.Publish("foo", null);
-                    // Falling out of this block will stop the server
-                }
-
-                // Now the NATS server is down and the internal NATS connection in sc1
-                // is attempting to reconnect.  It can't find the streaming server's embedded
-                // server in the cluster because the servers do not advertise.
-                //
-                // Create a new connection to the streaming server's embedded NATS server,
-                // and publish.  This replaces the sc1 client.
-                using(var c = scf.CreateConnection(CLUSTER_ID, CLIENT_ID))
-                    c.Publish("foo", null);
-
-                // now restart the clustered NATS server and let the client reconnect.  Eventually, the
-                // nats connection in sc1 reconnects, and we check for an error on publish.
-                using (new NatsServer(s2Args))
-                {
-                    // wait until we are reconnected
-                    Assert.True(ev.WaitOne(30000));
-                    Assert.Throws<StanException>(() => sc1.Publish("foo", null));
-                }
-            }
-        }
-
-        [Fact]
-        public void TestPingCloseUnlockPubCalls()
-        {
-            // FIXME - this seems to take too long... no deadlock, but unecessary blocking?
-            StanConnectionFactory scf = new StanConnectionFactory();
-            using (new NatsServer())
-            {
-                string nssArgs = " -ns tcp://127.0.0.1:4222";
-                using (var nss = new NatsStreamingServer(nssArgs))
-                {
-                    var ev = new AutoResetEvent(false);
-                    var so = StanOptions.GetDefaultOptions();
-                    so.PingInterval = 50;
-                    so.PingMaxOutstanding = 10;
-                    so.PubAckWait = 100;
-                    
-                    using (var sc = scf.CreateConnection(CLUSTER_ID, CLIENT_ID))
-                    {
-                        int total = 10;
-                        long count = 0;
-                        EventHandler<StanAckHandlerArgs> ah = (obj, args) =>
-                        {
-                            if (Interlocked.Increment(ref count) == (total / 2) - 1)
-                            {
-                                ev.Set();
-                            }
-                        };
-
-                        nss.Shutdown();
-
-                        List<Task<string>> pubs = new List<Task<string>>();
-                        for (int i = 0; i < total / 2; i++)
-                        {
-                            pubs.Add(Task.Run<string>(() => sc.Publish("foo", null, ah)));
-                            pubs.Add(sc.PublishAsync("foo", null));
-                        }
-
-                        foreach (Task t in pubs)
-                        {
-                            try
-                            {
-                                t.Wait();
-                            }
-                            catch (Exception)
-                            {
-                                Interlocked.Increment(ref count);
-                            }
-                        }
-
-                        int check = 0;
-                        while (Interlocked.Read(ref count) != total && check < 40)
-                        {
-                            ev.WaitOne(500);
-                            check++;
-                        }
-
-                        Assert.True(count == total);
-                    }
-                }
             }
         }
 
@@ -2260,12 +1921,12 @@ namespace IntegrationTests
         public void TestMultipleNatsUrl()
         {
 
-            using (new NatsStreamingServer())
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                var opts = StanOptions.GetDefaultOptions();
-                opts.NatsURL = "nats://127.0.0.1:4222,nats://127.0.0.1:4222";
+                var opts = Context.GetStanTestOptions(Context.DefaultServer);
+                opts.NatsURL = $"{Context.DefaultServer},{Context.DefaultServer}";
                 opts.ConnectTimeout = 5000;
-                using (var c = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts))
+                using (var c = Context.GetStanConnection(opts: opts))
                 {
                     c.Close();
                 }
@@ -2280,10 +1941,10 @@ namespace IntegrationTests
             AutoResetEvent disconnected = new AutoResetEvent(false);
             AutoResetEvent reconnected = new AutoResetEvent(false);
 
-            using (var server = new NatsStreamingServer("-st FILE -dir ."))
+            using (var server = Context.StartStreamingServerWithEmbedded(Context.DefaultServer, $"-st FILE -dir {Context.GenerateStorageDirPath()}"))
             {
-                var nOpts = ConnectionFactory.GetDefaultOptions();
-                nOpts.Url = "nats://127.0.0.1:4222";
+                var nOpts = Context.GetNatsTestOptions(Context.DefaultServer);
+                nOpts.Url = Context.DefaultServer.Url;
                 nOpts.MaxReconnect = Options.ReconnectForever;
                 nOpts.ReconnectedEventHandler = (obj, args) =>
                 {
@@ -2296,8 +1957,8 @@ namespace IntegrationTests
                 };
 
 
-                var opts = StanOptions.GetDefaultOptions();
-                opts.NatsConn = natsConn = new ConnectionFactory().CreateConnection(nOpts);
+                var opts = Context.GetStanTestOptions(Context.DefaultServer);
+                opts.NatsConn = natsConn = Context.GetNatsConnection(nOpts);
 
                 // make sure we don't time out on pings if this takes awhile.
                 opts.PingInterval = 60000;
@@ -2307,7 +1968,7 @@ namespace IntegrationTests
                 opts.PubAckWait = 250;
 
                 // connect and publish one message.
-                stanConn = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
+                stanConn = Context.GetStanConnection(opts: opts);
                 stanConn.Publish("foo", null);
             }
             // server will shutdown here.
@@ -2329,7 +1990,7 @@ namespace IntegrationTests
             }
 
             // start the server again...
-            using (var server = new NatsStreamingServer("-st FILE -dir ."))
+            using (var server = Context.StartStreamingServerWithEmbedded(Context.DefaultServer,$"-st FILE -dir {Context.GenerateStorageDirPath()}"))
             {
                 // Wait until we're reconnected.
                 Assert.True(reconnected.WaitOne(10000));
@@ -2357,13 +2018,13 @@ namespace IntegrationTests
             AutoResetEvent publishFail = new AutoResetEvent(false);
             Task pubTask = null;
 
-            using (var server = new NatsStreamingServer("-st FILE -dir ."))
+            using (var server = Context.StartStreamingServerWithEmbedded(Context.DefaultServer, $"-st FILE -dir {Context.GenerateStorageDirPath()}"))
             {
-                var nOpts = ConnectionFactory.GetDefaultOptions();
-                nOpts.Url = "nats://127.0.0.1:4222";
+                var nOpts = Context.GetNatsTestOptions(Context.DefaultServer);
+                nOpts.Url = Context.DefaultServer.Url;
                 nOpts.MaxReconnect = Options.ReconnectForever;
-                var opts = StanOptions.GetDefaultOptions();
-                opts.NatsConn = natsConn = new ConnectionFactory().CreateConnection(nOpts);
+                var opts = Context.GetStanTestOptions(Context.DefaultServer);
+                opts.NatsConn = natsConn = Context.GetNatsConnection(nOpts);
 
                 // make sure we don't time out on pings if this takes awhile.
                 opts.PingInterval = 60000;
@@ -2373,7 +2034,7 @@ namespace IntegrationTests
                 opts.PubAckWait = 250;
 
                 // connect and publish one message.
-                stanConn = new StanConnectionFactory().CreateConnection(CLUSTER_ID, CLIENT_ID, opts);
+                stanConn = Context.GetStanConnection(opts: opts);
 
                 long finished = 0;
                 pubTask = new Task(() =>
@@ -2406,7 +2067,7 @@ namespace IntegrationTests
             Assert.True(publishFail.WaitOne(10000));
 
             // start the server again...
-            using (var server = new NatsStreamingServer("-st FILE -dir ."))
+            using (var server = Context.StartStreamingServerWithEmbedded(Context.DefaultServer, $"-st FILE -dir {Context.GenerateStorageDirPath()}"))
             {
                 // Make sure we can publish again.
                 publishOK.Reset();

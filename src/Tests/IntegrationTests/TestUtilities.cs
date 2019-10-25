@@ -1,4 +1,4 @@
-﻿// Copyright 2015-2018 The NATS Authors
+﻿// Copyright 2015-2019 The NATS Authors
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -12,132 +12,41 @@
 // limitations under the License.
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using NATS.Client;
 
 namespace IntegrationTests
 {
-    class RunnableServer : IDisposable
+    public abstract class RunnableServer : IDisposable
     {
         Process p;
-        string executablePath;
 
-        public void init(string exeName, string args)
+        protected RunnableServer(string exeName, string args, Func<bool> isRunning)
         {
-            TestUtilities.CleanupExistingServers(exeName);
-            executablePath = exeName + ".exe";
-            ProcessStartInfo psInfo = createProcessStartInfo(args);
+            var psInfo = createProcessStartInfo($"{exeName}.exe", args);
+
             try
             {
                 p = Process.Start(psInfo);
                 for (int i = 1; i <= 20; i++)
                 {
                     Thread.Sleep(100 * i);
-                    if (IsRunning())
+                    if (isRunning())
                         break;
                 }
 
-                if (p.HasExited)
-                {
+                if (p == null || p.HasExited)
                     throw new Exception("Unable to start process.");
-                }
 
                 Thread.Sleep(1000);
             }
             catch (Exception ex)
             {
                 p = null;
-                throw new Exception(string.Format("{0} {1} failure with error: {2}", psInfo.FileName, psInfo.Arguments, ex.Message));
+                throw new Exception($"{psInfo.FileName} {psInfo.Arguments} failure with error: {ex.Message}");
             }
         }
-
-        public RunnableServer(string exeName)
-        {
-            init(exeName, null);
-        }
-
-        public RunnableServer(string exeName, string args)
-        {
-            init(exeName, args);
-        }
-
-        private ProcessStartInfo createProcessStartInfo(string args)
-        {
-            var ps = new ProcessStartInfo(executablePath)
-            {
-                UseShellExecute = false,
-                Arguments = args,
-                WorkingDirectory = Environment.CurrentDirectory,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true,
-                ErrorDialog = false,
-                RedirectStandardError = true
-            };
-
-            return ps;
-        }
-
-        public bool IsRunning()
-        {
-            try
-            {
-                using (var cn = new ConnectionFactory().CreateConnection())
-                {
-                    cn.Close();
-
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public void Shutdown()
-        {
-            if (p == null)
-                return;
-
-            try
-            {
-                var successfullyClosed = p.CloseMainWindow() || p.WaitForExit(100);
-                if (!successfullyClosed)
-                    p.Kill();
-
-                p.Close();
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
-            p = null;
-        }
-
-        void IDisposable.Dispose()
-        {
-            Shutdown();
-        }
-    }
-
-    class NatsServer : RunnableServer
-    {
-        public NatsServer() : base("nats-server") { }
-        public NatsServer(string args) : base("nats-server", args) { }
-    }
-
-    class NatsStreamingServer : RunnableServer
-    {
-        public NatsStreamingServer() : base("nats-streaming-server") { }
-        public NatsStreamingServer(string args) : base("nats-streaming-server", args) { }
-    }
-
-    class TestUtilities
-    {
-        object mu = new object();
 
         private static void stopProcess(Process p)
         {
@@ -154,7 +63,7 @@ namespace IntegrationTests
             }
         }
 
-        internal static void CleanupExistingServers(string procname)
+        protected static void CleanupExistingServers(string procname)
         {
             Func<Process[]> getProcesses = () => Process.GetProcessesByName(procname);
 
@@ -176,6 +85,90 @@ namespace IntegrationTests
             }
 
             Thread.Sleep(500);
+        }
+
+        private ProcessStartInfo createProcessStartInfo(string exe, string args)
+        {
+            var ps = new ProcessStartInfo(exe)
+            {
+                UseShellExecute = false,
+                Arguments = args,
+                WorkingDirectory = Environment.CurrentDirectory,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                ErrorDialog = false,
+                RedirectStandardError = true
+            };
+
+            return ps;
+        }
+
+        protected static bool IsRunning(TestServerInfo serverInfo)
+        {
+            try
+            {
+                using (var cn = new ConnectionFactory().CreateConnection(serverInfo.Url))
+                {
+                    cn.Close();
+
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public void Shutdown()
+        {
+            if (p == null)
+                return;
+
+            stopProcess(p);
+
+            p = null;
+        }
+
+        void IDisposable.Dispose() => Shutdown();
+    }
+
+    public class NatsServer : RunnableServer
+    {
+        private const string ProcName = "nats-server";
+
+        static NatsServer() => RunnableServer.CleanupExistingServers(ProcName);
+
+        private NatsServer(string args, Func<bool> isRunning) : base(ProcName, args, isRunning) { }
+
+        public static NatsServer Start(TestServerInfo serverInfo, string additionalArgs = null)
+        {
+            var args = $"-a {serverInfo.Address} -p {serverInfo.Port} {additionalArgs}";
+
+            return new NatsServer(args, () => IsRunning(serverInfo));
+        }
+    }
+
+    public class NatsStreamingServer : RunnableServer
+    {
+        private const string ProcName = "nats-streaming-server";
+
+        static NatsStreamingServer() => RunnableServer.CleanupExistingServers(ProcName);
+
+        private NatsStreamingServer(string args, Func<bool> isRunning) : base(ProcName, args, isRunning) { }
+
+        public static NatsStreamingServer StartWithEmbedded(TestServerInfo serverInfo, string clusterId, string additionalArgs = null)
+        {
+            var args = $"-cid {clusterId} -a {serverInfo.Address} -p {serverInfo.Port} {additionalArgs}";
+
+            return new NatsStreamingServer(args, () => IsRunning(serverInfo));
+        }
+
+        public static NatsStreamingServer StartWithExternal(TestServerInfo serverInfo, string clusterId, string additionalArgs = null)
+        {
+            var args = $"-cid {clusterId} -ns tcp://{serverInfo.Address}:{serverInfo.Port} {additionalArgs}";
+
+            return new NatsStreamingServer(args, () => IsRunning(serverInfo));
         }
     }
 }
