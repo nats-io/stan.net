@@ -36,6 +36,7 @@ namespace IntegrationTests
     {
         public const int ClusterTests = 11490; //4pc
         public const int PingTests = 11494; //1pc
+        public const int RxTests = 11495; //1pc
     }
 
     public abstract class TestContext
@@ -125,6 +126,13 @@ namespace IntegrationTests
     public class PingTestsContext : TestContext
     {
         private const int SeedPort = TestSeedPorts.PingTests;
+
+        public readonly TestServerInfo Server1 = new TestServerInfo(SeedPort);
+    }
+
+    public class RxTestsContext : TestContext
+    {
+        private const int SeedPort = TestSeedPorts.RxTests;
 
         public readonly TestServerInfo Server1 = new TestServerInfo(SeedPort);
     }
