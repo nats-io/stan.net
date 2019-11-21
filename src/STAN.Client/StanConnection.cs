@@ -245,6 +245,8 @@ namespace STAN.Client
             catch (NATSTimeoutException)
             {
                 protoUnsubscribe();
+                nc?.Close();
+                nc?.Dispose();
                 throw new StanConnectRequestTimeoutException(
                     string.Format("No response from a streaming server with a cluster ID of '{0}'", stanClusterID));
             }
