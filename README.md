@@ -4,7 +4,7 @@ NATS Streaming is an extremely performant, lightweight reliable streaming platfo
 
 [![License Apache 2.0](https://img.shields.io/badge/License-Apache2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![API Documentation](https://img.shields.io/badge/doc-Doxygen-brightgreen.svg?style=flat)](http://nats-io.github.io/stan.net)
-[![Build Status](https://dev.azure.com/NATS-CI/NATS-CI/_apis/build/status/nats-io.stan.net?branchName=master)](https://dev.azure.com/NATS-CI/NATS-CI/_build/latest?definitionId=3&branchName=master)
+[![Build Status](https://dev.azure.com/NATS-CI/NATS-CI/_apis/build/status/nats-io.stan.net-CI?branchName=master)](https://dev.azure.com/NATS-CI/NATS-CI/_build/latest?definitionId=3&branchName=master)
 [![NuGet](https://img.shields.io/nuget/v/STAN.Client.svg?cacheSeconds=3600)](https://www.nuget.org/packages/STAN.Client)
 
 NATS Streaming provides the following high-level feature set:
