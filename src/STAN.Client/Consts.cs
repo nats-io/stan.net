@@ -21,7 +21,7 @@ namespace STAN.Client
         /// <summary>
         /// NATS C# streaming client version.
         /// </summary>
-	    static public readonly string Version = "0.1.5";
+	    static public readonly string Version = "0.2.0";
 
         /// <summary>
         /// DefaultNatsURL is the default URL the client connects to.
