@@ -28,6 +28,8 @@ namespace STAN.Client
         internal long maxPubAcksInflight = StanConsts.DefaultMaxPubAcksInflight;
         internal int pingMaxOut = StanConsts.DefaultPingMaxOut;
         internal int pingInterval = StanConsts.DefaultPingInterval;
+        internal long pubAckPendingMessageLimit = StanConsts.DefaultPubAckPendingMessageLimit;
+        internal long pubAckPendingBytesLimit = StanConsts.DefaultPubAckPendingBytesLimit;
 
         internal StanOptions() { }
 
@@ -51,6 +53,8 @@ namespace STAN.Client
             PingInterval = options.PingInterval;
             PingMaxOutstanding = options.PingMaxOutstanding;
             ConnectionLostEventHandler = options.ConnectionLostEventHandler;
+            pubAckPendingMessageLimit = options.pubAckPendingMessageLimit;
+            pubAckPendingBytesLimit = options.pubAckPendingBytesLimit;
         }
 
         /// <summary>
@@ -193,6 +197,35 @@ namespace STAN.Client
 
                 pingInterval = value;
             }
+        }
+
+        /// <summary>
+        /// Gets the PubAck MessageLimit. Use <see cref="SetPubAckPendingLimits"/> to update.
+        /// </summary>
+        public long PubAckPendingMessageLimit => pubAckPendingMessageLimit;
+        
+        /// <summary>
+        /// Gets the PubAck BytesLimit. Use <see cref="SetPubAckPendingLimits"/> to update.
+        /// </summary>
+        public long PubAckPendingBytesLimit => pubAckPendingBytesLimit;
+
+        /// <summary>
+        /// Sets the limits for pending publish acknowledgement messages and bytes.
+        /// </summary>
+        /// <remarks>Zero (<c>0</c>) is not allowed. Negative values indicate that the
+        /// given metric is not limited.</remarks>
+        /// <param name="messageLimit">The maximum number of pending messages.</param>
+        /// <param name="bytesLimit">The maximum number of pending bytes of payload.</param>
+        public void SetPubAckPendingLimits(long messageLimit, long bytesLimit)
+        {
+            if(messageLimit == 0)
+                throw new ArgumentOutOfRangeException(nameof(messageLimit), "The pending message limit must not be zero.");
+            
+            if(bytesLimit == 0)
+                throw new ArgumentOutOfRangeException(nameof(bytesLimit), "The pending bytes limit must not be zero.");
+
+            pubAckPendingMessageLimit = messageLimit;
+            pubAckPendingBytesLimit = bytesLimit;
         }
 
         /// <summary>

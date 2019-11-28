@@ -280,7 +280,7 @@ namespace STAN.Client
             ackSubscription = nc.SubscribeAsync(ackSubject, processAck);
 
             // TODO:  hardcode or options?
-            ackSubscription.SetPendingLimits(1024 * 1024, 32 * 1024 * 1024);
+            ackSubscription.SetPendingLimits(opts.PubAckPendingMessageLimit, opts.PubAckPendingBytesLimit);
 
             pubAckMap = new BlockingDictionary<string, PublishAck>(opts.maxPubAcksInflight);
 

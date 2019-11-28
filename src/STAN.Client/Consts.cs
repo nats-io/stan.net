@@ -73,5 +73,14 @@ namespace STAN.Client
         // listens and responds to client PINGs. The validity of the
         // connection (based on connID) is checked on incoming PINGs.
         static internal readonly int protocolOne = 1;
+        /// <summary>
+        /// Default MessageLimit for PubAckPendingLimits.
+        /// </summary>
+        public static readonly long DefaultPubAckPendingMessageLimit = 1024 * 1024;
+
+        /// <summary>
+        /// Default BytesLimit for PubAckPendingLimits.
+        /// </summary>
+        public static readonly long DefaultPubAckPendingBytesLimit = 32 * 1024 * 1024;
     }
 }
