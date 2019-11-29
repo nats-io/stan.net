@@ -21,57 +21,67 @@ namespace STAN.Client
         /// <summary>
         /// NATS C# streaming client version.
         /// </summary>
-	    static public readonly string Version = "0.2.0";
+	    public static readonly string Version = "0.2.0";
 
         /// <summary>
         /// DefaultNatsURL is the default URL the client connects to.
         /// </summary>
-        static public readonly string DefaultNatsURL = "nats://localhost:4222";
+        public static readonly string DefaultNatsURL = "nats://localhost:4222";
 
         /// <summary>
         /// DefaultConnectWait is the default timeout used for the connect operation.
         /// </summary>
-        static public readonly int    DefaultConnectWait = 2000;
+        public static readonly int    DefaultConnectWait = 2000;
 
         /// <summary>
         /// DefaultDiscoverPrefix is the prefix subject used to connect to the NATS Streaming server.
         /// </summary>
-        static public readonly string DefaultDiscoverPrefix = "_STAN.discover";
+        public static readonly string DefaultDiscoverPrefix = "_STAN.discover";
 
         /// <summary>
         /// DefaultACKPrefix is the prefix subject used to send ACKs to the NATS Streaming server.
         /// </summary>
-        static public readonly string DefaultACKPrefix = "_STAN.acks";
+        public static readonly string DefaultACKPrefix = "_STAN.acks";
 
         /// <summary>
         /// DefaultMaxPubAcksInflight is the default maximum number of published messages
 	    /// without outstanding ACKs from the server.
         /// </summary>
-        static public readonly long DefaultMaxPubAcksInflight = 16384;
+        public static readonly long DefaultMaxPubAcksInflight = 16384;
 
         /// <summary>
         /// DefaultAckWait indicates how long the server should wait for an ACK before resending a message.
         /// </summary>
-        static public readonly long DefaultAckWait = 30000;
+        public static readonly long DefaultAckWait = 30000;
 
         /// <summary>
         /// DefaultMaxInflight indicates how many messages with outstanding ACKs the server can send.
         /// </summary>
-        static public readonly int  DefaultMaxInflight = 1024;
+        public static readonly int  DefaultMaxInflight = 1024;
 
         /// <summary>
         /// DefaultPingInterval is the default interval (in milliseconds) at which a connection sends a PING to the server.
         /// </summary>
-        static public readonly int DefaultPingInterval = 5000;
+        public static readonly int DefaultPingInterval = 5000;
 
         /// <summary>
         /// DefaultPingMaxOut is the number of PINGs without a response before the connection is considered lost.
         /// </summary>
-        static public readonly int DefaultPingMaxOut = 3;
+        public static readonly int DefaultPingMaxOut = 3;
 
         // Clients send connID in ConnectRequest and PubMsg, and the server
         // listens and responds to client PINGs. The validity of the
         // connection (based on connID) is checked on incoming PINGs.
-        static internal readonly int protocolOne = 1;
+        internal static readonly int protocolOne = 1;
+
+        /// <summary>
+        /// Default MessageLimit for PubAckPendingLimits.
+        /// </summary>
+        public static readonly long DefaultPubAckPendingMessageLimit = 1024 * 1024;
+
+        /// <summary>
+        /// Default BytesLimit for PubAckPendingLimits.
+        /// </summary>
+        public static readonly long DefaultPubAckPendingBytesLimit = 32 * 1024 * 1024;
     }
 }
