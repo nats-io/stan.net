@@ -646,14 +646,21 @@ namespace STAN.Client
 
         public Task<string> PublishAsync(string subject, byte[] data)
         {
-            PublishAck a = publish(subject, data, null);
-            Task<string> t = new Task<string>(() =>
+            TaskCompletionSource<string> completionSource = new TaskCompletionSource<string>();
+
+            try
             {
-                a.wait();
-                return a.GUID;
-            });
-            t.Start();
-            return t;
+                publish(subject, data, (sender, args) =>
+                {
+                    completionSource.TrySetResult(args.GUID);
+                });
+            }
+            catch (Exception exception)
+            {
+                completionSource.TrySetException(exception);
+            }
+
+            return completionSource.Task;
         }
 
         private IStanSubscription subscribe(string subject, string qgroup, EventHandler<StanMsgHandlerArgs> handler, StanSubscriptionOptions options)
