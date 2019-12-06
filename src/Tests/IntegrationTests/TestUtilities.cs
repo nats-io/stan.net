@@ -54,14 +54,23 @@ namespace IntegrationTests
         {
             try
             {
-                var successfullyClosed = p.CloseMainWindow() || p.WaitForExit(100);
-                if (!successfullyClosed)
+                var s = false;
+
+                if (p.MainWindowHandle != IntPtr.Zero)
+                    s = p.CloseMainWindow();
+
+                if (!s)
                     p.Kill();
-                p.Close();
+
+                p.WaitForExit(250);
             }
             catch (Exception)
             {
                 // ignored
+            }
+            finally
+            {
+                p.Close();
             }
         }
 
@@ -109,7 +118,11 @@ namespace IntegrationTests
         {
             try
             {
-                using (var cn = new ConnectionFactory().CreateConnection(serverInfo.Url))
+                var opts = ConnectionFactory.GetDefaultOptions();
+                opts.Url = serverInfo.Url;
+                opts.ReconnectBufferSize = Options.ReconnectBufferDisabled;
+
+                using (var cn = new ConnectionFactory().CreateConnection(opts))
                 {
                     cn.Close();
 

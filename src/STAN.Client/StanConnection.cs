@@ -193,7 +193,7 @@ namespace STAN.Client
                 {
                     nc = new ConnectionFactory().CreateConnection(opts.NatsURL);
                     nc.Opts.MaxReconnect = Options.ReconnectForever;
-                    // TODO:  disable buffering.
+                    nc.Opts.ReconnectBufferSize = Options.ReconnectBufferDisabled;
                 }
                 catch (Exception ex)
                 {
@@ -279,7 +279,6 @@ namespace STAN.Client
             ackSubject = StanConsts.DefaultACKPrefix + "." + newGUID();
             ackSubscription = nc.SubscribeAsync(ackSubject, processAck);
 
-            // TODO:  hardcode or options?
             ackSubscription.SetPendingLimits(opts.PubAckPendingMessageLimit, opts.PubAckPendingBytesLimit);
 
             pubAckMap = new BlockingDictionary<string, PublishAck>(opts.maxPubAcksInflight);
@@ -381,7 +380,8 @@ namespace STAN.Client
             catch (Exception ex)
             when (
                 ex is NATSConnectionClosedException || 
-                ex is NATSStaleConnectionException)
+                ex is NATSStaleConnectionException ||
+                ex is NATSReconnectBufferException)
             {
                 closeDueToPing(ex);
             }

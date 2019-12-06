@@ -82,6 +82,7 @@ namespace IntegrationTests
         {
             var opts = ConnectionFactory.GetDefaultOptions();
             opts.Url = serverInfo.Url;
+            opts.ReconnectBufferSize = Options.ReconnectBufferDisabled;
 
             return opts;
         }

@@ -83,7 +83,8 @@ namespace IntegrationTests
             string errStr = "";
 
             var ev = new AutoResetEvent(false);
-
+            var recEv = new AutoResetEvent(false);
+            
             // Create a NATS streaming server with an embedded NATS server
             // clustered with an external NATS server.
             string s1Args = $" -cluster \"{Context.ClusterServer1}\" -routes \"{Context.ClusterServer2}\" --no_advertise=true";
@@ -104,6 +105,16 @@ namespace IntegrationTests
                         errStr = args.ConnectionException.Message;
                         ev.Set();
                     };
+
+                    var no = Context.GetNatsTestOptions(Context.Server1);
+                    no.Url = Context.Server2.Url;
+                    no.MaxReconnect = Options.ReconnectForever;
+                    no.ReconnectWait = 250;
+                    no.ReconnectedEventHandler = (obj, args) =>
+                    {
+                        recEv.Set();
+                    };
+                    so.NatsConn = Context.GetNatsConnection(no);
 
                     sc1 = Context.GetStanConnection(opts: so);
                     sc1.Publish("foo", null);
@@ -126,6 +137,7 @@ namespace IntegrationTests
                 {
                     // ensure handler on the first conn is called
                     Assert.True(ev.WaitOne(30000));
+                    Assert.True(recEv.WaitOne(30000));
                     Assert.Contains("replaced", errStr);
                 }
             }
