@@ -126,7 +126,7 @@ namespace IntegrationTests
                 {
                     // ensure handler on the first conn is called
                     Assert.True(ev.WaitOne(30000));
-                    Assert.Contains("replaced", errStr);
+                    Assert.Contains("Reconnect buffering has been disabled", errStr);
                 }
             }
         }

@@ -109,7 +109,11 @@ namespace IntegrationTests
         {
             try
             {
-                using (var cn = new ConnectionFactory().CreateConnection(serverInfo.Url))
+                var opts = ConnectionFactory.GetDefaultOptions();
+                opts.Url = serverInfo.Url;
+                opts.ReconnectBufferSize = Options.ReconnectBufferDisabled;
+
+                using (var cn = new ConnectionFactory().CreateConnection(opts))
                 {
                     cn.Close();
 
