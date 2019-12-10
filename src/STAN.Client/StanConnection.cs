@@ -380,8 +380,7 @@ namespace STAN.Client
             catch (Exception ex)
             when (
                 ex is NATSConnectionClosedException || 
-                ex is NATSStaleConnectionException ||
-                ex is NATSReconnectBufferException)
+                ex is NATSStaleConnectionException)
             {
                 closeDueToPing(ex);
             }
