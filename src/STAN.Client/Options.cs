@@ -80,9 +80,7 @@ namespace STAN.Client
         {
             set
             {
-                if(value != null && value.Opts.ReconnectBufferSize != Options.ReconnectBufferDisabled)
-                    throw new ArgumentException("The underlying NATS connection should have buffers during reconnect disabled. E.g controlled via: 'Opts.ReconnectBufferSize = Options.ReconnectBufferDisabled'", nameof(value));
-
+                // TODO:  Override NATS connection buffer settings.
                 natsConn = value;
             }
         }

@@ -338,7 +338,6 @@ namespace STAN.Client
         private void pingServer(object state)
         {
             IConnection conn = null;
-            Exception pingEx = null;
             bool lostConnection = false;
 
             lock (pingLock)
@@ -358,7 +357,6 @@ namespace STAN.Client
                 if (pingOut > pingMaxOut)
                 {
                     lostConnection = true;
-                    pingEx = new StanMaxPingsException();
                 }
                 else
                 {
@@ -369,7 +367,7 @@ namespace STAN.Client
 
             if (lostConnection)
             {
-                closeDueToPing(pingEx);
+                closeDueToPing(new StanMaxPingsException());
                 return;
             }
             
@@ -380,11 +378,11 @@ namespace STAN.Client
             catch (Exception ex)
             when (
                 ex is NATSConnectionClosedException || 
-                ex is NATSStaleConnectionException ||
-                ex is NATSReconnectBufferException)
+                ex is NATSStaleConnectionException)
             {
                 closeDueToPing(ex);
             }
+            catch { /* ignore other publish exceptions */ }
         }
 
         private void closeDueToPing(Exception ex)
