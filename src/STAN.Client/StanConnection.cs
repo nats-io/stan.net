@@ -624,13 +624,9 @@ namespace STAN.Client
                 nc.Publish(subj, localAckSubject, b);
 
                 // Flush to reduce latency.
-                // 
-                // TODO:  Add a soft (non-ping) flush to NATS.net 
-                // for this type of situation.  Only flush in 
-                // blocking publish calls.
                 if (handler == null)
                 {
-                    nc.Flush();
+                    nc.FlushBuffer();
                 }
             }
             catch
