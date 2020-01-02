@@ -786,14 +786,17 @@ namespace IntegrationTests
         [Fact]
         public void TestCloseWhileReconnecting()
         {
+            int attempts = 50;
+
             using var s = Context.StartStreamingServerWithEmbedded(Context.DefaultServer);
             using var c = Context.GetStanConnection(Context.DefaultServer);
 
             s.Shutdown();
 
             // wait until attempting to reconnect
-            while (c.NATSConnection.IsReconnecting() == false)
+            for (int i = 1; i <= attempts && c.NATSConnection.IsReconnecting() == false; i++)
             {
+                Assert.False(i == attempts);
                 Thread.Sleep(100);
             }
 
