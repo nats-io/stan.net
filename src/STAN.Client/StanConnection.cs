@@ -28,7 +28,7 @@ using System.Threading.Tasks;
  * \section install_sec Installation
  *
  * Instructions to build and install the %NATS .NET C# Streaming Client can be
- * found at the [NATS .NET C# Streaming Client GitHub page](https://github.com/nats-io/csharp-nats-streaming)
+ * found at the [NATS .NET C# Streaming Client GitHub page](https://github.com/nats-io/stan.net)
  *
  * \section other_doc_section Other Documentation
  *
@@ -36,9 +36,10 @@ using System.Threading.Tasks;
  * information, refer to the following:
  *
  * - [General Documentation for nats.io](http://nats.io/documentation)
- * - [NATS .NET C# Streaming Client found on GitHub](https://github.com/nats-io/csharp-nats-streaming)
- * - [NATS .NET C# Client found on GitHub](https://github.com/nats-io/csnats)
- * - [The NATS server (gnatsd) found on GitHub](https://github.com/nats-io/gnatsd)
+ * - [NATS .NET C# Streaming Client found on GitHub](https://github.com/nats-io/stan.net)
+ * - [NATS .NET C# Client found on GitHub](https://github.com/nats-io/nats.net)
+ * - [The NATS server (nats-server) found on GitHub](https://github.com/nats-io/nats-server)
+ * - [The NATS streaming server (nats-streaming-server) found on GitHub](https://github.com/nats-io/nats-streaming-server)
  */
 
 // disable XML comment warnings
@@ -789,6 +790,13 @@ namespace STAN.Client
                 {
                     // it's possible we never actually connected.
                     return;
+                }
+                catch (NATSReconnectBufferException)
+                {
+                    // In order to maintain backward compatibility, we need to avoid throwing
+                    // this exception.  The reply will be null, so we'll fall through
+                    // and gracefully close the streaming connection.  The streaming server
+                    // will cleanup this client on its own.
                 }
 
                 if (reply != null)

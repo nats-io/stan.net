@@ -784,6 +784,27 @@ namespace IntegrationTests
         }
 
         [Fact]
+        public void TestCloseWhileReconnecting()
+        {
+            int attempts = 50;
+
+            using var s = Context.StartStreamingServerWithEmbedded(Context.DefaultServer);
+            using var c = Context.GetStanConnection(Context.DefaultServer);
+
+            s.Shutdown();
+
+            // wait until attempting to reconnect
+            for (int i = 1; i <= attempts && c.NATSConnection.IsReconnecting() == false; i++)
+            {
+                Assert.False(i == attempts);
+                Thread.Sleep(100);
+            }
+
+            // ensure close does not throw (which would fail the test)
+            c.Close();
+        }
+
+        [Fact]
         public void TestDoubleClose()
         {
             using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
