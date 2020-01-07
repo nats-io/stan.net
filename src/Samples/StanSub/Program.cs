@@ -22,7 +22,7 @@ namespace StanSub
     {
         static readonly string usageText =
 @"
-Usage: stan-sub [options] <subject>
+Usage: stan-sub [options]
 Options:
     -url < url >           NATS Streaming server URL(s)
     -cluster < cluster name > NATS Streaming cluster name
@@ -32,12 +32,14 @@ Options:
 Subscription Options:
     -count < num >      # of msgs to receieve    
     -qgroup < name >    Queue group
+    -subject <subject > Subscribe subject
     -seq < seqno >      Start at seqno
     -all                Deliver all available messages
     -last               Deliver starting with last published message
     -since < duration > Deliver messages in last interval(e.g. 1s, 1hr)
              (for more information: see .NET TimeSpan.Parse documentation)
 
+   --maxinflight        Maximum # of acknowledgements in flight
    --durable < name >   Durable subscriber name
    --unsubscribe        Unsubscribe the durable on exit";
 
@@ -52,6 +54,8 @@ Subscription Options:
         string clusterID = "test-cluster";
         string qGroup = null;
         bool unsubscribe = false;
+        IStanConnection c = null;
+        IStanSubscription s = null;
 
         StanSubscriptionOptions sOpts = StanSubscriptionOptions.GetDefaultOptions();
         StanOptions cOpts = StanOptions.GetDefaultOptions();
@@ -64,18 +68,31 @@ Subscription Options:
             var opts = StanOptions.GetDefaultOptions();
             opts.NatsURL = url;
 
-            using (var c = new StanConnectionFactory().CreateConnection(clusterID, clientID, opts))
+            Console.CancelKeyPress += controlCHandler;
+
+            using (c = new StanConnectionFactory().CreateConnection(clusterID, clientID, opts))
             {
-                TimeSpan elapsed = receiveAsyncSubscriber(c);
+                TimeSpan elapsed = ReceiveMessages();
               
                 Console.Write("Received {0} msgs in {1} seconds ", received, elapsed.TotalSeconds);
                 Console.WriteLine("({0} msgs/second).",
                     (int)(received / elapsed.TotalSeconds));
-
             }
         }
 
-        private TimeSpan receiveAsyncSubscriber(IStanConnection c)
+        // Convenience method to create a queue or standard subscriber
+        private IStanSubscription CreateSubscriber(IStanConnection c, EventHandler<StanMsgHandlerArgs> msgHandler)
+        {
+            if (qGroup != null)
+            {
+                return c.Subscribe(subject, qGroup, sOpts, msgHandler);
+            }
+            return c.Subscribe(subject, sOpts, msgHandler);
+        }
+
+        // Receive expected messages and return the elapsed time from first
+        // message to last message.
+        private TimeSpan ReceiveMessages()
         {
             Stopwatch sw = new Stopwatch();
             AutoResetEvent ev = new AutoResetEvent(false);
@@ -89,9 +106,8 @@ Subscription Options:
 
                 if (verbose)
                 {
-                    Console.WriteLine("Received seq # {0}: {1}",
-                        args.Message.Sequence,
-                        System.Text.Encoding.UTF8.GetString(args.Message.Data));
+                    Console.WriteLine("Received seq # {0}",
+                        args.Message.Sequence);
                 }
 
                 if (received >= count)
@@ -101,7 +117,7 @@ Subscription Options:
                 }
             };
 
-            using (var s = c.Subscribe(subject, sOpts, msgHandler))
+            using (s = CreateSubscriber(c, msgHandler))
             {
                 ev.WaitOne();
             }
@@ -180,6 +196,13 @@ Subscription Options:
                 sOpts.StartAt(ts);
             }
 
+            // override the default
+            sOpts.MaxInflight = 64;
+            if (parsedArgs.ContainsKey("-maxinflight"))
+            {
+                sOpts.MaxInflight = Convert.ToInt32(parsedArgs["-maxinflight"]);
+            }
+
             if (parsedArgs.ContainsKey("-durable"))
             {
                 sOpts.DurableName = parsedArgs["-durable"];
@@ -205,17 +228,39 @@ Subscription Options:
             Console.WriteLine("  Url: {0}", url);
         }
 
+        protected void cleanup()
+        {
+            if (sOpts.DurableName != null && unsubscribe)
+            {
+                s?.Unsubscribe();
+            }
+            c?.Close();
+        }
+
+        protected void controlCHandler(object sender, ConsoleCancelEventArgs args)
+        {
+            // Gracefully clean up for future runs of this sample application
+            Console.WriteLine("\nReceived an interrupt, unsubscribing and closing connection...");
+            cleanup();
+        }
+
         public static void Main(string[] args)
         {
+            StanSubscriber app = null;
             try
             {
-                new StanSubscriber().Run(args);
+                app = new StanSubscriber();
+                app.Run(args);
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine("Exception: " + ex.Message);
                 if (ex.InnerException != null)
                     Console.Error.WriteLine("Inner Exception: " + ex.InnerException.Message);
+            }
+            finally
+            {
+                app?.cleanup();
             }
         }
     }
