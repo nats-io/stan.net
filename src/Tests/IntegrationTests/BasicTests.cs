@@ -30,10 +30,7 @@ namespace IntegrationTests
 
         static byte[] getPayload(string s)
         {
-            if (s == null)
-                return null;
-
-            return System.Text.Encoding.UTF8.GetBytes(s);
+            return (s == null) ? null : System.Text.Encoding.UTF8.GetBytes(s);
         }
 
         [Fact]
@@ -1311,7 +1308,6 @@ namespace IntegrationTests
         public void TestPubMultiQueueSubWithSlowSubscriber()
         {
             AutoResetEvent ev = new AutoResetEvent(false);
-            AutoResetEvent subBlock = new AutoResetEvent(false);
 
             long received = 0;
             long s1Received = 0;
@@ -1339,7 +1335,7 @@ namespace IntegrationTests
                 {
                     // block this subscriber
                     Interlocked.Increment(ref s2Received);
-                    subBlock.WaitOne(500);
+                    Thread.Sleep(500);
                 }
                 else
                 {
@@ -1360,8 +1356,7 @@ namespace IntegrationTests
                     for (int i = 0; i < toSend; i++)
                         c.Publish("foo", null);
 
-                    subBlock.Set();
-                    Assert.True(ev.WaitOne(Context.DefaultWait * 2));
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 20));
 
                     s1.Unsubscribe();
                     s2.Unsubscribe();
