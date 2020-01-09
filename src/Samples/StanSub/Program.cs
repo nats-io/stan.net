@@ -39,9 +39,9 @@ Subscription Options:
     -since < duration > Deliver messages in last interval(e.g. 1s, 1hr)
              (for more information: see .NET TimeSpan.Parse documentation)
 
-   --maxinflight        Maximum # of acknowledgements in flight
-   --durable < name >   Durable subscriber name
-   --unsubscribe        Unsubscribe the durable on exit";
+    -maxinflight        Maximum # of acknowledgements in flight
+    -durable < name >   Durable subscriber name
+    -unsubscribe        Unsubscribe the durable on exit";
 
         Dictionary<string, string> parsedArgs = new Dictionary<string, string>();
 
@@ -140,7 +140,8 @@ Subscription Options:
             {
                 if (args[i].Equals("-verbose") ||
                     args[i].Equals("-all") ||
-                    args[i].Equals("-last"))
+                    args[i].Equals("-last") ||
+                    args[i].Equals("-unsubscribe"))
                 {
                     parsedArgs.Add(args[i], "true");
                 }
@@ -212,7 +213,7 @@ Subscription Options:
             if (parsedArgs.ContainsKey("-unsubscribe"))
             {
                 Console.WriteLine("Will unsubscribe before exit.");
-                unsubscribe = Convert.ToBoolean(parsedArgs["-unsubscribe"]);
+                unsubscribe = true;
             }
 
             if (parsedArgs.ContainsKey("-verbose"))
