@@ -155,8 +155,8 @@ namespace STAN.Client
         private int pingOut;
         private int pingMaxOut;
 
-        private IDictionary<string, AsyncSubscription> subMap = new Dictionary<string, AsyncSubscription>();
-        private BlockingDictionary<string, PublishAck> pubAckMap;
+        private readonly IDictionary<string, AsyncSubscription> subMap = new Dictionary<string, AsyncSubscription>();
+        private readonly BlockingDictionary<string, PublishAck> pubAckMap;
 
         internal ProtocolSerializer ps = new ProtocolSerializer();
 
@@ -500,12 +500,7 @@ namespace STAN.Client
 
         internal PublishAck removeAck(string guid)
         {
-            PublishAck a;
-
-            lock (mu)
-            {
-                pubAckMap.Remove(guid, out a, 0);
-            }
+            pubAckMap.Remove(guid, out PublishAck a, 0);
 
             return a;
         }
