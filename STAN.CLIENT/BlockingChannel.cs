@@ -12,6 +12,7 @@
 // limitations under the License.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace STAN.Client
@@ -40,7 +41,8 @@ namespace STAN.Client
             {
                 lock (dLock)
                 {
-                    return d.Keys;
+                    // Take a snapshot under the lock
+                    return d.Keys.ToArray();
                 }
             }
         }
