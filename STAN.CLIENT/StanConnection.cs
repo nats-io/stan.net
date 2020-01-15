@@ -576,7 +576,6 @@ namespace STAN.Client
         internal PublishAck publish(string subject, byte[] data, EventHandler<StanAckHandlerArgs> handler)
         {
             string localAckSubject = null;
-            long localAckTimeout = 0;
 
             string subj = this.pubPrefix + "." + subject;
             string guidValue = newGUID();
@@ -586,27 +585,26 @@ namespace STAN.Client
 
             lock (mu)
             {
-                if (nc == null)
+                if (nc == null || nc.IsClosed())
                     throw new StanConnectionClosedException();
 
+                int pingInterval = opts.PingInterval;
                 while (!pubAckMap.TryAdd(guidValue, a))
                 {
-                    var bd = pubAckMap;
-
                     Monitor.Exit(mu);
-                    // Wait for space outside of the lock so 
-                    // acks can be removed.
-                    bd.waitForSpace();
+                    // Wait for space outside of the lock so
+                    // other executive functions may take place,
+                    // but only wait for space up to the Ping
+                    // interval, to ensure forward progress can
+                    // be made in the event of a lost connection
+                    _ = pubAckMap.TryWaitForSpace(pingInterval);
                     Monitor.Enter(mu);
 
-                    if (nc == null)
-                    {
+                    if (nc == null || nc.IsClosed())
                         throw new StanConnectionClosedException();
-                    }
                 }
 
                 localAckSubject = ackSubject;
-                localAckTimeout = opts.ackTimeout;
             }
 
             try

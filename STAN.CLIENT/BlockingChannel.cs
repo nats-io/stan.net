@@ -47,14 +47,27 @@ namespace STAN.Client
             }
         }
 
-        internal void waitForSpace()
+        /// <summary>
+        /// Wait for space to become available within a given
+        /// amount of time.
+        /// </summary>
+        /// <param name="millisecondsTimeout">The number of milliseconds
+        /// to wait for space to become available.</param>
+        /// <returns><see langword="true"/> if there is capacity
+        /// available, otherwise <see langword="false"/>.</returns>
+        internal bool TryWaitForSpace(int millisecondsTimeout)
         {
             lock (addLock)
             {
                 while (isAtCapacity())
                 {
-                    Monitor.Wait(addLock);
+                    if (!Monitor.Wait(addLock, millisecondsTimeout))
+                    {
+                        return false;
+                    }
                 }
+
+                return true;
             }
         }
 
