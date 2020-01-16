@@ -48,19 +48,14 @@ namespace STAN.Client
             }
         }
 
-        internal bool TryWaitForSpace(int millisecondsTimeout)
+        internal void TryWaitForSpace(int millisecondsTimeout)
         {
             lock (addLock)
             {
-                while (isAtCapacity())
+                if (isAtCapacity())
                 {
-                    if (!Monitor.Wait(addLock, millisecondsTimeout))
-                    {
-                        return false;
-                    }
+                    _ = Monitor.Wait(addLock, millisecondsTimeout);
                 }
-
-                return true;
             }
         }
 

@@ -604,7 +604,7 @@ namespace STAN.Client
                     // Wait for space outside of the lock so 
                     // acks can be removed and other executive
                     // functions can continue
-                    _ = pubAckMap.TryWaitForSpace(pingInterval);
+                    pubAckMap.TryWaitForSpace(pingInterval);
                     Monitor.Enter(mu);
 
                     if (nc == null || nc.IsClosed())
