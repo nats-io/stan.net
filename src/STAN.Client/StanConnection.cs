@@ -158,8 +158,8 @@ namespace STAN.Client
         private int pingOut;
         private int pingMaxOut;
 
-        private IDictionary<string, AsyncSubscription> subMap = new Dictionary<string, AsyncSubscription>();
-        private BlockingDictionary<string, PublishAck> pubAckMap;
+        private readonly IDictionary<string, AsyncSubscription> subMap = new Dictionary<string, AsyncSubscription>();
+        private readonly BlockingDictionary<string, PublishAck> pubAckMap;
 
         internal ProtocolSerializer ps = new ProtocolSerializer();
 
@@ -502,12 +502,9 @@ namespace STAN.Client
 
         internal PublishAck removeAck(string guid)
         {
-            PublishAck a;
-
-            lock (mu)
+            if (pubAckMap.Remove(guid, out PublishAck a))
             {
-                if (pubAckMap.Remove(guid, out a))
-                    return a;
+                return a;
             }
 
             return null;
@@ -584,7 +581,6 @@ namespace STAN.Client
         internal PublishAck publish(string subject, byte[] data, EventHandler<StanAckHandlerArgs> handler)
         {
             string localAckSubject = null;
-            long localAckTimeout = 0;
 
             string subj = this.pubPrefix + "." + subject;
             string guidValue = newGUID();
@@ -593,31 +589,32 @@ namespace STAN.Client
 
             lock (mu)
             {
-                if (nc == null)
+                if (nc == null || nc.IsClosed())
                     throw new StanConnectionClosedException();
 
                 if (nc.IsReconnecting())
                     throw new StanConnectionException("The NATS connection is reconnecting");
 
                 a = new PublishAck(this, guidValue, handler, opts.PubAckWait);
+
+                int pingInterval = opts.PingInterval;
                 while (!pubAckMap.TryAdd(guidValue, a))
                 {
-                    var bd = pubAckMap;
-
                     Monitor.Exit(mu);
                     // Wait for space outside of the lock so 
-                    // acks can be removed.
-                    bd.waitForSpace();
+                    // acks can be removed and other executive
+                    // functions can continue
+                    pubAckMap.TryWaitForSpace(pingInterval);
                     Monitor.Enter(mu);
 
-                    if (nc == null)
-                    {
+                    if (nc == null || nc.IsClosed())
                         throw new StanConnectionClosedException();
-                    }
+
+                    if (nc.IsReconnecting())
+                        throw new StanConnectionException("The NATS connection is reconnecting");
                 }
 
                 localAckSubject = ackSubject;
-                localAckTimeout = opts.ackTimeout;
             }
 
             try

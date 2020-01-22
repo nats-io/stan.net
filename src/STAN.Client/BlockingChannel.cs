@@ -21,10 +21,10 @@ namespace STAN.Client
     // This dictionary class is a capacity bound, threadsafe, dictionary.
     internal sealed class BlockingDictionary<TKey, TValue>
     {
-        IDictionary<TKey, TValue> d = new Dictionary<TKey, TValue>();
-        Object dLock = new Object();
-        Object addLock = new Object();
-        long maxSize = 1024;
+        private readonly IDictionary<TKey, TValue> d = new Dictionary<TKey, TValue>();
+        private readonly Object dLock = new Object();
+        private readonly Object addLock = new Object();
+        private long maxSize = 1024;
 
         private bool isAtCapacity()
         {
@@ -48,13 +48,13 @@ namespace STAN.Client
             }
         }
 
-        internal void waitForSpace()
+        internal void TryWaitForSpace(int millisecondsTimeout)
         {
             lock (addLock)
             {
-                while (isAtCapacity())
+                if (isAtCapacity())
                 {
-                    Monitor.Wait(addLock);
+                    _ = Monitor.Wait(addLock, millisecondsTimeout);
                 }
             }
         }
@@ -83,14 +83,14 @@ namespace STAN.Client
                 {
                     wasAtCapacity = d.Count >= maxSize;
                     d.Remove(key);
+                }
+            }
 
-                    if (wasAtCapacity)
-                    {
-                        lock (addLock)
-                        {
-                            Monitor.Pulse(addLock);
-                        }
-                    }
+            if (wasAtCapacity)
+            {
+                lock (addLock)
+                {
+                    Monitor.Pulse(addLock);
                 }
             }
 

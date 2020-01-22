@@ -1661,7 +1661,7 @@ namespace IntegrationTests
             }
         }
 
-        [Fact(Skip = "HANGS SOMETIMES")]
+        [Fact]
         public void TestMaxPubAckInflight()
         {
             using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
