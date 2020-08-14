@@ -30,16 +30,18 @@ namespace STAN.Client
         /// This constructor has been provided to facilitate application unit testing.
         /// </remarks>
         /// <param name="data">The message payload.</param>
-        /// <param name="redelivered">True if the message may have been redelivered.</param>
+        /// <param name="redelivered">True if the message may have been redelivered.</param>\
+        /// <param name="redeliveryCount">Number of times the message has been redelivered.</param>
         /// <param name="subject">Subject of the message</param>
         /// <param name="timestamp">Message timestamp, nanoseconds since epoch (1/1/1970)</param>
         /// <param name="sequence">Sequence number of the message.</param>
         /// <param name="subscription">Subscription of the message.  Must be a valid streaming subscription or null.</param>
-        public StanMsg(byte[] data, bool redelivered, string subject, long timestamp, ulong sequence, IStanSubscription subscription)
+        public StanMsg(byte[] data, bool redelivered, int redeliveryCount, string subject, long timestamp, ulong sequence, IStanSubscription subscription)
         {
             proto = new MsgProto();
             proto.Data = Google.Protobuf.ByteString.CopyFrom(data);
             proto.Redelivered = redelivered;
+            proto.RedeliveryCount = redeliveryCount;
             proto.Subject = subject;
             proto.Sequence = sequence;
             proto.Timestamp = timestamp;
@@ -130,6 +132,14 @@ namespace STAN.Client
         public bool Redelivered
         {
             get { return proto.Redelivered; }
+        }
+
+        /// <summary>
+        /// Get the number of times that this message has been redelivered.
+        /// </summary>
+        public int RedeliveryCount
+        {
+            get { return proto.RedeliveryCount; }
         }
 
         /// <summary>

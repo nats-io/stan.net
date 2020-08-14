@@ -14,6 +14,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NATS.Client;
@@ -48,7 +49,7 @@ namespace IntegrationTests
             {
                 try
                 {
-                    using(Context.GetStanConnection(Context.DefaultServer, "invalid-cluster")){}
+                    using (Context.GetStanConnection(Context.DefaultServer, "invalid-cluster")) { }
                 }
                 catch (StanConnectRequestTimeoutException se)
                 {
@@ -68,7 +69,7 @@ namespace IntegrationTests
                 {
                     var opts = Context.GetStanTestOptions(Context.DefaultServer);
                     opts.NatsConn = nc;
-                    using(var sc = Context.GetStanConnection(opts: opts))
+                    using (var sc = Context.GetStanConnection(opts: opts))
                         sc.Close();
 
                     Assert.True(nc.IsClosed() == false);
@@ -82,7 +83,7 @@ namespace IntegrationTests
         {
             using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using(var c = Context.GetStanConnection(Context.DefaultServer))
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                     c.Close();
             }
         }
@@ -715,7 +716,7 @@ namespace IntegrationTests
                 {
                     Assert.Throws<StanConnectRequestException>(() =>
                     {
-                        using (Context.GetStanConnection(Context.DefaultServer)) {}
+                        using (Context.GetStanConnection(Context.DefaultServer)) { }
                     });
                 }
             }
@@ -1037,9 +1038,9 @@ namespace IntegrationTests
             TimeSpan duration = time2 - time1;
 
             if (duration < (expected - tolerance))
-                throw new Exception(string.Format("Duration {0} is below tolerance {1}.", duration, (expected-tolerance)));
+                throw new Exception(string.Format("Duration {0} is below tolerance {1}.", duration, (expected - tolerance)));
             if (duration > (expected + tolerance))
-                throw new Exception(string.Format("Duration {0} is above tolerance {1}.", duration, (expected+tolerance)));
+                throw new Exception(string.Format("Duration {0} is above tolerance {1}.", duration, (expected + tolerance)));
         }
 
         private void testRedelivery(int count, bool useQueueSub)
@@ -1121,7 +1122,7 @@ namespace IntegrationTests
 
                     Thread.Sleep(ackRedeliveryTime + 100);
 
-                    checkTime("First redelivery", startDelivery, startFirstRedelivery, ackRedeliveryTime, (int)(ackRedeliveryTime*.80));
+                    checkTime("First redelivery", startDelivery, startFirstRedelivery, ackRedeliveryTime, (int)(ackRedeliveryTime * .80));
                     checkTime("Second redelivery", startFirstRedelivery, startSecondRedelivery, ackRedeliveryTime, (int)(ackRedeliveryTime * .80));
 
                     Assert.True(Interlocked.Read(ref firstDeliveryCount) == toSend);
@@ -1146,14 +1147,76 @@ namespace IntegrationTests
         [Fact]
         public void TestLowRedeliveryToQueueSubMoreThanOnce()
         {
-            testRedelivery(10, false);
+            testRedelivery(10, true);
         }
 
         [Fact]
         public void TestHighRedeliveryToQueueSubMoreThanOnce()
         {
-            testRedelivery(20, false);
+            testRedelivery(20, true);
         }
+
+        private void testRedeliveryCount(int triesBeforeSucceeding, bool useQueueSub)
+        {
+            //using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
+            {
+                using (var c = Context.GetStanConnection(Context.DefaultServer, "cluster-project-alpha"))
+                {
+                    long acked = 0;
+                    long redileveryCount = 0;
+
+                    AutoResetEvent ev = new AutoResetEvent(false);
+
+                    EventHandler<StanMsgHandlerArgs> recvEh = (obj, args) =>
+                    {
+                        var m = args.Message;
+                        Interlocked.Exchange(ref redileveryCount, m.RedeliveryCount);
+                        if (Interlocked.Increment(ref acked) != triesBeforeSucceeding) return;
+                        m.Ack();
+                        ev.Set();
+                    };
+
+                    IStanSubscription s = null;
+                    var sOpts = StanSubscriptionOptions.GetDefaultOptions();
+                    sOpts.AckWait = 1000;
+                    sOpts.ManualAcks = true;
+
+                    var s1 = useQueueSub ? c.Subscribe("foo", "bar", sOpts, recvEh) : c.Subscribe("foo", sOpts, recvEh);
+
+                    c.Publish("foo", null);
+
+                    // If this succeeds, it means that the message has been redelivered toSend - 1 times
+                    Assert.True(ev.WaitOne(Context.DefaultWait * 10));
+                    Assert.True(Interlocked.Read(ref acked) - 1 == Interlocked.Read(ref redileveryCount));
+                    Assert.True(Interlocked.Read(ref acked) == triesBeforeSucceeding);
+                }
+            }
+        }
+
+        [Fact]
+        public void TestRedeliveryCountToSubWhenMessageHasBeenAcknowledgedTheFirstTime()
+        {
+            testRedeliveryCount(1, false);
+        }
+
+        [Fact]
+        public void TestRedeliveryCountToQueueSubWhenMessageHasBeenAcknowledgedTheFirstTime()
+        {
+            testRedeliveryCount(1, true);
+        }
+
+        [Fact]
+        public void TestRedeliveryCountToSubWhenMessageHasBeenAcknowledgedAfter10Times()
+        {
+            testRedeliveryCount(10, false);
+        }
+
+        [Fact]
+        public void TestRedeliveryCountToQueueSubWhenMessageHasBeenAcknowledgedAfter10Times()
+        {
+            testRedeliveryCount(10, true);
+        }
+
 
         [Fact]
         public void TestDurableSubscriber()
@@ -1874,7 +1937,7 @@ namespace IntegrationTests
                     ev.Set();
                 };
 
-                using(var sc = Context.GetStanConnection(opts: so))
+                using (var sc = Context.GetStanConnection(opts: so))
                     sc.Close();
 
                 // ensure handler is not called
@@ -1890,7 +1953,7 @@ namespace IntegrationTests
         {
             var mhArgs = new StanMsgHandlerArgs(
                 System.Text.Encoding.UTF8.GetBytes("N"),
-                true, "foo", 10000, 999999, null);
+                true, 3, "foo", 10000, 999999, null);
 
             EventHandler<StanMsgHandlerArgs> eh = (obj, args) =>
             {
@@ -1898,6 +1961,7 @@ namespace IntegrationTests
                 Assert.True(m != null);
                 Assert.True(m.Data[0] == (byte)'N');
                 Assert.True(m.Redelivered == true);
+                Assert.True(3 == m.RedeliveryCount);
                 Assert.Equal("foo", m.Subject);
                 Assert.Equal(10000, m.Time);
                 Assert.True(999999 == m.Sequence);
@@ -1906,10 +1970,11 @@ namespace IntegrationTests
 
             StanMsg msg = new StanMsg(
                 System.Text.Encoding.UTF8.GetBytes("N"),
-                true, "foo", 10000, 999999, null);
+                true, 3, "foo", 10000, 999999, null);
             Assert.True(msg != null);
             Assert.True(msg.Data[0] == (byte)'N');
             Assert.True(msg.Redelivered == true);
+            Assert.True(msg.RedeliveryCount == 3);
             Assert.Equal("foo", msg.Subject);
             Assert.Equal(10000, msg.Time);
             Assert.True(999999 == msg.Sequence);
@@ -2006,7 +2071,7 @@ namespace IntegrationTests
             }
 
             // start the server again...
-            using (var server = Context.StartStreamingServerWithEmbedded(Context.DefaultServer,$"-st FILE -dir {Context.GenerateStorageDirPath()}"))
+            using (var server = Context.StartStreamingServerWithEmbedded(Context.DefaultServer, $"-st FILE -dir {Context.GenerateStorageDirPath()}"))
             {
                 // Wait until we're reconnected.
                 Assert.True(reconnected.WaitOne(10000));

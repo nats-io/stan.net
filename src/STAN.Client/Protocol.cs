@@ -60,7 +60,7 @@ namespace STAN.Client {
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::STAN.Client.StartPosition), }, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.PubMsg), global::STAN.Client.PubMsg.Parser, new[]{ "ClientID", "Guid", "Subject", "Reply", "Data", "ConnID", "Sha256" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.PubAck), global::STAN.Client.PubAck.Parser, new[]{ "Guid", "Error" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.MsgProto), global::STAN.Client.MsgProto.Parser, new[]{ "Sequence", "Subject", "Reply", "Data", "Timestamp", "Redelivered", "CRC32" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.MsgProto), global::STAN.Client.MsgProto.Parser, new[]{ "Sequence", "Subject", "Reply", "Data", "Timestamp", "Redelivered", "RedeliveryCount", "CRC32" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.Ack), global::STAN.Client.Ack.Parser, new[]{ "Subject", "Sequence" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectRequest), global::STAN.Client.ConnectRequest.Parser, new[]{ "ClientID", "HeartbeatInbox", "Protocol", "ConnID", "PingInterval", "PingMaxOut" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::STAN.Client.ConnectResponse), global::STAN.Client.ConnectResponse.Parser, new[]{ "PubPrefix", "SubRequests", "UnsubRequests", "CloseRequests", "Error", "SubCloseRequests", "PingRequests", "PingInterval", "PingMaxOut", "Protocol", "PublicKey" }, null, null, null),
@@ -613,6 +613,7 @@ namespace STAN.Client {
       data_ = other.data_;
       timestamp_ = other.timestamp_;
       redelivered_ = other.redelivered_;
+      redeliveryCount_ = other.redeliveryCount_;
       cRC32_ = other.cRC32_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -706,8 +707,23 @@ namespace STAN.Client {
       }
     }
 
-    /// <summary>Field number for the "CRC32" field.</summary>
-    public const int CRC32FieldNumber = 10;
+    /// <summary>Field number for the "redeliveryCount" field.</summary>
+    public const int RedeliveryCountFieldNumber = 7;
+    private int redeliveryCount_;
+    /// <summary>
+    /// Number of times the message has been redelivered
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int RedeliveryCount
+        {
+        get { return redeliveryCount_; }
+        set {
+          redeliveryCount_ = value;
+        }
+    }
+
+        /// <summary>Field number for the "CRC32" field.</summary>
+        public const int CRC32FieldNumber = 10;
     private uint cRC32_;
     /// <summary>
     /// optional IEEE CRC32
@@ -739,6 +755,7 @@ namespace STAN.Client {
       if (Data != other.Data) return false;
       if (Timestamp != other.Timestamp) return false;
       if (Redelivered != other.Redelivered) return false;
+      if (RedeliveryCount != other.RedeliveryCount) return false;
       if (CRC32 != other.CRC32) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -752,6 +769,7 @@ namespace STAN.Client {
       if (Data.Length != 0) hash ^= Data.GetHashCode();
       if (Timestamp != 0L) hash ^= Timestamp.GetHashCode();
       if (Redelivered != false) hash ^= Redelivered.GetHashCode();
+      if (RedeliveryCount != 0) hash ^= RedeliveryCount.GetHashCode();
       if (CRC32 != 0) hash ^= CRC32.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -790,6 +808,10 @@ namespace STAN.Client {
         output.WriteRawTag(48);
         output.WriteBool(Redelivered);
       }
+      if (RedeliveryCount != 0) {
+          output.WriteRawTag(56);
+          output.WriteInt32(RedeliveryCount);
+      }
       if (CRC32 != 0) {
         output.WriteRawTag(80);
         output.WriteUInt32(CRC32);
@@ -819,6 +841,10 @@ namespace STAN.Client {
       }
       if (Redelivered != false) {
         size += 1 + 1;
+      }
+      if (RedeliveryCount != 0)
+      {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(RedeliveryCount);
       }
       if (CRC32 != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(CRC32);
@@ -851,6 +877,9 @@ namespace STAN.Client {
       }
       if (other.Redelivered != false) {
         Redelivered = other.Redelivered;
+      }
+      if (other.RedeliveryCount != 0) {
+        RedeliveryCount = other.RedeliveryCount;
       }
       if (other.CRC32 != 0) {
         CRC32 = other.CRC32;
@@ -888,6 +917,11 @@ namespace STAN.Client {
           }
           case 48: {
             Redelivered = input.ReadBool();
+            break;
+          }
+          case 56:
+          {
+            RedeliveryCount = input.ReadInt32();
             break;
           }
           case 80: {
