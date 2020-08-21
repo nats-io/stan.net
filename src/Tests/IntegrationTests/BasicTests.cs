@@ -1097,19 +1097,11 @@ namespace IntegrationTests
                         }
                     };
 
-                    IStanSubscription s = null;
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
                     sOpts.AckWait = ackRedeliveryTime;
                     sOpts.ManualAcks = true;
 
-                    if (useQueueSub)
-                    {
-                        s = c.Subscribe("foo", "bar", sOpts, recvEh);
-                    }
-                    else
-                    {
-                        s = c.Subscribe("foo", sOpts, recvEh);
-                    }
+                    IStanSubscription s = useQueueSub ? c.Subscribe("foo", "bar", sOpts, recvEh) : c.Subscribe("foo", sOpts, recvEh);
 
                     for (int i = 0; i < toSend; i++)
                     {
@@ -1158,9 +1150,9 @@ namespace IntegrationTests
 
         private void testRedeliveryCount(int triesBeforeSucceeding, bool useQueueSub)
         {
-            //using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
             {
-                using (var c = Context.GetStanConnection(Context.DefaultServer, "cluster-project-alpha"))
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
                     long acked = 0;
                     long redileveryCount = 0;
@@ -1176,12 +1168,11 @@ namespace IntegrationTests
                         ev.Set();
                     };
 
-                    IStanSubscription s = null;
                     var sOpts = StanSubscriptionOptions.GetDefaultOptions();
                     sOpts.AckWait = 1000;
                     sOpts.ManualAcks = true;
 
-                    var s1 = useQueueSub ? c.Subscribe("foo", "bar", sOpts, recvEh) : c.Subscribe("foo", sOpts, recvEh);
+                    IStanSubscription s = useQueueSub ? c.Subscribe("foo", "bar", sOpts, recvEh) : c.Subscribe("foo", sOpts, recvEh);
 
                     c.Publish("foo", null);
 
