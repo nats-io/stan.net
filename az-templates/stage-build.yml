@@ -14,12 +14,12 @@ stages:
         arguments: '-c $(BuildConfiguration) --no-incremental --nologo -p:TreatWarningsAsErrors=true -p:Version=$(SemVer) -p:InformationalVersion=$(InfoVer)'
   
     - task: DotNetCoreCLI@2
-      displayName: 'UnitTests .NetCoreApp2.2'
+      displayName: 'UnitTests .NetCoreApp3.1'
       inputs:
         command: test
         projects: 'src/Tests/**/UnitTests.csproj'
-        arguments: '-c $(BuildConfiguration) -f netcoreapp2.2 --no-build'
-        testRunTitle: 'UnitTests .NetCoreApp2.2'
+        arguments: '-c $(BuildConfiguration) -f netcoreapp3.1 --no-build'
+        testRunTitle: 'UnitTests .NetCoreApp3.1'
   
     - task: DotNetCoreCLI@2
       displayName: 'UnitTests .Net4.5.2'
@@ -98,12 +98,12 @@ stages:
           Write-Host "##vso[task.setvariable variable=PATH;]${env:PATH};$natsStreamingServerDir"
   
     - task: DotNetCoreCLI@2
-      displayName: 'IntegrationTests .NetCoreApp2.2'
+      displayName: 'IntegrationTests .NetCoreApp3.1'
       inputs:
         command: test
         projects: 'src/Tests/**/IntegrationTests.csproj'
-        arguments: '-c $(BuildConfiguration) -f netcoreapp2.2 --no-build'
-        testRunTitle: 'IntegrationTests .NetCoreApp2.2'
+        arguments: '-c $(BuildConfiguration) -f netcoreapp3.1 --no-build'
+        testRunTitle: 'IntegrationTests .NetCoreApp3.1'
 
     - task: DotNetCoreCLI@2
       displayName: 'IntegrationTests .Net4.5.2'
