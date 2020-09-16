@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STAN.Client", "STAN.Client\STAN.Client.csproj", "{D0E19EEE-86C2-4122-A80C-3F7A545A8C08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STAN.Client", "STAN.Client\STAN.Client.csproj", "{D0E19EEE-86C2-4122-A80C-3F7A545A8C08}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "Tests\UnitTests\UnitTests.csproj", "{C0ECAD2C-8AE5-4063-964A-BE7F03550ABA}"
 EndProject

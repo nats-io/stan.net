@@ -39,7 +39,7 @@ The repository contains several projects, all located under `src\`
     * StanSub - A samble subscriber.
 
 ### .NET Core SDK
-.NET Core SDK style projects are used, so ensure your environment (command line, VSCode, Visual Studio, etc) supports the targetted .NET Core SDK in `src\global.json` as well as .NET Framework 4.5 or greater.
+.NET Core SDK style projects are used, so ensure your environment (command line, VSCode, Visual Studio, etc) supports the targetted .NET Core SDK in `src\global.json` as well as .NET Framework 4.6 or greater.
 
 ### Visual Studio
 The recommendation is to load `src\STAN.sln` into Visual Studio 2019 (Visual Studio 2017 works as well). .NET Core SDK style projects are used to multitarget different frameworks, so when working with the source code (debugging, running tets etc) you might need to mind the "context" of the current framework.

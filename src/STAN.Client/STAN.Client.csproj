@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net45</TargetFrameworks>
+    <TargetFrameworks Condition="$(OS) == 'Windows_NT'">netstandard1.6;net46</TargetFrameworks>
+    <TargetFramework Condition="$(OS) != 'Windows_NT'">netstandard1.6</TargetFramework>    
     <Title>NATS Streaming .NET Client</Title>
     <Description>NATS acts as a central nervous system for distributed systems at scale for IoT, edge computing, and cloud native and on-premise applications. This is the .NET Streaming client API.</Description>
     <PackageId>STAN.Client</PackageId>
@@ -21,7 +22,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Include="package-icon.png" Pack="true" PackagePath="\"/>
+    <None Include="package-icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
