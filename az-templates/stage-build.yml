@@ -22,12 +22,12 @@ stages:
         testRunTitle: 'UnitTests .NetCoreApp3.1'
   
     - task: DotNetCoreCLI@2
-      displayName: 'UnitTests .Net4.5.2'
+      displayName: 'UnitTests .Net4.6'
       inputs:
         command: test
         projects: 'src/Tests/**/UnitTests.csproj'
-        arguments: '-c $(BuildConfiguration) -f net452 --no-build'
-        testRunTitle: 'UnitTests .Net4.5.2'
+        arguments: '-c $(BuildConfiguration) -f net46 --no-build'
+        testRunTitle: 'UnitTests .Net4.6'
   
     - task: PowerShell@2
       displayName: 'Download latest Win64 NATS-Server'
@@ -106,12 +106,12 @@ stages:
         testRunTitle: 'IntegrationTests .NetCoreApp3.1'
 
     - task: DotNetCoreCLI@2
-      displayName: 'IntegrationTests .Net4.5.2'
+      displayName: 'IntegrationTests .Net4.6'
       inputs:
         command: test
         projects: 'src/Tests/**/IntegrationTests.csproj'
-        arguments: '-c $(BuildConfiguration) -f net452 --no-build'
-        testRunTitle: 'IntegrationTests .Net4.5.2'
+        arguments: '-c $(BuildConfiguration) -f net46 --no-build'
+        testRunTitle: 'IntegrationTests .Net4.6'
   
     - task: DotNetCoreCLI@2
       displayName: 'Pack Nupkg'

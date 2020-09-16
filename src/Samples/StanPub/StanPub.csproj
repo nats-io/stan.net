@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp3.1;net45</TargetFrameworks>
+    <TargetFrameworks Condition="$(OS) == 'Windows_NT'">netcoreapp3.1;net46</TargetFrameworks>
+    <TargetFramework Condition="$(OS) != 'Windows_NT'">netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
     <Description>NATS Streaming Publisher Example</Description>
   </PropertyGroup>
