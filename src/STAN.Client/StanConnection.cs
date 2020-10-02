@@ -163,7 +163,8 @@ namespace STAN.Client
 
         internal ProtocolSerializer ps = new ProtocolSerializer();
 
-        internal StanOptions opts = null;
+        // Options are set in the constructor.
+        internal readonly StanOptions opts;
 
         private IConnection nc;
         private bool ncOwned = false;

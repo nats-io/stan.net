@@ -118,7 +118,6 @@ namespace STAN.Client
 
                 byte[] b = ProtocolSerializer.marshal(sr);
 
-                // TODO:  Configure request timeout?
                 Msg m = sc.NATSConnection.Request(subRequestSubject, b, sc.opts.ConnectTimeout);
 
                 SubscriptionResponse r = new SubscriptionResponse();
