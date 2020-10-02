@@ -86,8 +86,8 @@ namespace STAN.Client
         }
 
         /// <summary>
-        /// ConnectTimeout is an Option to set the timeout for establishing a connection
-        /// in milliseconds.
+        /// ConnectTimeout is the timeout in milliseconds for the initial Connect. This value is also
+        /// used for some of the internal request timeouts with the cluster.  The default is 2000 ms.
         /// </summary>
         public int ConnectTimeout
         {

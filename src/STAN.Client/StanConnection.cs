@@ -163,7 +163,8 @@ namespace STAN.Client
 
         internal ProtocolSerializer ps = new ProtocolSerializer();
 
-        private StanOptions opts = null;
+        // Options are set in the constructor.
+        internal readonly StanOptions opts;
 
         private IConnection nc;
         private bool ncOwned = false;
@@ -712,7 +713,7 @@ namespace STAN.Client
             };
             byte[] b = ProtocolSerializer.marshal(usr);
 
-            var r = lnc.Request(requestSubject, b, 2000);
+            var r = lnc.Request(requestSubject, b, opts.connectTimeout);
             SubscriptionResponse sr = new SubscriptionResponse();
             ProtocolSerializer.unmarshal(r.Data, sr);
             if (!string.IsNullOrEmpty(sr.Error))
@@ -783,7 +784,7 @@ namespace STAN.Client
                 {
                     if (closeRequests != null)
                     {
-                        reply = nc.Request(closeRequests, ProtocolSerializer.marshal(req));
+                        reply = nc.Request(closeRequests, ProtocolSerializer.marshal(req), opts.connectTimeout);
                     }
                 }
                 catch (StanBadSubscriptionException)
