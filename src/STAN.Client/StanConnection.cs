@@ -149,7 +149,11 @@ namespace STAN.Client
         private ISubscription pingSubscription = null;
 
         private readonly object pingLock = new object();
+
+#pragma warning disable 0618
         private readonly NUID pubNUID = new NUID();
+#pragma warning restore 0618
+
         private Timer pingTimer;
         private readonly byte[] pingBytes;
         private readonly string pingRequests;
@@ -576,7 +580,9 @@ namespace STAN.Client
 
         static public string newGUID()
         {
+#pragma warning disable 0618
             return NUID.NextGlobal;
+#pragma warning restore 0618
         }
 
         public void Publish(string subject, byte[] data)
