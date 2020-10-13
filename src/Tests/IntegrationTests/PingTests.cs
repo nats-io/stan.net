@@ -62,6 +62,11 @@ namespace IntegrationTests
                 {
                     nc.SubscribeAsync(StanConsts.DefaultDiscoverPrefix + "." + Context.ClusterId + ".pings", (obj, args) =>
                     {
+                        if (args.Message.Data.Length == 0)
+                        {
+                            return;
+                        }
+
                         count++;
                         if (count > StanConsts.DefaultPingMaxOut)
                         {
@@ -99,7 +104,7 @@ namespace IntegrationTests
                     AutoResetEvent ev = new AutoResetEvent(false);
 
                     var so = Context.GetStanTestOptions(Context.Server1);
-                    so.PingInterval = 200;
+                    so.PingInterval = 100;
                     so.PingMaxOutstanding = 3;
                     so.ConnectionLostEventHandler = (obj, args) =>
                     {
@@ -108,8 +113,9 @@ namespace IntegrationTests
 
                     using (var sc = Context.GetStanConnection(so))
                     {
+                        sc.NATSConnection.FlushBuffer();
                         nss.Shutdown();
-                        Assert.True(ev.WaitOne(20000));
+                        Assert.True(ev.WaitOne(2000));
                     }
                 }
             }
@@ -124,10 +130,6 @@ namespace IntegrationTests
                 using (var nss = Context.StartStreamingServerWithExternal(Context.Server1))
                 {
                     var ev = new AutoResetEvent(false);
-                    //var so = StanOptions.GetDefaultOptions();
-                    //so.PingInterval = 50;
-                    //so.PingMaxOutstanding = 10;
-                    //so.PubAckWait = 100;
 
                     using (var sc = Context.GetStanConnection(Context.Server1))
                     {

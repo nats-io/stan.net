@@ -246,6 +246,8 @@ namespace STAN.Client
             }
             catch (NATSTimeoutException)
             {
+                // This also covers no-responders as the NATSNoRespondersException
+                // is a subclass of NATSTimeoutException
                 protoUnsubscribe();
                 if (ncOwned)
                 {
@@ -324,7 +326,7 @@ namespace STAN.Client
                     pingMaxOut = response.PingMaxOut;
                     pingBytes = ProtocolSerializer.createPing(connID);
 
-                    pingTimer = new Timer(pingServer, null, pingInterval, Timeout.Infinite);
+                    pingTimer = new Timer(pingServer, null, pingInterval, pingInterval);
                 }
             }
             if (unsubPing)
@@ -353,20 +355,12 @@ namespace STAN.Client
                     return;
                 }
 
-                // disable timer, will never be called.
-                pingTimer.Change(Timeout.Infinite, Timeout.Infinite);
-
                 pingOut++;
                 conn = nc;
 
                 if (pingOut > pingMaxOut)
                 {
                     lostConnection = true;
-                }
-                else
-                {
-                    //reactivate timer.
-                    pingTimer.Change(pingInterval, Timeout.Infinite);
                 }
             }
 
@@ -379,6 +373,7 @@ namespace STAN.Client
             try
             {
                 conn.Publish(pingRequests, pingInbox, pingBytes);
+                conn.FlushBuffer();
             }
             catch (Exception ex)
             when (
@@ -461,10 +456,18 @@ namespace STAN.Client
             }
         }
 
-        private void processPingResponse(object sender, MsgHandlerEventArgs e)
+        private bool IsNoResponseMsg(Msg m)
         {
-            // No data means OK (no need to unmarshall)
-            var data = e.Message.Data;
+            return m != null && m.Data.Length == 0 && m.HasHeaders && "503".Equals(m.Header["Status"]);
+        }
+
+        private void processPingResponse(object sender, MsgHandlerEventArgs args)
+        {
+            if (IsNoResponseMsg(args.Message))
+                return;
+
+            // No data can be a valid message
+            var data = args.Message.Data;
             if (data?.Length > 0)
             {
                 var pingResp = new PingResponse();
@@ -482,6 +485,7 @@ namespace STAN.Client
                 if (err?.Length > 0)
                 {
                     closeDueToPing(new StanException(err));
+                    return;
                 }
             }
 
@@ -501,7 +505,10 @@ namespace STAN.Client
             }
 
             if (lnc != null)
+            {
                 lnc.Publish(args.Message.Reply, null);
+                lnc.FlushBuffer();
+            }
         }
 
         internal PublishAck removeAck(string guid)
@@ -798,6 +805,12 @@ namespace STAN.Client
                     // this exception.  The reply will be null, so we'll fall through
                     // and gracefully close the streaming connection.  The streaming server
                     // will cleanup this client on its own.
+                }
+                catch (NATSTimeoutException)
+                {
+                    // Also covers NATSNoRespondersException.  Either way, 
+                    // Assume that there 's no streaming server available and
+                    // close the connection below if required.
                 }
 
                 if (reply != null)
