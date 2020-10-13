@@ -13,4 +13,7 @@
     <ProjectReference Include="..\..\STAN.Client\STAN.Client.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NATS.Client" Version="0.11.0" />
+  </ItemGroup>
 </Project>
