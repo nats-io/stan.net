@@ -600,9 +600,9 @@ namespace STAN.Client
             return publish(subject, data, 0, data?.Length ?? 0, handler).GUID;
         }
 
-        public string Publish(string subject, byte[] data, int offset, int length, EventHandler<StanAckHandlerArgs> handler)
+        public string Publish(string subject, byte[] data, int offset, int count, EventHandler<StanAckHandlerArgs> handler)
         {
-            return publish(subject, data, offset, length, handler).GUID;
+            return publish(subject, data, offset, count, handler).GUID;
         }
 
         internal PublishAck publish(string subject, byte[] data, int offset, int count, EventHandler<StanAckHandlerArgs> handler)
