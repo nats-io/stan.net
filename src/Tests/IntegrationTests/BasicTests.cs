@@ -94,7 +94,13 @@ namespace IntegrationTests
             {
                 using (var c = Context.GetStanConnection(Context.DefaultServer))
                 {
-                    c.Publish("foo", getPayload("hello"));
+                    var payload = getPayload("hello");
+                    c.Publish("foo", payload);
+                    
+                    var payload2 = new byte[payload.Length + 20];
+                    Buffer.BlockCopy(payload, 0, payload2, 10, payload.Length);
+                    c.Publish("foo", payload2, 10, payload.Length);
+                    
                     c.Publish("foo", null);
                 }
             }

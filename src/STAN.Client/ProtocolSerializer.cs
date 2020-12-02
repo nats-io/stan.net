@@ -28,7 +28,14 @@ namespace STAN.Client
             ((IMessage)obj).MergeFrom(bytes);
         }
 
-        internal static byte[] createPubMsg(string clientID, string guidValue, string subject, byte[] data, object connID)
+        internal static byte[] createPubMsg(
+            string clientID,
+            string guidValue,
+            string subject,
+            byte[] data,
+            int offset,
+            int count,
+            object connID)
         {
             PubMsg pm = new PubMsg
             {
@@ -37,8 +44,9 @@ namespace STAN.Client
                 Subject = subject,
                 ConnID = (ByteString)connID
             };
+
             if (data != null)
-                pm.Data = ByteString.CopyFrom(data);
+                pm.Data = ByteString.CopyFrom(data, offset, count);
 
             return pm.ToByteArray();
         }

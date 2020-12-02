@@ -587,21 +587,40 @@ namespace STAN.Client
 
         public void Publish(string subject, byte[] data)
         {
-            publish(subject, data, null).wait();
+            publish(subject, data, 0, data?.Length ?? 0, null).wait();
+        }
+
+        public void Publish(string subject, byte[] data, int offset, int count)
+        {
+            publish(subject, data, offset, count, null).wait();
         }
 
         public string Publish(string subject, byte[] data, EventHandler<StanAckHandlerArgs> handler)
         {
-            return publish(subject, data, handler).GUID;
+            return publish(subject, data, 0, data?.Length ?? 0, handler).GUID;
         }
 
-        internal PublishAck publish(string subject, byte[] data, EventHandler<StanAckHandlerArgs> handler)
+        public string Publish(string subject, byte[] data, int offset, int length, EventHandler<StanAckHandlerArgs> handler)
         {
+            return publish(subject, data, offset, length, handler).GUID;
+        }
+
+        internal PublishAck publish(string subject, byte[] data, int offset, int count, EventHandler<StanAckHandlerArgs> handler)
+        {
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            
+            if (data?.Length < offset + count)
+                throw new ArgumentException($"Combination of {nameof(offset)} and {nameof(count)} exceeds data length.");
+            
             string localAckSubject = null;
 
             string subj = this.pubPrefix + "." + subject;
             string guidValue = newGUID();
-            byte[] b = ProtocolSerializer.createPubMsg(clientID, guidValue, subject, data, connID);
+            byte[] b = ProtocolSerializer.createPubMsg(clientID, guidValue, subject, data, offset, count, connID);
             PublishAck a = null;
 
             lock (mu)
@@ -655,7 +674,12 @@ namespace STAN.Client
 
         public Task<string> PublishAsync(string subject, byte[] data)
         {
-            PublishAck a = publish(subject, data, null);
+            return PublishAsync(subject, data, 0, data?.Length ?? 0);
+        }
+
+        public Task<string> PublishAsync(string subject, byte[] data, int offset, int count)
+        {
+            PublishAck a = publish(subject, data, offset, count, null);
             Task<string> t = new Task<string>(() =>
             {
                 a.wait();
