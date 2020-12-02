@@ -45,7 +45,7 @@ namespace STAN.Client
                 ConnID = (ByteString)connID
             };
 
-            if (data != null)
+            if (data != null && count > 0)
                 pm.Data = ByteString.CopyFrom(data, offset, count);
 
             return pm.ToByteArray();
