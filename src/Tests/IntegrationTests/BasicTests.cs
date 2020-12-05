@@ -266,6 +266,47 @@ namespace IntegrationTests
         }
 
         [Fact]
+        public void TestPubSubOffset()
+        {
+            var payload = System.Text.Encoding.UTF8.GetBytes("hello");
+            var payloadLength = payload.Length;
+            var bytes = new byte[payloadLength + 20];
+            Buffer.BlockCopy(payload, 0, bytes, 10, payloadLength);
+
+            Exception ex = null;
+            var ev = new AutoResetEvent(false);
+            using (Context.StartStreamingServerWithEmbedded(Context.DefaultServer))
+            {
+                using (var c = Context.GetStanConnection(Context.DefaultServer))
+                {
+                    // Test using here for unsubscribe
+                    using (c.Subscribe("foo", (obj, args) =>
+                    {
+                        try
+                        {
+                            Assert.True(args.Message.Sequence > 0);
+                            Assert.True(args.Message.Time > 0);
+                            Assert.True(args.Message.Data != null);
+                            var str = System.Text.Encoding.UTF8.GetString(args.Message.Data);
+                            Assert.Equal("hello", str);
+                            ev.Set();
+                        }
+                        catch (Exception e)
+                        {
+                            ex = e;
+                        }
+                    }))
+                    {
+                        c.Publish("foo", bytes, 10, payloadLength);
+                        Assert.True(ev.WaitOne(Context.DefaultWait));
+                    }
+                }
+            }
+            if (ex != null)
+                throw ex;
+        }
+
+        [Fact]
         public void TestBasicQueuePubSub()
         {
             byte[] payload = System.Text.Encoding.UTF8.GetBytes("hello");
