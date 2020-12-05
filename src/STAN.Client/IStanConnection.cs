@@ -47,16 +47,64 @@ namespace STAN.Client
         string Publish(string subject, byte[] data, EventHandler<StanAckHandlerArgs> handler);
 
         /// <summary>
-        /// Publish publishes the data argument to the given subject. The data
+        /// Publish publishes a sequence of bytes from the data argument to the given subject.
+        /// The data argument is left untouched. A sequence of bytes to send, determined by <paramref name="offset"/> and
+        /// <paramref name="count"/> arguments, needs to be correctly interpreted on the receiver.
+        /// This API is synchronous and waits for the acknowledgement or error from the NATS streaming server.
+        /// </summary>
+        /// <param name="subject">Subject to publish the message to.</param>
+        /// <param name="data">An array of type <see cref="Byte"/> containing message payload.</param>
+        /// <param name="offset">The zero-based byte offset in <paramref name="data"/> at which to begin publishing
+        /// bytes to the subject.</param>
+        /// <param name="count">The number of bytes to be published to the subject.</param>
+        /// <exception cref="StanException">When an error occurs locally or on the NATS streaming server.</exception>
+        void Publish(string subject, byte[] data, int offset, int count);
+
+        /// <summary>
+        /// Publish publishes a sequence of bytes from the data argument to the given subject.
+        /// The data argument is left untouched. A sequence of bytes to send, determined by <paramref name="offset"/> and
+        /// <paramref name="count"/> arguments, needs to be correctly interpreted on the receiver.
+        /// This API is asynchronous and handles the acknowledgement or error from the NATS streaming server
+        /// in the provided handler. An exception is thrown when an error occurs during the send,
+        /// the handler will process acknowledgments and errors.
+        /// </summary>
+        /// <param name="subject">Subject to publish the message to.</param>
+        /// <param name="data">An array of type <see cref="Byte"/> containing message payload.</param>
+        /// <param name="offset">The zero-based byte offset in <paramref name="data"/> at which to begin publishing
+        /// bytes to the subject.</param>
+        /// <param name="count">The number of bytes to be published to the subject.</param>
+        /// <param name="handler">Event handler to process message acknowledgements.</param>
+        /// <returns>The GUID of the published message.</returns>
+        /// <exception cref="StanException">Thrown when an error occurs publishing the message.</exception>
+        string Publish(string subject, byte[] data, int offset, int count, EventHandler<StanAckHandlerArgs> handler);
+
+        /// <summary>
+        /// PublishAsync publishes the data argument to the given subject. The data
         /// argument is left untouched and needs to be correctly interpreted on
         /// the receiver.  This API is asynchronous and handles the acknowledgement
         /// or error from the NATS streaming server in the provided handler.  An exception is thrown when
         /// an error occurs during the send, the handler will process acknowledgments and errors.
         /// </summary>
         /// <param name="subject">Subject to publish the message to.</param>
-        /// <param name="data"></param>
+        /// <param name="data">An array of type <see cref="Byte"/> that contains the data to publish.</param>
         /// <returns>The task object representing the asynchronous operation, containing the guid.</returns>
         Task<string> PublishAsync(string subject, byte[] data);
+
+        /// <summary>
+        /// PublishAsync publishes a sequence of bytes from the data argument to the given subject.
+        /// The data argument is left untouched. A sequence of bytes to send, determined by <paramref name="offset"/> and
+        /// <paramref name="count"/> arguments, needs to be correctly interpreted on the receiver.
+        /// This API is asynchronous and handles the acknowledgement or error from the NATS streaming server in
+        /// the provided handler.  An exception is thrown when an error occurs during the send,
+        /// the handler will process acknowledgments and errors.
+        /// </summary>
+        /// <param name="subject">Subject to publish the message to.</param>
+        /// <param name="data">An array of type <see cref="Byte"/> that contains the data to publish.</param>
+        /// <param name="offset">The zero-based byte offset in <paramref name="data"/> at which to begin publishing
+        /// bytes to the subject.</param>
+        /// <param name="count">The number of bytes to be published to the subject.</param>
+        /// <returns>The task object representing the asynchronous operation, containing the guid.</returns>
+        Task<string> PublishAsync(string subject, byte[] data, int offset, int count);
 
         /// <summary>
         /// Subscribe will create an Asynchronous Subscriber with
